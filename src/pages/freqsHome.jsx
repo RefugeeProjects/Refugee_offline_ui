@@ -95,8 +95,6 @@ export default function FreqsHome() {
   });
 
   const { user } = useContext(appContext);
-  console.log('user roles:', user.roles);
-
   // const fetchData = useCallback(async () => {
   //   setIsLoadingTable(true);
   //   try {
@@ -413,347 +411,439 @@ useEffect(() => {
     return <TextField {...commonProps} multiline={isMultiline} rows={isMultiline ? 3 : 1} />;
   };
 
-//   const renderSection = (fields) => {
-//     const dataToDisplay = isEditing ? editableRefugeeData : selectedRefugee;
+  const renderSection = (fields) => {
+    const dataToDisplay = isEditing ? editableRefugeeData : selectedRefugee;
 
-//     const renderFieldValue = (key, value) => {
-//       if (key === 'personal_photo') {
-//         return value ? (
-//           <img src={value} alt="الصورة الشخصية" style={{ maxWidth: '100%', maxHeight: '120px', borderRadius: 8 }} />
-//         ) : (
-//           <Typography variant="body1" color="text.secondary">
-//             لا توجد صورة
-//           </Typography>
-//         );
-//       }
-//       if (
-//         key === 'birth_date' ||
-//         key === 'residency_issue_date' ||
-//         key === 'residency_expiry_date' ||
-//         key === 'form_issue_date' ||
-//         key === 'form_expiry_date' ||
-//         key === 'interview_date' ||
-//         key === 'departure_date_from_origin' ||
-//         key === 'date_of_arrival_to_iraq'
-//       ) {
-//         return <Typography variant="body1">{formatDateForDisplay(value) || '---'}</Typography>;
-//       }
-//       return (
-//         <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-//           {value || '---'}
-//         </Typography>
-//       );
-//     };
-
-//     if (!isEditing) {
-//       return (
-//         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
-//           <tbody>
-//             {fields.map((key) => {
-//               if (key === 'personal_photo' && !dataToDisplay?.personal_photo) {
-//                 return null;
-//               }
-
-//               const label = fieldLabels[key] || key;
-//               const value = dataToDisplay?.[key];
-
-//               return (
-//                 <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
-//                   <td
-//                     style={{
-//                       padding: '12px',
-//                       fontWeight: 'bold',
-//                       width: '35%',
-//                       backgroundColor: '#f5f5f5',
-//                       borderRight: '1px solid #ddd',
-//                     }}
-//                   >
-//                     <Typography variant="subtitle1" fontWeight="bold">
-//                    {label}
-//                     </Typography>
-//                   </td>
-//                   <td style={{ padding: '12px', width: '65%' }}>{renderFieldValue(key, value)}</td>
-//                 </tr>
-//               );
-//             })}
-//           </tbody>
-//         </table>
-//       );
-//     } else {
-//       // return (
-//       //   <Grid container spacing={2}>
-//       //     {fields.map((key) => {
-//       //       if (key === 'personal_photo') {
-//       //         return null;
-//       //       }
-
-//       //       const label = fieldLabels[key] || key;
-//       //       const value = editableRefugeeData?.[key];
-
-//       //       return (
-//       //         <Grid item xs={12} sm={6} key={key}>
-//       //           <Box sx={{ mb: 3 }}>
-//       //             <Typography variant="h6" fontSize={20} fontWeight="medium" lineHeight={1.8} gutterBottom>
-//       //             {label}
-//       //             </Typography>
-//       //             {getEditableFieldComponent(key, value)}
-//       //           </Box>
-//       //         </Grid>
-//       //       );
-//       //     })}
-//       //   </Grid>
-//       // );
-//       return (
-//   <Grid container spacing={2}>
-//     {/* الجنس */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         select
-//         fullWidth
-//         label={fieldLabels.gender}
-//         name="gender"
-//         value={editableRefugeeData?.gender || ""}
-//         onChange={handleInputChange}
-//       >
-//         {GENDERS.map((option) => (
-//           <MenuItem key={option} value={option}>{option}</MenuItem>
-//         ))}
-//       </TextField>
-//     </Grid>
-
-//     {/* تاريخ المقابلة */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         fullWidth
-//         type="date"
-//         label={fieldLabels.interview_date}
-//         name="interview_date"
-//         value={formatDateForInput(editableRefugeeData?.interview_date)}
-//         onChange={handleInputChange}
-//         InputLabelProps={{ shrink: true }}
-//       />
-//     </Grid>
-
-//     {/* اسم مسؤول المقابلة */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         fullWidth
-//         label={fieldLabels.interview_officername}
-//         name="interview_officername"
-//         value={editableRefugeeData?.interview_officername || ""}
-//         onChange={handleInputChange}
-//       />
-//     </Grid>
-
-//     {/* الاسم الأول */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         fullWidth
-//         label={fieldLabels.frist_name}
-//         name="frist_name"
-//         value={editableRefugeeData?.frist_name || ""}
-//         onChange={handleInputChange}
-//       />
-//     </Grid>
-
-//     {/* اسم الأب */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         fullWidth
-//         label={fieldLabels.second_name}
-//         name="second_name"
-//         value={editableRefugeeData?.second_name || ""}
-//         onChange={handleInputChange}
-//       />
-//     </Grid>
-
-//     {/* اسم الجد */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         fullWidth
-//         label={fieldLabels.theard_name}
-//         name="theard_name"
-//         value={editableRefugeeData?.theard_name || ""}
-//         onChange={handleInputChange}
-//       />
-//     </Grid>
-
-//     {/* اللقب */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         fullWidth
-//         label={fieldLabels.sur_name}
-//         name="sur_name"
-//         value={editableRefugeeData?.sur_name || ""}
-//         onChange={handleInputChange}
-//       />
-//     </Grid>
-
-//     {/* اسم الأم */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         fullWidth
-//         label={fieldLabels.mother_name}
-//         name="mother_name"
-//         value={editableRefugeeData?.mother_name || ""}
-//         onChange={handleInputChange}
-//       />
-//     </Grid>
-
-//     {/* اسم أبي الأم */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         fullWidth
-//         label={fieldLabels.fath_mother_name}
-//         name="fath_mother_name"
-//         value={editableRefugeeData?.fath_mother_name || ""}
-//         onChange={handleInputChange}
-//       />
-//     </Grid>
-
-//     {/* الديانة */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         select
-//         fullWidth
-//         label={fieldLabels.religion}
-//         name="religion"
-//         value={editableRefugeeData?.religion || ""}
-//         onChange={handleInputChange}
-//       >
-//         {RELIGIONS.map((option) => (
-//           <MenuItem key={option} value={option}>{option}</MenuItem>
-//         ))}
-//       </TextField>
-//     </Grid>
-//     {/* تاريخ الولادة */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         fullWidth
-//         type="date"
-//         label={fieldLabels.birth_date}
-//         name="birth_date"
-//         value={formatDateForInput(editableRefugeeData?.birth_date)}
-//         onChange={handleInputChange}
-//         InputLabelProps={{ shrink: true }}
-//       />
-//     </Grid>
-
-//     {/* مكان الولادة */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         fullWidth
-//         label={fieldLabels.birth_place}
-//         name="birth_place"
-//         value={editableRefugeeData?.birth_place || ""}
-//         onChange={handleInputChange}
-//       />
-//     </Grid>
-
-//     {/* الحالة الاجتماعية */}
-//     <Grid item xs={12} sm={6}>
-//       <TextField
-//         select
-//         fullWidth
-//         label={fieldLabels.marital_status}
-//         name="marital_status"
-//         value={editableRefugeeData?.marital_status || ""}
-//         onChange={handleInputChange}
-//       >
-//         {MARITAL_STATUSES.map((option) => (
-//           <MenuItem key={option} value={option}>{option}</MenuItem>
-//         ))}
-//       </TextField>
-//     </Grid>
-
-//     {/* باقي الحقول */}
-//     {/* كرر نفس النمط لبقية الحقول: spouse_nationality, phone_number, governorate, district, ... إلخ */}
-
-//   </Grid>
-// );
-
-//     }
-//   };
-
-const renderSection = (fields) => {
-  const dataToDisplay = selectedRefugee || {};
-
-  const renderFieldValue = (key, value) => {
-    if (key === 'personal_photo') {
-      return value ? (
-        <img
-          src={value}
-          alt="الصورة الشخصية"
-          style={{ maxWidth: '100%', maxHeight: '120px', borderRadius: 8 }}
-        />
-      ) : (
-        <Typography variant="body1" color="text.secondary">
-          لا توجد صورة
+    const renderFieldValue = (key, value) => {
+      if (key === 'personal_photo') {
+        return value ? (
+          <img src={value} alt="الصورة الشخصية" style={{ maxWidth: '100%', maxHeight: '120px', borderRadius: 8 }} />
+        ) : (
+          <Typography variant="body1" color="text.secondary">
+            لا توجد صورة
+          </Typography>
+        );
+      }
+      if (
+        key === 'birth_date' ||
+        key === 'residency_issue_date' ||
+        key === 'residency_expiry_date' ||
+        key === 'form_issue_date' ||
+        key === 'form_expiry_date' ||
+        key === 'interview_date' ||
+        key === 'departure_date_from_origin' ||
+        key === 'date_of_arrival_to_iraq'
+      ) {
+        return <Typography variant="body1">{formatDateForDisplay(value) || '---'}</Typography>;
+      }
+      return (
+        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+          {value || '---'}
         </Typography>
       );
-    }
+    };
 
-    // حقول التواريخ
-    if (
-      key === 'birth_date' ||
-      key === 'residency_issue_date' ||
-      key === 'residency_expiry_date' ||
-      key === 'form_issue_date' ||
-      key === 'form_expiry_date' ||
-      key === 'interview_date' ||
-      key === 'departure_date_from_origin' ||
-      key === 'date_of_arrival_to_iraq'
-    ) {
-      return <Typography variant="body1">{formatDateForDisplay(value) || '---'}</Typography>;
-    }
+    if (!isEditing) {
+      return (
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
+          <tbody>
+            {fields.map((key) => {
+              if (key === 'personal_photo' && !dataToDisplay?.personal_photo) {
+                return null;
+              }
 
-    // باقي الحقول
-    return (
-      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-        {value || '---'}
-      </Typography>
-    );
+              const label = fieldLabels[key] || key;
+              const value = dataToDisplay?.[key];
+
+              return (
+                <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
+                  <td
+                    style={{
+                      padding: '12px',
+                      fontWeight: 'bold',
+                      width: '35%',
+                      backgroundColor: '#f5f5f5',
+                      borderRight: '1px solid #ddd',
+                    }}
+                  >
+                    <Typography variant="subtitle1" fontWeight="bold">
+                   {label}
+                    </Typography>
+                  </td>
+                  <td style={{ padding: '12px', width: '65%' }}>{renderFieldValue(key, value)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      );
+    } else {
+      // return (
+      //   <Grid container spacing={2}>
+      //     {fields.map((key) => {
+      //       if (key === 'personal_photo') {
+      //         return null;
+      //       }
+
+      //       const label = fieldLabels[key] || key;
+      //       const value = editableRefugeeData?.[key];
+
+      //       return (
+      //         <Grid item xs={12} sm={6} key={key}>
+      //           <Box sx={{ mb: 3 }}>
+      //             <Typography variant="h6" fontSize={20} fontWeight="medium" lineHeight={1.8} gutterBottom>
+      //             {label}
+      //             </Typography>
+      //             {getEditableFieldComponent(key, value)}
+      //           </Box>
+      //         </Grid>
+      //       );
+      //     })}
+      //   </Grid>
+      // );
+      return (
+  <Grid container spacing={2}>
+    {/* الجنس */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        select
+        fullWidth
+        label={fieldLabels.gender}
+        name="gender"
+        value={editableRefugeeData?.gender || ""}
+        onChange={handleInputChange}
+      >
+        {GENDERS.map((option) => (
+          <MenuItem key={option} value={option}>{option}</MenuItem>
+        ))}
+      </TextField>
+    </Grid>
+
+    {/* تاريخ المقابلة */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        type="date"
+        label={fieldLabels.interview_date}
+        name="interview_date"
+        value={formatDateForInput(editableRefugeeData?.interview_date)}
+        onChange={handleInputChange}
+        InputLabelProps={{ shrink: true }}
+      />
+    </Grid>
+
+    {/* اسم مسؤول المقابلة */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={fieldLabels.interview_officername}
+        name="interview_officername"
+        value={editableRefugeeData?.interview_officername || ""}
+        onChange={handleInputChange}
+      />
+    </Grid>
+
+    {/* الاسم الأول */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={fieldLabels.frist_name}
+        name="frist_name"
+        value={editableRefugeeData?.frist_name || ""}
+        onChange={handleInputChange}
+      />
+    </Grid>
+
+    {/* اسم الأب */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={fieldLabels.second_name}
+        name="second_name"
+        value={editableRefugeeData?.second_name || ""}
+        onChange={handleInputChange}
+      />
+    </Grid>
+
+    {/* اسم الجد */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={fieldLabels.theard_name}
+        name="theard_name"
+        value={editableRefugeeData?.theard_name || ""}
+        onChange={handleInputChange}
+      />
+    </Grid>
+
+    {/* اللقب */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={fieldLabels.sur_name}
+        name="sur_name"
+        value={editableRefugeeData?.sur_name || ""}
+        onChange={handleInputChange}
+      />
+    </Grid>
+
+    {/* اسم الأم */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={fieldLabels.mother_name}
+        name="mother_name"
+        value={editableRefugeeData?.mother_name || ""}
+        onChange={handleInputChange}
+      />
+    </Grid>
+
+    {/* اسم أبي الأم */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={fieldLabels.fath_mother_name}
+        name="fath_mother_name"
+        value={editableRefugeeData?.fath_mother_name || ""}
+        onChange={handleInputChange}
+      />
+    </Grid>
+
+    {/* الديانة */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        select
+        fullWidth
+        label={fieldLabels.religion}
+        name="religion"
+        value={editableRefugeeData?.religion || ""}
+        onChange={handleInputChange}
+      >
+        {RELIGIONS.map((option) => (
+          <MenuItem key={option} value={option}>{option}</MenuItem>
+        ))}
+      </TextField>
+    </Grid>
+    {/* تاريخ الولادة */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        type="date"
+        label={fieldLabels.birth_date}
+        name="birth_date"
+        value={formatDateForInput(editableRefugeeData?.birth_date)}
+        onChange={handleInputChange}
+        InputLabelProps={{ shrink: true }}
+      />
+    </Grid>
+
+    {/* مكان الولادة */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label={fieldLabels.birth_place}
+        name="birth_place"
+        value={editableRefugeeData?.birth_place || ""}
+        onChange={handleInputChange}
+      />
+    </Grid>
+
+    {/* الحالة الاجتماعية */}
+    <Grid item xs={12} sm={6}>
+      <TextField
+        select
+        fullWidth
+        label={fieldLabels.marital_status}
+        name="marital_status"
+        value={editableRefugeeData?.marital_status || ""}
+        onChange={handleInputChange}
+      >
+        {MARITAL_STATUSES.map((option) => (
+          <MenuItem key={option} value={option}>{option}</MenuItem>
+        ))}
+      </TextField>
+    </Grid>
+ {/* تاريخ الحالة الاجتماعية */}
+  <Grid item xs={12} sm={6}>
+    <TextField
+      fullWidth
+      type="date"
+      label={fieldLabels.marital_status_date}
+      name="marital_status_date"
+      value={editableRefugeeData?.marital_status_date || ""}
+      onChange={handleInputChange}
+      InputLabelProps={{ shrink: true }}
+    />
+  </Grid>
+
+  {/* رقم الهاتف */}
+  <Grid item xs={12} sm={6}>
+    <TextField
+      fullWidth
+      label={fieldLabels.phone_number}
+      name="phone_number"
+      value={editableRefugeeData?.phone_number || ""}
+      onChange={handleInputChange}
+    />
+  </Grid>
+
+  {/* المحافظة */}
+  <Grid item xs={12} sm={6}>
+    <TextField
+      fullWidth
+      label={fieldLabels.governorate}
+      name="governorate"
+      value={editableRefugeeData?.governorate || ""}
+      onChange={handleInputChange}
+    />
+  </Grid>
+
+  {/* القضاء */}
+  <Grid item xs={12} sm={6}>
+    <TextField
+      fullWidth
+      label={fieldLabels.district}
+      name="district"
+      value={editableRefugeeData?.district || ""}
+      onChange={handleInputChange}
+    />
+  </Grid>
+
+  {/* المنطقة */}
+  <Grid item xs={12} sm={6}>
+    <TextField
+      fullWidth
+      label={fieldLabels.subdistrict}
+      name="subdistrict"
+      value={editableRefugeeData?.subdistrict || ""}
+      onChange={handleInputChange}
+    />
+  </Grid>
+
+  {/* القومية */}
+  <Grid item xs={12} sm={6}>
+    <TextField
+      select
+      fullWidth
+      label={fieldLabels.nationality}
+      name="nationality"
+      value={editableRefugeeData?.nationality || ""}
+      onChange={handleInputChange}
+    >
+      {NATIONALITIES.map((option) => (
+        <MenuItem key={option} value={option}>{option}</MenuItem>
+      ))}
+    </TextField>
+  </Grid>
+
+  {/* بلد الأصل */}
+  <Grid item xs={12} sm={6}>
+    <TextField
+      
+      fullWidth
+      label={fieldLabels.origin_country}
+      name="origin_country"
+      value={editableRefugeeData?.origin_country || ""}
+      onChange={handleInputChange}
+    />
+  </Grid>
+
+  {/* المهنة */}
+  <Grid item xs={12} sm={6}>
+    <TextField
+      fullWidth
+      label={fieldLabels.profession}
+      name="profession"
+      value={editableRefugeeData?.profession || ""}
+      onChange={handleInputChange}
+    />
+  </Grid>
+  </Grid>
+);
+
+    }
   };
 
-  return (
-    <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
-      <tbody>
-        {fields.map((key) => {
-          if (key === 'personal_photo' && !dataToDisplay?.personal_photo) {
-            return null;
-          }
+// const renderSection = (fields) => {
+//   const dataToDisplay = selectedRefugee || {};
 
-          const label = fieldLabels[key] || key;
-          const value = dataToDisplay?.[key];
+//   const renderFieldValue = (key, value) => {
+//     if (key === 'personal_photo') {
+//       return value ? (
+//         <img
+//           src={value}
+//           alt="الصورة الشخصية"
+//           style={{ maxWidth: '100%', maxHeight: '120px', borderRadius: 8 }}
+//         />
+//       ) : (
+//         <Typography variant="body1" color="text.secondary">
+//           لا توجد صورة
+//         </Typography>
+//       );
+//     }
 
-          return (
-            <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
-              <td
-                style={{
-                  padding: '12px',
-                  fontWeight: 'bold',
-                  width: '35%',
-                  backgroundColor: '#f5f5f5',
-                  borderRight: '1px solid #ddd',
-                }}
-              >
-                <Typography variant="subtitle1" fontWeight="bold">
-                  {label}
-                </Typography>
-              </td>
-              <td style={{ padding: '12px', width: '65%' }}>
-                {renderFieldValue(key, value)}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  );
-};
+//     // حقول التواريخ
+//     if (
+//       key === 'birth_date' ||
+//       key === 'residency_issue_date' ||
+//       key === 'residency_expiry_date' ||
+//       key === 'form_issue_date' ||
+//       key === 'form_expiry_date' ||
+//       key === 'interview_date' ||
+//       key === 'departure_date_from_origin' ||
+//       key === 'date_of_arrival_to_iraq'
+//     ) {
+//       return <Typography variant="body1">{formatDateForDisplay(value) || '---'}</Typography>;
+//     }
+
+//     // باقي الحقول
+//     return (
+//       <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+//         {value || '---'}
+//       </Typography>
+//     );
+//   };
+
+//   return (
+//     <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
+//       <tbody>
+//         {fields.map((key) => {
+//           if (key === 'personal_photo' && !dataToDisplay?.personal_photo) {
+//             return null;
+//           }
+
+//           const label = fieldLabels[key] || key;
+//           const value = dataToDisplay?.[key];
+
+//           return (
+//             <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
+//               <td
+//                 style={{
+//                   padding: '12px',
+//                   fontWeight: 'bold',
+//                   width: '35%',
+//                   backgroundColor: '#f5f5f5',
+//                   borderRight: '1px solid #ddd',
+//                 }}
+//               >
+//                 <Typography variant="subtitle1" fontWeight="bold">
+//                   {label}
+//                 </Typography>
+//               </td>
+//               <td style={{ padding: '12px', width: '65%' }}>
+//                 {renderFieldValue(key, value)}
+//               </td>
+//             </tr>
+//           );
+//         })}
+//       </tbody>
+//     </table>
+//   );
+// };
 
 // وضع التعديل (تحرير البيانات)
 const renderEditSection = (fields) => {
+  
   return (
     <Grid container spacing={2}>
       {fields.map((key) => {
@@ -773,7 +863,9 @@ const renderEditSection = (fields) => {
           key === 'form_expiry_date' ||
           key === 'interview_date' ||
           key === 'departure_date_from_origin' ||
-          key === 'date_of_arrival_to_iraq'
+          key === 'date_of_arrival_to_iraq' ||
+          key === 'marital_status_date' 
+
         ) {
           return (
             <Grid item xs={12} sm={6} key={key}>
@@ -853,6 +945,26 @@ const renderEditSection = (fields) => {
             </Grid>
           );
         }
+
+        if (
+  key === "mok_approval" ||
+  key === "amn_wat_approval" ||
+  key === "istk_approval" ||
+  key === "iqama_approval"
+) {
+  return (
+    <Grid item xs={12} sm={6} key={key}>
+      <TextField
+        fullWidth
+        label={label}
+        name={key}
+        value={value}
+        disabled
+      />
+    </Grid>
+  );
+}
+
 
         // باقي الحقول النصية
         return (
@@ -1177,6 +1289,7 @@ const handleForward = async () => {
       const filteredData = Object.fromEntries(
         Object.entries(editableRefugeeData).filter(([key]) => allowedFieldsToEdit.includes(key))
       );
+console.log('filteredData',filteredData);
 
       const { success, msg } = await api('PUT', `mains/refugees/id/${editableRefugeeData.id}`, filteredData);
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -1257,6 +1370,7 @@ const handleForward = async () => {
   // تخزين بيانات الفرد الجاري تعديله
   const [editingMember, setEditingMember] = useState(null);
 
+  //Edit Familly
   const handleOpenEditDialog = (member) => {
     setEditingMember({ ...member }); // نسخة من بيانات الفرد
     setOpenEditDialog(true);
@@ -1267,6 +1381,7 @@ const handleForward = async () => {
     setOpenEditDialog(false);
   };
 
+  //العائلة
   const handleEditMember = async () => {
     if (!editingMember?.id) return;
 
@@ -1569,7 +1684,8 @@ const handleForward = async () => {
 
           <TabPanel value={tabIndex} index={0}>
             {/* Render table in view mode, or grid for edit mode */}
-            {renderSection(personalFields)} زر تفاصيل العائلة
+            
+            {renderSection(personalFields)} 
             {!isEditing && (
               <Box sx={{ textAlign: 'center', mt: 3 }}>
                 <Button variant="outlined" color="primary" onClick={() => setOpenFamilyDialog(true)}>
@@ -1582,9 +1698,8 @@ const handleForward = async () => {
             {/* Render table in view mode, or grid for edit mode */}
             {/* {renderSection(additionalFields)} */}
              {/* إذا في وضع تعديل، اعرض دالة التعديل، غير ذلك اعرض دالة العرض */}
-  {isEditing 
-    ? renderEditSection(additionalFields) 
-    : renderSection(additionalFields)}
+  {isEditing ? renderEditSection(additionalFields) : renderSection(additionalFields)}
+  
           </TabPanel>
 
 
