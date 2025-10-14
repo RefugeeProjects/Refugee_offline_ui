@@ -1281,7 +1281,7 @@ const handleForward = async () => {
         'passport',
         'passportissuecountry',
         'familypassports',
-        'interviewnotes',
+        'interviewnotes','district'
         // أضف حقول أخرى إن أردت السماح بتعديلها
       ];
 

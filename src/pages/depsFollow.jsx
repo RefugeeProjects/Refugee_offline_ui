@@ -182,7 +182,7 @@ export default function DepsFollow() {
     setStages([]);
     setStagesLoading(true);
     try {
-      // عدّل المسار حسب الـbase عندك:
+      // عدّل المسار حسب الـbase عندك: تتتت
       // لو useApi تضيف /api/ تلقائيًا:
       const endpoint = `freqs/refugees/${row.id}/stages`; // أو refugees/${row.id}/stages حسب مشروعك
       const { success, data, msg } = await api('GET', endpoint);
