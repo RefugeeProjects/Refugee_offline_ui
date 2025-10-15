@@ -242,7 +242,6 @@ useEffect(() => {
     origin_country: 'بلد الأصل',
     profession: 'المهنة',
     personal_photo: 'الصورة الشخصية',
-    first_name_member: 'اسم أول فرد من العائلة',
     political_opinion: 'الرأي السياسي',
     social_group_membership: 'الانتماء الاجتماعي أو القبلي',
     reasons_for_persecution: 'أسباب طلب اللجوء',
@@ -305,111 +304,110 @@ useEffect(() => {
     'origin_country',
     'profession',
     'personal_photo',
-    'first_name_member',
   ];
 
   const additionalFields = Object.keys(fieldLabels).filter((key) => !personalFields.includes(key));
 
-  const getEditableFieldComponent = (key, value) => {
-    const commonProps = {
-      fullWidth: true,
-      variant: 'outlined',
-      name: key,
-      value: value || '',
-      onChange: handleInputChange,
-    };
+  // const getEditableFieldComponent = (key, value) => {
+  //   const commonProps = {
+  //     fullWidth: true,
+  //     variant: 'outlined',
+  //     name: key,
+  //     value: value || '',
+  //     onChange: handleInputChange,
+  //   };
 
-    if (
-      [
-        'gender',
-        'religion',
-        'marital_status',
-        'military_service',
-        'origin_country',
-        'previous_country_before_iraq',
-        'spouse_nationality',
-        'nationality',
-      ].includes(key)
-    ) {
-      let options = [];
-      switch (key) {
-        case 'gender':
-          options = GENDERS;
-          break;
-        case 'religion':
-          options = RELIGIONS;
-          break;
-        case 'marital_status':
-          options = MARITAL_STATUSES;
-          break;
-        case 'military_service':
-          options = MILITARY_SERVICES;
-          break;
-        case 'origin_country':
-        case 'previous_country_before_iraq':
-        case 'spouse_nationality':
-          options = COUNTRIES;
-          break;
-        case 'nationality':
-          options = NATIONALITIES;
-          break;
+  //   if (
+  //     [
+  //       'gender',
+  //       'religion',
+  //       'marital_status',
+  //       'military_service',
+  //       'origin_country',
+  //       'previous_country_before_iraq',
+  //       'spouse_nationality',
+  //       'nationality',
+  //     ].includes(key)
+  //   ) {
+  //     let options = [];
+  //     switch (key) {
+  //       case 'gender':
+  //         options = GENDERS;
+  //         break;
+  //       case 'religion':
+  //         options = RELIGIONS;
+  //         break;
+  //       case 'marital_status':
+  //         options = MARITAL_STATUSES;
+  //         break;
+  //       case 'military_service':
+  //         options = MILITARY_SERVICES;
+  //         break;
+  //       case 'origin_country':
+  //       case 'previous_country_before_iraq':
+  //       case 'spouse_nationality':
+  //         options = COUNTRIES;
+  //         break;
+  //       case 'nationality':
+  //         options = NATIONALITIES;
+  //         break;
 
-        default:
-          options = [];
-      }
-      return (
-        <FormControl fullWidth variant="outlined">
-          <InputLabel>{fieldLabels[key]}</InputLabel>
-          <Select {...commonProps} label={fieldLabels[key]}>
-            {options.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      );
-    }
+  //       default:
+  //         options = [];
+  //     }
+  //     return (
+  //       <FormControl fullWidth variant="outlined">
+  //         <InputLabel>{fieldLabels[key]}</InputLabel>
+  //         <Select {...commonProps} label={fieldLabels[key]}>
+  //           {options.map((option) => (
+  //             <MenuItem key={option} value={option}>
+  //               {option}
+  //             </MenuItem>
+  //           ))}
+  //         </Select>
+  //       </FormControl>
+  //     );
+  //   }
 
-    if (
-      key === 'birth_date' ||
-      key === 'form_issue_date' ||
-      key === 'residency_issue_date' ||
-      key === 'residency_expiry_date' ||
-      key === 'form_expiry_date' ||
-      key === 'interview_date' ||
-      key === 'departure_date_from_origin' ||
-      key === 'date_of_arrival_to_iraq'
-    ) {
-      return (
-        <TextField
-          type="date"
-          {...commonProps}
-          value={formatDateForInput(value)}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-      );
-    }
+  //   if (
+  //     key === 'birth_date' ||
+  //     key === 'form_issue_date' ||
+  //     key === 'residency_issue_date' ||
+  //     key === 'residency_expiry_date' ||
+  //     key === 'form_expiry_date' ||
+  //     key === 'interview_date' ||
+  //     key === 'departure_date_from_origin' ||
+  //     key === 'date_of_arrival_to_iraq'
+  //   ) {
+  //     return (
+  //       <TextField
+  //         type="date"
+  //         {...commonProps}
+  //         value={formatDateForInput(value)}
+  //         InputLabelProps={{
+  //           shrink: true,
+  //         }}
+  //       />
+  //     );
+  //   }
 
-    if (key === 'personal_photo') {
-      return null;
-    }
+  //   if (key === 'personal_photo') {
+  //     return null;
+  //   }
 
-    const isMultiline = [
-      'political_opinion',
-      'social_group_membership',
-      'reasons_for_persecution',
-      'last_place_of_residence',
-      'reasons_for_leaving_origin',
-      'reasons_for_asylum',
-      'political_party_names',
-      'returntocountryhistory',
-    ].includes(key);
+  //   const isMultiline = [
+  //     'political_opinion',
+  //     'social_group_membership',
+  //     'reasons_for_persecution',
+  //     'last_place_of_residence',
+  //     'reasons_for_leaving_origin',
+  //     'reasons_for_asylum',
+  //     'political_party_names',
+  //     'returntocountryhistory',
+  //   ].includes(key);
 
-    return <TextField {...commonProps} multiline={isMultiline} rows={isMultiline ? 3 : 1} />;
-  };
+  //   return <TextField {...commonProps} multiline={isMultiline} rows={isMultiline ? 3 : 1} />;
+  // };
 
   const renderSection = (fields) => {
     const dataToDisplay = isEditing ? editableRefugeeData : selectedRefugee;
@@ -478,6 +476,7 @@ useEffect(() => {
         </table>
       );
     } else {
+
       // return (
       //   <Grid container spacing={2}>
       //     {fields.map((key) => {
@@ -1223,92 +1222,188 @@ const handleForward = async () => {
     }
   };
 
-  const handleSaveEdit = async () => {
-    if (!editableRefugeeData) return;
-    setIsForwarding(true);
+  //2025/10/15
+//   const handleSaveEdit = async () => {
+//     if (!editableRefugeeData) return;
+//     setIsForwarding(true);
 
-    try {
-      // ✅ حدد الحقول التي تريد السماح بتعديلها فقط
-      const allowedFieldsToEdit = [
-        'interview_date',
-        'interview_officername',
-        'gender',
-        'frist_name',
-        'second_name',
-        'theard_name',
-        'sur_name',
-        'mother_name',
-        'fath_mother_name',
-        'religion',
-        'birth_date',
-        'birth_place',
-        'marital_status',
-        'spouse_nationality',
-        'marital_status_date',
-        'phone_number',
-        'nationality',
-        'origin_country',
-        'profession',
-        'first_name_member',
-        'political_opinion',
-        'social_group_membership',
-        'reasons_for_persecution',
-        'last_place_of_residence',
-        'residency_duration',
-        'military_service',
-        'political_party_membership',
-        'political_party_names',
-        'departure_date_from_origin',
-        'date_of_arrival_to_iraq',
-        'is_iraq_residency',
-        'residency_issue_date',
-        'residency_expiry_date',
-        'reasons_for_leaving_origin',
-        'previous_country_before_iraq',
-        'residency_befor_iraq',
-        'residency_befor_iraq_durtion',
-        'place_of_residence',
-        'duration_of_place',
-        'returntocountryhistory',
-        'intendtoreturn',
-        'whathappensifreturn',
-        'reasons_for_asylum',
-        'power_of_attorney_number',
-        'form_issue_date',
-        'form_expiry_date',
-        'form_place_of_issue',
-        'race',
-        'passport',
-        'passportissuecountry',
-        'familypassports',
-        'interviewnotes','district'
-        // أضف حقول أخرى إن أردت السماح بتعديلها
-      ];
+//     try {
+//       // ✅ حدد الحقول التي تريد السماح بتعديلها فقط
+//       const allowedFieldsToEdit = [
+//         'interview_date',
+//         'interview_officername',
+//         'gender',
+//         'frist_name',
+//         'second_name',
+//         'theard_name',
+//         'sur_name',
+//         'mother_name',
+//         'fath_mother_name',
+//         'religion',
+//         'birth_date',
+//         'birth_place',
+//         'marital_status',
+//         'spouse_nationality',
+//         'marital_status_date',
+//         'phone_number',
+//         'nationality',
+//         'origin_country',
+//         'profession',
+//         'first_name_member',
+//         'political_opinion',
+//         'social_group_membership',
+//         'reasons_for_persecution',
+//         'last_place_of_residence',
+//         'residency_duration',
+//         'military_service',
+//         'political_party_membership',
+//         'political_party_names',
+//         'departure_date_from_origin',
+//         'date_of_arrival_to_iraq',
+//         'is_iraq_residency',
+//         'residency_issue_date',
+//         'residency_expiry_date',
+//         'reasons_for_leaving_origin',
+//         'previous_country_before_iraq',
+//         'residency_befor_iraq',
+//         'residency_befor_iraq_durtion',
+//         'place_of_residence',
+//         'duration_of_place',
+//         'returntocountryhistory',
+//         'intendtoreturn',
+//         'whathappensifreturn',
+//         'reasons_for_asylum',
+//         'power_of_attorney_number',
+//         'form_issue_date',
+//         'form_expiry_date',
+//         'form_place_of_issue',
+//         'race',
+//         'passport',
+//         'passportissuecountry',
+//         'familypassports',
+//         'interviewnotes','district'
+//         // أضف حقول أخرى إن أردت السماح بتعديلها
+//       ];
 
-      // فلترة الحقول غير المسموح بها
-      const filteredData = Object.fromEntries(
-        Object.entries(editableRefugeeData).filter(([key]) => allowedFieldsToEdit.includes(key))
-      );
-console.log('filteredData',filteredData);
+//       // فلترة الحقول غير المسموح بها
+//       const filteredData = Object.fromEntries(
+//         Object.entries(editableRefugeeData).filter(([key]) => allowedFieldsToEdit.includes(key))
+//       );
 
-      const { success, msg } = await api('PUT', `mains/refugees/id/${editableRefugeeData.id}`, filteredData);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      if (success) {
-        NotificationMsg('نجاح', 'تم حفظ التعديلات بنجاح.');
-        await fetchData();
-        setIsEditing(false);
-        setSelectedRefugee((prev) => ({ ...prev, ...filteredData }));
-        setEditableRefugeeData((prev) => ({ ...prev, ...filteredData }));
-      } else {
-        DangerMsg('فشل الحفظ', msg || 'تعذر حفظ التعديلات');
-      }
-    } catch (error) {
-      DangerMsg('خطأ', 'حدث خطأ أثناء حفظ التعديلات');
-      console.error(error);
-    } finally {
-      setIsForwarding(false);
+// console.log('filteredData',filteredData);
+
+//       const { success, msg } = await api('PUT', `mains/refugees/id/${editableRefugeeData.id}`, filteredData);
+//       await new Promise((resolve) => setTimeout(resolve, 1500));
+//       if (success) {
+//         NotificationMsg('نجاح', 'تم حفظ التعديلات بنجاح.');
+//         await fetchData();
+//         setIsEditing(false);
+//         setSelectedRefugee((prev) => ({ ...prev, ...filteredData }));
+//         setEditableRefugeeData((prev) => ({ ...prev, ...filteredData }));
+//       } else {
+//         DangerMsg('فشل الحفظ', msg || 'تعذر حفظ التعديلات');
+//       }
+//     } catch (error) {
+//       DangerMsg('خطأ', 'حدث خطأ أثناء حفظ التعديلات');
+//       console.error(error);
+//     } finally {
+//       setIsForwarding(false);
+//     }
+//   };
+const handleSaveEdit = async () => {
+  if (!editableRefugeeData) return;
+  setIsForwarding(true);
+
+  try {
+    // ✅ هنا نكوّن الكائن يدوياً بالحقول المسموح تعديلها فقط
+    console.log
+    ('editableRefugeeData', editableRefugeeData);
+    const filteredData = {
+      interview_date: editableRefugeeData.interview_date,
+      interview_officername: editableRefugeeData.interview_officername,
+      gender: editableRefugeeData.gender,
+      frist_name: editableRefugeeData.frist_name,
+      second_name: editableRefugeeData.second_name,
+      theard_name: editableRefugeeData.theard_name,
+      sur_name: editableRefugeeData.sur_name,
+      mother_name: editableRefugeeData.mother_name,
+      fath_mother_name: editableRefugeeData.fath_mother_name,
+      religion: editableRefugeeData.religion,
+      birth_date: editableRefugeeData.birth_date,
+      birth_place: editableRefugeeData.birth_place,
+      marital_status: editableRefugeeData.marital_status,
+      spouse_nationality: editableRefugeeData.spouse_nationality,
+      marital_status_date: editableRefugeeData.marital_status_date,
+      phone_number: editableRefugeeData.phone_number,
+      nationality: editableRefugeeData.nationality,
+      origin_country: editableRefugeeData.origin_country,
+      profession: editableRefugeeData.profession,
+      first_name_member: editableRefugeeData.first_name_member,
+      political_opinion: editableRefugeeData.political_opinion,
+      social_group_membership: editableRefugeeData.social_group_membership,
+      reasons_for_persecution: editableRefugeeData.reasons_for_persecution,
+      last_place_of_residence: editableRefugeeData.last_place_of_residence,
+      residency_duration: editableRefugeeData.residency_duration,
+      military_service: editableRefugeeData.military_service,
+      political_party_membership: editableRefugeeData.political_party_membership,
+      political_party_names: editableRefugeeData.political_party_names,
+      departure_date_from_origin: editableRefugeeData.departure_date_from_origin,
+      date_of_arrival_to_iraq: editableRefugeeData.date_of_arrival_to_iraq,
+      is_iraq_residency: editableRefugeeData.is_iraq_residency,
+      residency_issue_date: editableRefugeeData.residency_issue_date,
+      residency_expiry_date: editableRefugeeData.residency_expiry_date,
+      reasons_for_leaving_origin: editableRefugeeData.reasons_for_leaving_origin,
+      previous_country_before_iraq: editableRefugeeData.previous_country_before_iraq,
+      residency_befor_iraq: editableRefugeeData.residency_befor_iraq,
+      residency_befor_iraq_durtion: editableRefugeeData.residency_befor_iraq_durtion,
+      place_of_residence: editableRefugeeData.place_of_residence,
+      duration_of_place: editableRefugeeData.duration_of_place,
+      returntocountryhistory: editableRefugeeData.returntocountryhistory,
+      intendtoreturn: editableRefugeeData.intendtoreturn,
+      whathappensifreturn: editableRefugeeData.whathappensifreturn,
+      reasons_for_asylum: editableRefugeeData.reasons_for_asylum,
+      power_of_attorney_number: editableRefugeeData.power_of_attorney_number,
+      form_issue_date: editableRefugeeData.form_issue_date,
+      form_expiry_date: editableRefugeeData.form_expiry_date,
+      form_place_of_issue: editableRefugeeData.form_place_of_issue,
+      race: editableRefugeeData.race,
+      passport: editableRefugeeData.passport,
+      passportissuecountry: editableRefugeeData.passportissuecountry,
+      familypassports: editableRefugeeData.familypassports,
+      interviewnotes: editableRefugeeData.interviewnotes,
+      district: editableRefugeeData.district,
+      subdistrict: editableRefugeeData.subdistrict,
+      governorate: editableRefugeeData.governorate,
+    };
+
+    console.log('filteredData', filteredData);
+
+    const { success, msg } = await api(
+      'PUT',
+      `mains/refugees/id/${editableRefugeeData.id}`,
+      filteredData
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    if (success) {
+      NotificationMsg('نجاح', 'تم حفظ التعديلات بنجاح.');
+      await fetchData();
+      setIsEditing(false);
+      setSelectedRefugee((prev) => ({ ...prev, ...filteredData }));
+      setEditableRefugeeData((prev) => ({ ...prev, ...filteredData }));
+    } else {
+      DangerMsg('فشل الحفظ', msg || 'تعذر حفظ التعديلات');
     }
-  };
+  } catch (error) {
+    DangerMsg('خطأ', 'حدث خطأ أثناء حفظ التعديلات');
+    console.error(error);
+  } finally {
+    setIsForwarding(false);
+  }
+};
+
+
 
   const handleCancelEdit = () => {
     setIsEditing(false);
