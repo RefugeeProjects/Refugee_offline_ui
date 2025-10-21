@@ -115,7 +115,7 @@ export default function FreqsHome() {
   // useEffect(() => {
   //   fetchData();
   // }, [fetchData]);
-    const userRole = user.roles; // أو من الكونتكست/ستيت
+    const userRole = user.roles; // أو من الكونتكست/ستيت2023
 
 const fetchData = useCallback(async () => {
   setIsLoadingTable(true);

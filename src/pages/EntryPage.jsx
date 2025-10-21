@@ -1,18 +1,76 @@
 import * as React from 'react';
-import { useEffect, useState, useCallback } from 'react';
-import { Drawer, IconButton, Divider, TextField, Button, Grid, Avatar } from '@mui/material';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { Drawer, IconButton, Divider, Grid, Avatar, Paper } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-
 import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid'; // إضافة GridToolbar
 import { useApi } from '../utils';
 import { DangerMsg } from '../components/NotificationMsg';
 import { Stack, Typography } from '@mui/material';
+import { format } from 'date-fns'; // مكتبة احترافية للتعامل مع التواريخ
+import { ar } from 'date-fns/locale'; // استيراد اللغة العربية
+
+// 1. مكون مساعد لعرض الحقول والتسميات داخل الـ Drawer (لتحسين القراءة)
+const DetailItem = ({ label, value }) => (
+  <Grid item xs={12} sm={6} md={4}>
+    <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+      {label}:
+    </Typography>
+    <Typography variant="body1" sx={{ fontWeight: 500, fontSize: '1.0rem' }}>
+      {value || 'غير متوفر'}
+    </Typography>
+  </Grid>
+);
+
+// 2. دالة مساعدة لتنسيق التاريخ
+const formatDate = (dateString) => {
+  if (!dateString) return 'غير متوفر';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date)) return 'تاريخ غير صالح';
+    // تنسيق التاريخ باللغة العربية مع اليوم والشهر والسنة
+    return format(date, 'dd MMMM yyyy', { locale: ar });
+  } catch {
+    return 'تاريخ غير صالح';
+  }
+};
+
+// 3. تعريف الأعمدة خارج المكون
+const columnsDefinition = [
+  { field: 'id', headerName: 'رقم الطلب', width: 100 },
+  { field: 'frist_name', headerName: 'الاسم ', width: 180 },
+  { field: 'second_name', headerName: 'اسم الاب', width: 180 },
+  { field: 'nationality', headerName: 'الجنسية', width: 120 },
+  {
+    field: 'birth_date',
+    headerName: 'تاريخ الميلاد',
+    width: 130,
+    // استخدام Value Formatter لتحسين تنسيق العرض في الشبكة
+    valueFormatter: (params) => (params.value ? new Date(params.value).toISOString().slice(0, 10) : ''),
+  },
+  {
+    field: 'interview_date',
+    headerName: 'تاريخ المقابلة',
+    width: 150,
+    valueFormatter: (params) => (params.value ? new Date(params.value).toISOString().slice(0, 10) : ''),
+  },
+  { field: 'interview_officerName', headerName: 'اسم موظف المقابلة', width: 180 },
+  { field: 'current_stage', headerName: 'الحالة', width: 140 },
+  {
+    field: 'created_at',
+    headerName: 'تاريخ الإنشاء',
+    width: 140,
+    valueFormatter: (params) => (params.value ? new Date(params.value).toISOString().slice(0, 10) : ''),
+  },
+  // تم حذف created_by لأنه لم يكن موجودًا في البيانات المنسقة.
+];
+
 export default function RefugeesGrid() {
   const api = useApi();
   const [rows, setRows] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleRowClick = (params) => {
     setSelectedRow(params.row);
@@ -24,27 +82,29 @@ export default function RefugeesGrid() {
     setSelectedRow(null);
   };
 
+  // 4. دمج التواريخ المنسقة في عملية جلب البيانات وتحسين معالجة التاريخ
   const fetchData = useCallback(async () => {
+    setLoading(true);
     try {
       const { success, data } = await api('GET', 'freqs/refugees/stage/done');
       if (!success) {
         DangerMsg('اشعارات اللاجئين', 'خطأ في تحميل البيانات');
+        setLoading(false);
         return;
       }
 
+      // وظيفة مساعدة لتنسيق التاريخ إلى 'YYYY-MM-DD'
+      const safeFormatDate = (date) =>
+        date && !isNaN(Date.parse(date)) ? new Date(date).toISOString().slice(0, 10) : '';
+
       const formatted = (data?.records || data || []).map((item) => ({
         id: item.id,
-        case_number: item.case_number,
-        name_plain: item.name_plain,
-        interview_date: item.interview_date,
+        id: item.id,
+        frist_name: item.frist_name,
+        second_name: item.second_name,
         gender: item.gender,
         religion: item.religion,
-
-        birth_date:
-          item.birth_date && !isNaN(Date.parse(item.birth_date))
-            ? new Date(item.birth_date).toISOString().slice(0, 10)
-            : '',
-
+        birth_date: safeFormatDate(item.birth_date), // تنسيق في صفيف البيانات
         birth_place: item.birth_place,
         marital_status: item.marital_status,
         spouse_nationality: item.spouse_nationality,
@@ -52,450 +112,233 @@ export default function RefugeesGrid() {
         nationality: item.nationality,
         origin_country: item.origin_country,
         profession: item.profession,
-
-        created_at:
-          item.created_at && !isNaN(Date.parse(item.created_at))
-            ? new Date(item.created_at).toISOString().slice(0, 10)
-            : '',
-
+        created_at: safeFormatDate(item.created_at),
         current_stage: item.current_stage,
         political_opinion: item.political_opinion,
         social_group_membership: item.social_group_membership,
         reasons_for_persecution: item.reasons_for_persecution,
         last_place_of_residence: item.last_place_of_residence,
         residency_duration: item.residency_duration,
-        military_service: item.military_service ? 'Yes' : 'No',
-        political_party_membership: item.political_party_membership ? 'Yes' : 'No',
+        military_service: item.military_service ? 'نعم' : 'لا',
+        political_party_membership: item.political_party_membership ? 'نعم' : 'لا',
         political_party_names: item.political_party_names || '',
-
-        departure_date_from_origin:
-          item.departure_date_from_origin && !isNaN(Date.parse(item.departure_date_from_origin))
-            ? new Date(item.departure_date_from_origin).toISOString().slice(0, 10)
-            : '',
-
-        date_of_arrival_to_iraq:
-          item.date_of_arrival_to_iraq && !isNaN(Date.parse(item.date_of_arrival_to_iraq))
-            ? new Date(item.date_of_arrival_to_iraq).toISOString().slice(0, 10)
-            : '',
-
-        passport_expiry_date:
-          item.passport_expiry_date && !isNaN(Date.parse(item.passport_expiry_date))
-            ? new Date(item.passport_expiry_date).toISOString().slice(0, 10)
-            : '',
-
+        departure_date_from_origin: safeFormatDate(item.departure_date_from_origin),
+        date_of_arrival_to_iraq: safeFormatDate(item.date_of_arrival_to_iraq),
+        passport_expiry_date: safeFormatDate(item.passport_expiry_date),
         reasons_for_leaving_origin: item.reasons_for_leaving_origin,
         previous_country_before_iraq: item.previous_country_before_iraq,
         reasons_for_asylum: item.reasons_for_asylum,
-
-        updated_at:
-          item.updated_at && !isNaN(Date.parse(item.updated_at))
-            ? new Date(item.updated_at).toISOString().slice(0, 10)
-            : '',
-
-        interview_date:
-          item.interview_date && !isNaN(Date.parse(item.interview_date))
-            ? new Date(item.interview_date).toISOString().slice(0, 10)
-            : '',
-
+        updated_at: safeFormatDate(item.updated_at),
+        interview_date: safeFormatDate(item.interview_date),
         interview_officerName: item.interview_officerName || '',
         personal_photo: item.personal_photo || '',
+        notes: item.notes || '', // ✅ إضافة حقل الملاحظات المفقود
       }));
 
       setRows(formatted);
     } catch (err) {
       DangerMsg('اشعارات اللاجئين', 'فشل في تحميل البيانات');
       console.error(err);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, []); // إضافة api إلى قائمة الاعتمادات
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  const columns = [
-    { field: 'case_number', headerName: 'رقم الطلب', width: 100 },
-
-    { field: 'interview_officerName', headerName: 'اسم موظف المقابلة', width: 150 },
-    { field: 'interview_date', headerName: 'تاريخ المقابلة  ', width: 150 },
-    { field: 'name_plain', headerName: 'الاسم الكامل', width: 150 },
-    { field: 'birth_date', headerName: 'تاريخ الميلاد', width: 130 },
-    { field: 'created_at', headerName: 'تاريخ الإنشاء', width: 140 },
-    { field: 'created_by', headerName: 'انشيء من قبل المستخدم ', width: 140 },
-    { field: 'current_stage', headerName: 'الحالة', width: 140 },
-  ];
-  console.log('Raw birth_date: test', selectedRow?.birth_date);
+  const columns = useMemo(() => columnsDefinition, []); // استخدام useMemo
 
   return (
-    <Box sx={{ height: 600, width: '100%' }}>
-      {' '}
-      <Stack alignItems="center" mb={1}>
-        <Typography variant="h3"> طلبات مصادق عليها من الوزير</Typography>
+    <Box sx={{ height: 650, width: '100%', p: 2 }}>
+      <Stack alignItems="center" mb={3}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'primary.dark' }}>
+          📂 طلبات مصادق عليها من الوزير
+        </Typography>
       </Stack>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        checkboxSelection
-        disableRowSelectionOnClick
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 10,
-            },
-          },
-        }}
-        pageSizeOptions={[5, 10, 20]}
-        onRowClick={handleRowClick} // <<< أضف هذا السطر
-      />
+
+      <Paper elevation={3} sx={{ height: '100%', width: '100%', p: 1 }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          loading={loading} // عرض حالة التحميل
+          slots={{ toolbar: GridToolbar }} // إضافة شريط أدوات للبحث والتصفية والتصدير
+          checkboxSelection
+          disableRowSelectionOnClick
+          localeText={{
+            // تحسين دعم اللغة العربية
+            columnMenuUnsort: 'إلغاء الفرز',
+            columnMenuSortAsc: 'فرز تصاعدي',
+            columnMenuSortDesc: 'فرز تنازلي',
+            columnMenuFilter: 'تصفية',
+            columnMenuHideColumn: 'إخفاء العمود',
+            columnMenuShowColumns: 'عرض الأعمدة',
+            noRowsLabel: 'لا توجد طلبات لعرضها',
+            toolbarExport: 'تصدير',
+            toolbarExportCSV: 'تصدير كملف CSV',
+            toolbarExportPrint: 'طباعة',
+            toolbarDensity: 'كثافة العرض',
+            toolbarDensityCompact: 'صغير',
+            toolbarDensityStandard: 'قياسي',
+            toolbarDensityComfortable: 'كبير',
+            toolbarFilters: 'الفلاتر',
+            toolbarColumns: 'الأعمدة',
+            toolbarQuickFilterPlaceholder: 'ابحث...',
+            // يمكن إضافة المزيد حسب الحاجة
+          }}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 10 } },
+            filter: { filterModel: { items: [], quickFilterExcludeHiddenColumns: true } },
+          }}
+          pageSizeOptions={[5, 10, 25, 50]}
+          onRowClick={handleRowClick}
+          sx={{ '& .MuiDataGrid-row:hover': { cursor: 'pointer', backgroundColor: 'action.hover' } }}
+        />
+      </Paper>
+
+      {/* -------------------- Drawer Details -------------------- */}
+
       <Drawer
         anchor="right"
         open={drawerOpen}
         onClose={handleDrawerClose}
-        PaperProps={{
-          sx: { width: '90%' },
-        }}
+        PaperProps={{ sx: { width: { xs: '100%', sm: '80%', md: '50%' } } }} // تحسين استجابة العرض على الشاشات المختلفة
       >
         <Box p={3}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h5" sx={{ fontWeight: 'bold', fontSize: '1.4rem' }}>
-              تفاصيل اللاجئ
+              👤 تفاصيل اللاجئ - رقم الطلب: {selectedRow?.id}
             </Typography>
             <IconButton onClick={handleDrawerClose}>
-              <CloseIcon sx={{ fontSize: 30 }} />
+              <CloseIcon sx={{ fontSize: 30, color: 'error.main' }} />
             </IconButton>
           </Stack>
+
           <Divider sx={{ my: 2 }} />
+
           {selectedRow && (
-            <Grid container spacing={3}>
-              {/* صورة شخصية في أعلى اليمين */}
-              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
+            <Grid container spacing={4}>
+              {/* القسم الأول: الصورة والمعلومات الأساسية */}
+              <Grid item xs={12} sx={{ textAlign: 'center' }}>
                 {selectedRow.personal_photo ? (
                   <Avatar
-                    alt={selectedRow.name_plain}
+                    alt={selectedRow.frist_name}
                     src={selectedRow.personal_photo}
-                    sx={{
-                      width: 120,
-                      height: 120,
-                      border: '2px solid',
-                      borderColor: 'primary.main',
-                      borderRadius: '4px',
-                    }}
+                    sx={{ width: 140, height: 140, border: '4px solid', borderColor: 'primary.main', m: '0 auto' }}
                   />
                 ) : (
-                  <Avatar sx={{ width: 120, height: 120, bgcolor: 'grey.300', fontSize: '3rem', borderRadius: '4px' }}>
-                    {selectedRow.name_plain ? selectedRow.name_plain.charAt(0) : '؟'}
+                  <Avatar sx={{ width: 140, height: 140, bgcolor: 'grey.400', fontSize: '3rem', m: '0 auto' }}>
+                    {selectedRow.frist_name ? selectedRow.frist_name.charAt(0) : '؟'}
                   </Avatar>
                 )}
+                <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold' }}>
+                  {selectedRow.frist_name}
+                </Typography>
+                <Typography variant="subtitle1" color="text.secondary">
+                  {selectedRow.nationality}
+                </Typography>
               </Grid>
 
-              {/* معلومات شخصية */}
+              {/* ----------------- المعلومات الشخصية ----------------- */}
               <Grid item xs={12}>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 1, color: 'primary.main', fontSize: '2.8rem' }}>
+                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
                   المعلومات الشخصية
                 </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      الاسم الكامل:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.name_plain}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      الجنس:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.gender}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      تاريخ الميلاد:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow?.birth_date
-                        ? new Date(selectedRow.birth_date).toISOString().split('T')[0]
-                        : 'Not available'}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      مكان الميلاد:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.birth_place}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      الديانة:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.religion}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      الجنسية:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.nationality}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      دولة المنشأ:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.origin_country}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      المهنة:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.profession}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      رقم الهاتف:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.phone_number}
-                    </Typography>
-                  </Grid>
+                <Grid container spacing={3}>
+                  <DetailItem label="الاسم " value={selectedRow.frist_name} />
+                  <DetailItem label="الجنس" value={selectedRow.gender} />
+                  {/* استخدام الدالة المساعدة للتنسيق الاحترافي */}
+                  <DetailItem label="تاريخ الميلاد" value={formatDate(selectedRow.birth_date)} />
+                  <DetailItem label="مكان الميلاد" value={selectedRow.birth_place} />
+                  <DetailItem label="الديانة" value={selectedRow.religion} />
+                  <DetailItem label="الجنسية" value={selectedRow.nationality} />
+                  <DetailItem label="دولة المنشأ" value={selectedRow.origin_country} />
+                  <DetailItem label="المهنة" value={selectedRow.profession} />
+                  <DetailItem label="رقم الهاتف" value={selectedRow.phone_number} />
                 </Grid>
               </Grid>
 
+              {/* ----------------- معلومات الزواج ----------------- */}
               <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
-
-              {/* معلومات الزواج والعائلة */}
-              <Grid item xs={12}>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 1, color: 'primary.main', fontSize: '2.8rem' }}>
+                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
                   معلومات الزواج
                 </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      الحالة الاجتماعية:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.marital_status}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      جنسية الزوج/الزوجة:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.spouse_nationality}
-                    </Typography>
-                  </Grid>
+                <Grid container spacing={3}>
+                  <DetailItem label="الحالة الاجتماعية" value={selectedRow.marital_status} />
+                  <DetailItem label="جنسية الزوج/الزوجة" value={selectedRow.spouse_nationality} />
                 </Grid>
               </Grid>
 
+              {/* ----------------- تفاصيل اللجوء والوضع الأمني ----------------- */}
               <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
-
-              {/* معلومات اللجوء والوضع السياسي */}
-              <Grid item xs={12}>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 1, color: 'primary.main', fontSize: '2.8rem' }}>
+                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
                   تفاصيل اللجوء والوضع الأمني
                 </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      الرأي السياسي:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.political_opinion}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      الانتماء الاجتماعي:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.social_group_membership}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      أسباب الاضطهاد:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.reasons_for_persecution}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      آخر مكان إقامة:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.last_place_of_residence}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      مدة الإقامة هناك:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.residency_duration}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      خدمة عسكرية:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.military_service ? 'نعم' : 'لا'}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      عضوية حزب سياسي:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.political_party_membership ? 'نعم' : 'لا'}
-                    </Typography>
-                  </Grid>
-                  {selectedRow.political_party_membership && (
-                    <Grid item xs={12} sm={6} md={4}>
-                      <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                        أسماء الأحزاب السياسية:
-                      </Typography>
-                      <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                        {selectedRow.political_party_names}
-                      </Typography>
-                    </Grid>
+                <Grid container spacing={3}>
+                  <DetailItem label="الرأي السياسي" value={selectedRow.political_opinion} />
+                  <DetailItem label="الانتماء الاجتماعي" value={selectedRow.social_group_membership} />
+                  <DetailItem label="أسباب الاضطهاد" value={selectedRow.reasons_for_persecution} />
+                  <DetailItem label="آخر مكان إقامة" value={selectedRow.last_place_of_residence} />
+                  <DetailItem label="مدة الإقامة هناك" value={selectedRow.residency_duration} />
+                  <DetailItem label="خدمة عسكرية" value={selectedRow.military_service} />
+                  <DetailItem label="عضوية حزب سياسي" value={selectedRow.political_party_membership} />
+                  {selectedRow.political_party_membership === 'نعم' && (
+                    <DetailItem label="أسماء الأحزاب السياسية" value={selectedRow.political_party_names} />
                   )}
                 </Grid>
               </Grid>
 
+              {/* ----------------- تفاصيل السفر والوصول ----------------- */}
               <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
-
-              {/* معلومات السفر والوصول */}
-              <Grid item xs={12}>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 1, color: 'primary.main', fontSize: '2.8rem' }}>
+                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
                   تفاصيل السفر والوصول
                 </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      تاريخ المغادرة من بلد المنشأ:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {/* {new Date(selectedRow.departure_date_from_origin).toLocaleDateString('ar-IQ')} */}
-                      {selectedRow.departure_date_from_origin}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      تاريخ الوصول إلى العراق:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {/* {new Date(selectedRow.date_of_arrival_to_iraq).toLocaleDateString('ar-IQ')} */}
-                      {selectedRow.date_of_arrival_to_iraq}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      أسباب مغادرة بلد المنشأ:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.reasons_for_leaving_origin}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      الدولة السابقة قبل العراق:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.previous_country_before_iraq}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      أسباب طلب اللجوء:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.reasons_for_asylum}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      تاريخ انتهاء صلاحية جواز السفر:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.passport_expiry_date ? selectedRow.passport_expiry_date : 'لا يوجد'}
-                    </Typography>
-                  </Grid>
+                <Grid container spacing={3}>
+                  <DetailItem
+                    label="تاريخ المغادرة من بلد المنشأ"
+                    value={formatDate(selectedRow.departure_date_from_origin)}
+                  />
+                  <DetailItem label="تاريخ الوصول إلى العراق" value={formatDate(selectedRow.date_of_arrival_to_iraq)} />
+                  <DetailItem label="أسباب مغادرة بلد المنشأ" value={selectedRow.reasons_for_leaving_origin} />
+                  <DetailItem label="الدولة السابقة قبل العراق" value={selectedRow.previous_country_before_iraq} />
+                  <DetailItem label="أسباب طلب اللجوء" value={selectedRow.reasons_for_asylum} />
+                  <DetailItem
+                    label="تاريخ انتهاء صلاحية جواز السفر"
+                    value={formatDate(selectedRow.passport_expiry_date)}
+                  />
                 </Grid>
               </Grid>
 
+              {/* ----------------- معلومات إدارية ----------------- */}
               <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
-
-              {/* معلومات إدارية */}
-              <Grid item xs={12}>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 1, color: 'primary.main', fontSize: '2.8rem' }}>
+                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
                   معلومات إدارية
                 </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      رقم الحالة:
+                <Grid container spacing={3}>
+                  <DetailItem label="رقم الحالة" value={selectedRow.id} />
+                  <DetailItem label="المرحلة الحالية" value={selectedRow.current_stage} />
+                  <DetailItem label="اسم موظف المقابلة" value={selectedRow.interview_officerName} />
+                  <DetailItem label="تاريخ المقابلة" value={formatDate(selectedRow.interview_date)} />
+                  <DetailItem label="تاريخ الإنشاء" value={formatDate(selectedRow.created_at)} />
+                  <DetailItem label="آخر تحديث" value={formatDate(selectedRow.updated_at)} />
+                  {/* عرض الملاحظات بشكل كامل */}
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+                      الملاحظات:
                     </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.case_number}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      المرحلة الحالية:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.current_stage}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      تاريخ الإنشاء:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {/* {new Date(selectedRow.created_at).toLocaleDateString('ar-IQ')} */}
-                      {selectedRow.created_at}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      آخر تحديث:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.updated_at}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.4rem' }}>
-                      ملاحظات:
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontSize: '1.6rem' }}>
-                      {selectedRow.notes || 'لا توجد ملاحظات'}
-                    </Typography>
+                    <Paper variant="outlined" sx={{ p: 1, mt: 0.5, backgroundColor: 'grey.50' }}>
+                      <Typography variant="body1" sx={{ fontWeight: 400, fontSize: '1.0rem' }}>
+                        {selectedRow.notes || 'لا توجد ملاحظات'}
+                      </Typography>
+                    </Paper>
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
           )}
+          {/* مساحة إضافية في الأسفل لتجنب اقتصاص المحتوى */}
+          <Box sx={{ height: 50 }} /> 
         </Box>
       </Drawer>
     </Box>
