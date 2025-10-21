@@ -9,6 +9,7 @@ import { DangerMsg } from '../components/NotificationMsg';
 import { Stack, Typography } from '@mui/material';
 import { format } from 'date-fns'; // مكتبة احترافية للتعامل مع التواريخ
 import { ar } from 'date-fns/locale'; // استيراد اللغة العربية
+import { auth } from 'src/firebase.config';
 
 // 1. مكون مساعد لعرض الحقول والتسميات داخل الـ Drawer (لتحسين القراءة)
 const DetailItem = ({ label, value }) => (
@@ -29,7 +30,7 @@ const formatDate = (dateString) => {
     const date = new Date(dateString);
     if (isNaN(date)) return 'تاريخ غير صالح';
     // تنسيق التاريخ باللغة العربية مع اليوم والشهر والسنة
-    return format(date, 'dd MMMM yyyy', { locale: ar });
+    return format(date, 'yyyy/MM/dd');
   } catch {
     return 'تاريخ غير صالح';
   }
@@ -37,32 +38,21 @@ const formatDate = (dateString) => {
 
 // 3. تعريف الأعمدة خارج المكون
 const columnsDefinition = [
-  { field: 'id', headerName: 'رقم الطلب', width: 100 },
-  { field: 'frist_name', headerName: 'الاسم ', width: 180 },
-  { field: 'second_name', headerName: 'اسم الاب', width: 180 },
-  { field: 'nationality', headerName: 'الجنسية', width: 120 },
-  {
-    field: 'birth_date',
-    headerName: 'تاريخ الميلاد',
-    width: 130,
-    // استخدام Value Formatter لتحسين تنسيق العرض في الشبكة
-    valueFormatter: (params) => (params.value ? new Date(params.value).toISOString().slice(0, 10) : ''),
-  },
+  { field: 'id', headerName: 'رقم الطلب', flex: 1, },
+  { field: 'frist_name', headerName: 'الاسم ', flex: 1},
+  { field: 'second_name', headerName: 'اسم الاب', flex: 1 },
+  { field: 'theard_name', headerName: 'اسم الجد', flex: 1 },
+  { field: 'sur_name', headerName: 'اللقب ', flex: 1 },
+  { field: 'nationality', headerName: 'الجنسية', flex: 1 },
   {
     field: 'interview_date',
     headerName: 'تاريخ المقابلة',
-    width: 150,
+    flex: 1,minWidth: 150 ,
     valueFormatter: (params) => (params.value ? new Date(params.value).toISOString().slice(0, 10) : ''),
   },
-  { field: 'interview_officerName', headerName: 'اسم موظف المقابلة', width: 180 },
-  { field: 'current_stage', headerName: 'الحالة', width: 140 },
-  {
-    field: 'created_at',
-    headerName: 'تاريخ الإنشاء',
-    width: 140,
-    valueFormatter: (params) => (params.value ? new Date(params.value).toISOString().slice(0, 10) : ''),
-  },
-  // تم حذف created_by لأنه لم يكن موجودًا في البيانات المنسقة.
+  { field: 'interview_officername', headerName: 'اسم موظف المقابلة', flex: 1,minWidth: 150 },
+  { field: 'current_stage', headerName: 'الحالة', flex: 1 },
+
 ];
 
 export default function RefugeesGrid() {
@@ -99,18 +89,24 @@ export default function RefugeesGrid() {
 
       const formatted = (data?.records || data || []).map((item) => ({
         id: item.id,
-        id: item.id,
+        interview_officername: item.interview_officername,
         frist_name: item.frist_name,
         second_name: item.second_name,
+        theard_name: item.theard_name,
+        sur_name: item.sur_name,
+        mother_name: item.mother_name,
+        fath_mother_name: item.fath_mother_name,
         gender: item.gender,
         religion: item.religion,
         birth_date: safeFormatDate(item.birth_date), // تنسيق في صفيف البيانات
         birth_place: item.birth_place,
         marital_status: item.marital_status,
+        marital_status_date: safeFormatDate(item.marital_status_date),
         spouse_nationality: item.spouse_nationality,
         phone_number: item.phone_number,
         nationality: item.nationality,
         origin_country: item.origin_country,
+        governorate: item.governorate,
         profession: item.profession,
         created_at: safeFormatDate(item.created_at),
         current_stage: item.current_stage,
@@ -233,7 +229,7 @@ export default function RefugeesGrid() {
                   </Avatar>
                 )}
                 <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold' }}>
-                  {selectedRow.frist_name}
+                  {selectedRow.frist_name} {selectedRow.second_name} {selectedRow.last_name} {selectedRow.theard_name} {selectedRow.sur_name}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
                   {selectedRow.nationality}
@@ -245,14 +241,20 @@ export default function RefugeesGrid() {
                 <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
                   المعلومات الشخصية
                 </Typography>
-                <Grid container spacing={3}>
+                <Grid container spacing={3}>                  <DetailItem label="الجنس" value={selectedRow.gender} />
+
                   <DetailItem label="الاسم " value={selectedRow.frist_name} />
-                  <DetailItem label="الجنس" value={selectedRow.gender} />
+                  <DetailItem label="الاب " value={selectedRow.second_name} />
+                  <DetailItem label="الجد " value={selectedRow.theard_name} />
+                  <DetailItem label="اللقب " value={selectedRow.sur_name} />
                   {/* استخدام الدالة المساعدة للتنسيق الاحترافي */}
+                  
+                  <DetailItem label="اسم الام " value={selectedRow.mother_name} />
+                  <DetailItem label="اسم اب الام " value={selectedRow.fath_mother_name} />
                   <DetailItem label="تاريخ الميلاد" value={formatDate(selectedRow.birth_date)} />
                   <DetailItem label="مكان الميلاد" value={selectedRow.birth_place} />
                   <DetailItem label="الديانة" value={selectedRow.religion} />
-                  <DetailItem label="الجنسية" value={selectedRow.nationality} />
+                  <DetailItem label="القومية" value={selectedRow.nationality} />
                   <DetailItem label="دولة المنشأ" value={selectedRow.origin_country} />
                   <DetailItem label="المهنة" value={selectedRow.profession} />
                   <DetailItem label="رقم الهاتف" value={selectedRow.phone_number} />
@@ -266,7 +268,18 @@ export default function RefugeesGrid() {
                 </Typography>
                 <Grid container spacing={3}>
                   <DetailItem label="الحالة الاجتماعية" value={selectedRow.marital_status} />
+                  <DetailItem label="تاريخ الحالة الاجتماعية " value={selectedRow.marital_status_date} />
                   <DetailItem label="جنسية الزوج/الزوجة" value={selectedRow.spouse_nationality} />
+                </Grid>
+              </Grid>
+
+              {/* ----------------- معلومات السكن ----------------- */}
+              <Grid item xs={12}>
+                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
+                  معلومات السكن
+                </Typography>
+                <Grid container spacing={3}>
+                  <DetailItem label="المحافظة" value={selectedRow.governorate} />
                 </Grid>
               </Grid>
 
@@ -318,7 +331,7 @@ export default function RefugeesGrid() {
                 <Grid container spacing={3}>
                   <DetailItem label="رقم الحالة" value={selectedRow.id} />
                   <DetailItem label="المرحلة الحالية" value={selectedRow.current_stage} />
-                  <DetailItem label="اسم موظف المقابلة" value={selectedRow.interview_officerName} />
+                  <DetailItem label="اسم موظف المقابلة" value={selectedRow.interview_officername} />
                   <DetailItem label="تاريخ المقابلة" value={formatDate(selectedRow.interview_date)} />
                   <DetailItem label="تاريخ الإنشاء" value={formatDate(selectedRow.created_at)} />
                   <DetailItem label="آخر تحديث" value={formatDate(selectedRow.updated_at)} />
