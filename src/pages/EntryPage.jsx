@@ -254,7 +254,7 @@ export default function RefugeesGrid() {
                   <DetailItem label="تاريخ الميلاد" value={formatDate(selectedRow.birth_date)} />
                   <DetailItem label="مكان الميلاد" value={selectedRow.birth_place} />
                   <DetailItem label="الديانة" value={selectedRow.religion} />
-                  <DetailItem label="القومية" value={selectedRow.nationality} />
+                  <DetailItem label="جنسية مقدم الطلب" value={selectedRow.nationality} />
                   <DetailItem label="دولة المنشأ" value={selectedRow.origin_country} />
                   <DetailItem label="المهنة" value={selectedRow.profession} />
                   <DetailItem label="رقم الهاتف" value={selectedRow.phone_number} />
@@ -297,7 +297,7 @@ export default function RefugeesGrid() {
                   <DetailItem label="خدمة عسكرية" value={selectedRow.military_service} />
                   <DetailItem label="عضوية حزب سياسي" value={selectedRow.political_party_membership} />
                   {selectedRow.political_party_membership === 'نعم' && (
-                    <DetailItem label="أسماء الأحزاب السياسية" value={selectedRow.political_party_names} />
+                   <DetailItem label="أسماء الأحزاب السياسية" value={selectedRow.political_party_names} />
                   )}
                 </Grid>
               </Grid>
