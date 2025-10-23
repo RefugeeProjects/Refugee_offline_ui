@@ -241,8 +241,8 @@ export default function RefugeesGrid() {
                 <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
                   المعلومات الشخصية
                 </Typography>
-                <Grid container spacing={3}>                  <DetailItem label="الجنس" value={selectedRow.gender} />
-
+                <Grid container spacing={3}>                  
+                  <DetailItem label="الجنس" value={selectedRow.gender} />
                   <DetailItem label="الاسم " value={selectedRow.frist_name} />
                   <DetailItem label="الاب " value={selectedRow.second_name} />
                   <DetailItem label="الجد " value={selectedRow.theard_name} />

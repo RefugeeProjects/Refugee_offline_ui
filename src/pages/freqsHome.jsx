@@ -219,12 +219,12 @@ useEffect(() => {
   };
 
   const fieldLabels = {
-    gender: 'الجنس',
-    interview_date: 'تاريخ المقابلة',
-    interview_officername: 'اسم مسؤول المقابلة',
-    frist_name: 'الاسم  ',
-    second_name: 'اسم الأب',
-    theard_name: 'اسم الجد',
+    gender: 'الجنس',//confirmed
+    interview_date: 'تاريخ المقابلة',//confirmed
+    interview_officername: 'اسم مسؤول المقابلة',//confirmed
+    frist_name: 'الاسم  ',//confirmed
+    second_name: 'اسم الأب',//confirmed
+    theard_name: 'اسم الجد',//confirmed
     sur_name: 'اللقب',
     mother_name: 'اسم الأم',
     fath_mother_name: 'اسم  ابي الأم',
@@ -238,42 +238,42 @@ useEffect(() => {
     governorate: 'المحافظة',
     district: 'القضاء',
     subdistrict: 'المنطقة',
-    nationality: 'القومية',
+    nationality: 'جنسية مقدم الطلب',
     origin_country: 'بلد الأصل',
     profession: 'المهنة',
     personal_photo: 'الصورة الشخصية',
     political_opinion: 'الرأي السياسي',
     social_group_membership: 'الانتماء الاجتماعي أو القبلي',
-    reasons_for_persecution: 'أسباب طلب اللجوء',
+    reasons_for_persecution: 'أسباب طلب اللجوء', // confirmed
     last_place_of_residence: 'آخر مكان سكن فيه',
     residency_duration: 'مدة الإقامة في آخر مكان',
     military_service: 'هل لديك خدمة عسكرية؟',
-    political_party_membership: 'هل تنتمي لأحزاب سياسية؟',
-    political_party_names: 'أسماء الأحزاب',
-    departure_date_from_origin: 'تاريخ مغادرة البلد الأصلي',
-    date_of_arrival_to_iraq: 'تاريخ الوصول إلى العراق',
-    is_iraq_residency: 'هل لديك إقامة في العراق؟',
-    residency_issue_date: 'تاريخ إصدار الإقامة',
-    residency_expiry_date: 'تاريخ انتهاء الإقامة',
-    passport: 'هل لديك جواز سفر',
-    passportissuecountry: 'بلد إصدار جواز السفر',
-    familypassports: '   هل كل أفراد العائلة لديهم جوازات سفر؟   ',
-    reasons_for_leaving_origin: 'أسباب مغادرة البلد الأصلي',
+    political_party_membership: 'هل تنتمي لأحزاب سياسية؟',//confirmed
+    political_party_names: 'أسماء الأحزاب',//confirmed
+    departure_date_from_origin: 'تاريخ مغادرة البلد الأصلي',//confirmed
+    date_of_arrival_to_iraq: 'تاريخ الوصول إلى العراق',//confirmed
+    is_iraq_residency: 'هل لديك إقامة في العراق؟',//confirmed
+    residency_issue_date: 'تاريخ إصدار الإقامة',//confirmed
+    residency_expiry_date: 'تاريخ انتهاء الإقامة',//confirmed
+    passport: 'هل لديك جواز سفر',//confirmed
+    passportissuecountry: 'بلد إصدار جواز السفر',//confirmed
+    familypassports: '   هل كل أفراد العائلة لديهم جوازات سفر؟   ',//confirmed
+    reasons_for_leaving_origin: 'أسباب مغادرة البلد الأصلي',//confirmed
     previous_country_before_iraq: 'البلد السابق قبل القدوم إلى العراق',
-    residency_befor_iraq: ' محل الاقامة قبل دخول الاراضي العراقية ',
-    residency_befor_iraq_durtion: 'الفترةالزمنية قبل دخول الاراضي العراقية ',
+    residency_befor_iraq: ' محل الاقامة قبل دخول الاراضي العراقية ',//confirmed
+    residency_befor_iraq_durtion: 'الفترةالزمنية قبل دخول الاراضي العراقية ',//confirmed
     returntocountryhistory:
-      '(اذكر بالتفصيل)هل سبق وأن عدت إلى بلدك بعد مغادرته؟ إذا كان الجواب نعم، فمتى؟ وأين كان مكان العودة ومتى؟ وماهي الفترة التي بقيت فيها؟ ماذا فعلت هناك؟ لماذا عدت إلى العراق؟',
-    intendtoreturn: 'هل تنوي العودة إلى بلدك؟',
+      '(اذكر بالتفصيل)هل سبق وأن عدت إلى بلدك بعد مغادرته؟ إذا كان الجواب نعم، فمتى؟ وأين كان مكان العودة ومتى؟ وماهي الفترة التي بقيت فيها؟ ماذا فعلت هناك؟ لماذا عدت إلى العراق؟',//confirmed
+    intendtoreturn: 'هل تنوي العودة إلى بلدك؟',//confirmed
     preferredresidencereturn: 'اذا كنت تنوي العودة اين تفضل السكن ؟',
     whathappensifreturn: 'ماذا سيحدث لك اذا عدت الى بلدك؟',
-    place_of_residence: '  آخر محل للإقامة ضمن مغادرة بلد الأصل (قرية/مدينة/مقاطعة/الدولة)',
+    place_of_residence: '  آخر محل للإقامة ضمن مغادرة بلد الأصل (قرية/مدينة/مقاطعة/الدولة)', //confirmed
     duration_of_place: 'ماضي الفترة الزمنية التي قضيتها في هذا المكان قبل مغادرة بلدالأصل',
     reasons_for_asylum: 'ملخص اسباب طلب اللجوء',
-    power_of_attorney_number: 'رقم الفورما',
-    form_issue_date: 'تاريخ إصدار الفورما',
-    form_expiry_date: 'تاريخ انتهاء الفورما',
-    form_place_of_issue: 'جهة الاصدار',
+    power_of_attorney_number: 'رقم الفورما', //confirmed
+    form_issue_date: 'تاريخ إصدار الفورما',//confirmed
+    form_expiry_date: 'تاريخ انتهاء الفورما', //confirmed
+    form_place_of_issue: 'محل الاصدار', //confirmed
     race: 'العرق',
     notes_case: 'تعليق',
     mok_approval: 'موافقة المخابرات',amn_wat_approval:'موافقة الامن الوطني',istk_approval:'موافقة استخبارات وامن الدفاع',iqama_approval:'موافقة الاقامة',
