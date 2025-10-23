@@ -36,10 +36,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import PauseIcon from '@mui/icons-material/Pause';
-import { SuccessMsg } from "../utils/alerts"; // عدل المسار حسب مكان الملف
+import { SuccessMsg } from '../utils/alerts'; // عدل المسار حسب مكان الملف
 
 import { useApi } from '../utils';
-import { DangerMsg,NotificationMsg } from '../components/NotificationMsg';
+import { DangerMsg, NotificationMsg } from '../components/NotificationMsg';
 import { LoadingButton } from '@mui/lab';
 
 import { appContext } from '../context';
@@ -115,41 +115,39 @@ export default function FreqsHome() {
   // useEffect(() => {
   //   fetchData();
   // }, [fetchData]);
-    const userRole = user.roles; // أو من الكونتكست/ستيت2023
+  const userRole = user.roles; // أو من الكونتكست/ستيت2023
 
-const fetchData = useCallback(async () => {
-  setIsLoadingTable(true);
-  try {
-    // تحديد المسار بناءً على الدور
-    let endpoint = "freqs/refugees";
+  const fetchData = useCallback(async () => {
+    setIsLoadingTable(true);
+    try {
+      // تحديد المسار بناءً على الدور
+      let endpoint = 'freqs/refugees';
 
-    if (["mokhabarat", "amn_watani", "istikhbarat_defense", "iqama","",null].includes(userRole)) {
-      endpoint = "freqs/refugees/pending-approval";
+      if (['mokhabarat', 'amn_watani', 'istikhbarat_defense', 'iqama', '', null].includes(userRole)) {
+        endpoint = 'freqs/refugees/pending-approval';
+      }
+
+      const { success, data } = await api('GET', endpoint);
+
+      if (!success) {
+        DangerMsg('اشعارات اللاجئين', 'خطأ في تحميل البيانات');
+        return;
+      } else {
+        NotificationMsg('اشعارات اللاجئين', 'تم  تحميل البيانات');
+      }
+      //  setRefugees(Array.isArray(data) || null);
+      setRefugees(data?.records || data);
+    } catch (err) {
+      DangerMsg('اشعارات اللاجئين', 'خطأ في تحميل البيانات');
+      console.error(err);
+    } finally {
+      setIsLoadingTable(false);
     }
+  }, []);
 
-    const { success, data } = await api("GET", endpoint);
-
-    if (!success) {
-      DangerMsg("اشعارات اللاجئين", "خطأ في تحميل البيانات");
-      return;
-    }
-    else {      NotificationMsg("اشعارات اللاجئين", "تم  تحميل البيانات");
-}
-//  setRefugees(Array.isArray(data) || null);
-    setRefugees(data?.records || data);
-  } catch (err) {
-    DangerMsg("اشعارات اللاجئين", "خطأ في تحميل البيانات");
-    console.error(err);
-  } finally {
-    setIsLoadingTable(false);
-  }
-}, []);
-
-useEffect(() => {
-  fetchData();
-}, [fetchData]);
-
-
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   //جلب بيانات العائلة
   const fetchFamily = useCallback(async () => {
@@ -219,66 +217,69 @@ useEffect(() => {
   };
 
   const fieldLabels = {
-    gender: 'الجنس',//confirmed
-    interview_date: 'تاريخ المقابلة',//confirmed
-    interview_officername: 'اسم مسؤول المقابلة',//confirmed
-    frist_name: 'الاسم  ',//confirmed
-    second_name: 'اسم الأب',//confirmed
-    theard_name: 'اسم الجد',//confirmed
-    sur_name: 'اللقب',
-    mother_name: 'اسم الأم',
-    fath_mother_name: 'اسم  ابي الأم',
-    religion: 'الديانة',
-    birth_date: 'تاريخ الولادة',
-    birth_place: 'مكان الولادة',
-    marital_status: 'الحالة الاجتماعية',
-    spouse_nationality: 'جنسية الزوج/الزوجة',
-    marital_status_date: 'تاريخ الحالة الاجتماعية',
-    phone_number: 'رقم الهاتف',
-    governorate: 'المحافظة',
-    district: 'القضاء',
-    subdistrict: 'المنطقة',
-    nationality: 'جنسية مقدم الطلب',
-    origin_country: 'بلد الأصل',
-    profession: 'المهنة',
-    personal_photo: 'الصورة الشخصية',
-    political_opinion: 'الرأي السياسي',
-    social_group_membership: 'الانتماء الاجتماعي أو القبلي',
+    gender: 'الجنس', //confirmed
+    interview_date: 'تاريخ المقابلة', //confirmed
+    interview_officername: 'اسم مسؤول المقابلة', //confirmed
+    frist_name: 'الاسم  ', //confirmed
+    second_name: 'اسم الأب', //confirmed
+    theard_name: 'اسم الجد', //confirmed
+    sur_name: 'اللقب', //confirmed
+    mother_name: 'اسم الأم', //  confirmed
+    fath_mother_name: 'اسم  اب الأم', //confirmed
+    religion: 'الديانة', //confirmed
+    birth_date: 'تاريخ الولادة', //confirmed
+    birth_place: 'مكان الولادة', //confirmed
+    marital_status: 'الحالة الاجتماعية', //confirmed
+    spouse_nationality: 'جنسية الزوج/الزوجة', //confirmed
+    marital_status_date: 'تاريخ الحالة الاجتماعية', // confirmed
+    phone_number: 'رقم الهاتف', //confirmed
+    governorate: 'المحافظة', //confirmed
+    district: 'القضاء', //confirmed
+    subdistrict: 'المنطقة', //confirmed
+    nationality: 'جنسية مقدم الطلب', //confirmed
+    origin_country: 'بلد الأصل', //confirmed
+    profession: 'المهنة', //confirmed
+    personal_photo: 'الصورة الشخصية', //confirmed
+    // political_opinion: 'الرأي السياسي', //confirmed
+    // social_group_membership: 'الانتماء الاجتماعي أو القبلي',
     reasons_for_persecution: 'أسباب طلب اللجوء', // confirmed
-    last_place_of_residence: 'آخر مكان سكن فيه',
-    residency_duration: 'مدة الإقامة في آخر مكان',
-    military_service: 'هل لديك خدمة عسكرية؟',
-    political_party_membership: 'هل تنتمي لأحزاب سياسية؟',//confirmed
-    political_party_names: 'أسماء الأحزاب',//confirmed
-    departure_date_from_origin: 'تاريخ مغادرة البلد الأصلي',//confirmed
-    date_of_arrival_to_iraq: 'تاريخ الوصول إلى العراق',//confirmed
-    is_iraq_residency: 'هل لديك إقامة في العراق؟',//confirmed
-    residency_issue_date: 'تاريخ إصدار الإقامة',//confirmed
-    residency_expiry_date: 'تاريخ انتهاء الإقامة',//confirmed
-    passport: 'هل لديك جواز سفر',//confirme
-    passport_number: 'رقم الجواز',//confirmed
-    passportissuecountry: 'بلد إصدار جواز السفر',//confirmed
-    familypassports: '   هل كل أفراد العائلة لديهم جوازات سفر؟   ',//confirmed
-    reasons_for_leaving_origin: 'أسباب مغادرة البلد الأصلي',//confirmed
-    previous_country_before_iraq: 'البلد السابق قبل القدوم إلى العراق',
-    residency_befor_iraq: ' محل الاقامة قبل دخول الاراضي العراقية ',//confirmed
-    residency_befor_iraq_durtion: 'الفترةالزمنية قبل دخول الاراضي العراقية ',//confirmed
+    // last_place_of_residence: 'آخر مكان سكن فيه',
+    // residency_duration: 'مدة الإقامة في آخر مكان',
+    // military_service: 'هل لديك خدمة عسكرية؟',
+    political_party_membership: 'هل تنتمي لأحزاب سياسية؟', //confirmed
+    political_party_names: 'أسماء الأحزاب', //confirmed
+    departure_date_from_origin: 'تاريخ مغادرة البلد الأصلي', //confirmed
+    date_of_arrival_to_iraq: 'تاريخ الوصول إلى العراق', //confirmed
+    is_iraq_residency: 'هل لديك إقامة في العراق؟', //confirmed
+    residency_issue_date: 'تاريخ إصدار الإقامة', //confirmed
+    residency_expiry_date: 'تاريخ انتهاء الإقامة', //confirmed
+    passport: 'هل لديك جواز سفر', //confirme
+    passport_number: 'رقم الجواز', //confirmed
+    passportissuecountry: 'بلد إصدار جواز السفر', //confirmed
+    familypassports: '   هل كل أفراد العائلة لديهم جوازات سفر؟   ', //confirmed
+    reasons_for_leaving_origin: 'أسباب مغادرة البلد الأصلي', //confirmed
+    // previous_country_before_iraq: 'البلد السابق قبل القدوم إلى العراق',
+    residency_befor_iraq: ' محل الاقامة قبل دخول الاراضي العراقية ', //confirmed
+    residency_befor_iraq_durtion: 'الفترةالزمنية قبل دخول الاراضي العراقية ', //confirmed
     returntocountryhistory:
-      '(اذكر بالتفصيل)هل سبق وأن عدت إلى بلدك بعد مغادرته؟ إذا كان الجواب نعم، فمتى؟ وأين كان مكان العودة ومتى؟ وماهي الفترة التي بقيت فيها؟ ماذا فعلت هناك؟ لماذا عدت إلى العراق؟',//confirmed
-    intendtoreturn: 'هل تنوي العودة إلى بلدك؟',//confirmed
-    preferredresidencereturn: 'اذا كنت تنوي العودة اين تفضل السكن ؟',//confirmed
-    whathappensifreturn: 'ماذا سيحدث لك اذا عدت الى بلدك؟',//confirmed
+      '(اذكر بالتفصيل)هل سبق وأن عدت إلى بلدك بعد مغادرته؟ إذا كان الجواب نعم، فمتى؟ وأين كان مكان العودة ومتى؟ وماهي الفترة التي بقيت فيها؟ ماذا فعلت هناك؟ لماذا عدت إلى العراق؟', //confirmed
+    intendtoreturn: 'هل تنوي العودة إلى بلدك؟', //confirmed
+    preferredresidencereturn: 'اذا كنت تنوي العودة اين تفضل السكن ؟', //confirmed
+    whathappensifreturn: 'ماذا سيحدث لك اذا عدت الى بلدك؟', //confirmed
     place_of_residence: '  آخر محل للإقامة ضمن مغادرة بلد الأصل (قرية/مدينة/مقاطعة/الدولة)', //confirmed
-    duration_of_place: 'ماضي الفترة الزمنية التي قضيتها في هذا المكان قبل مغادرة بلدالأصل',//confirmed
-    reasons_for_asylum: 'ملخص اسباب طلب اللجوء',//confirmed
+    duration_of_place: 'ماضي الفترة الزمنية التي قضيتها في هذا المكان قبل مغادرة بلدالأصل', //confirmed
+    reasons_for_asylum: 'ملخص اسباب طلب اللجوء', //confirmed
     power_of_attorney_number: 'رقم الفورما', //confirmed
-    form_issue_date: 'تاريخ إصدار الفورما',//confirmed
+    form_issue_date: 'تاريخ إصدار الفورما', //confirmed
     form_expiry_date: 'تاريخ انتهاء الفورما', //confirmed
     form_place_of_issue: 'محل الاصدار', //confirmed
-    race: 'العرق',
+    race: 'العرق', //confirmed
     notes_case: 'تعليق',
-    mok_approval: 'موافقة المخابرات',amn_wat_approval:'موافقة الامن الوطني',istk_approval:'موافقة استخبارات وامن الدفاع',iqama_approval:'موافقة الاقامة',
-    interviewnotes: 'ملخص المقابلة',//confirmed
+    mok_approval: 'موافقة المخابرات',
+    amn_wat_approval: 'موافقة الامن الوطني',
+    istk_approval: 'موافقة استخبارات وامن الدفاع',
+    iqama_approval: 'موافقة الاقامة',
+    interviewnotes: 'ملخص المقابلة', //confirmed
   };
 
   const personalFields = [
@@ -466,7 +467,7 @@ useEffect(() => {
                     }}
                   >
                     <Typography variant="subtitle1" fontWeight="bold">
-                   {label}
+                      {label}
                     </Typography>
                   </td>
                   <td style={{ padding: '12px', width: '65%' }}>{renderFieldValue(key, value)}</td>
@@ -477,7 +478,6 @@ useEffect(() => {
         </table>
       );
     } else {
-
       // return (
       //   <Grid container spacing={2}>
       //     {fields.map((key) => {
@@ -502,486 +502,463 @@ useEffect(() => {
       //   </Grid>
       // );
       return (
-  <Grid container spacing={2}>
-    {/* الجنس */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        select
-        fullWidth
-        label={fieldLabels.gender}
-        name="gender"
-        value={editableRefugeeData?.gender || ""}
-        onChange={handleInputChange}
-      >
-        {GENDERS.map((option) => (
-          <MenuItem key={option} value={option}>{option}</MenuItem>
-        ))}
-      </TextField>
-    </Grid>
+        <Grid container spacing={2}>
+          {/* الجنس */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.gender}
+              name="gender"
+              value={editableRefugeeData?.gender || ''}
+              onChange={handleInputChange}
+            >
+              {GENDERS.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
 
-    {/* تاريخ المقابلة */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        type="date"
-        label={fieldLabels.interview_date}
-        name="interview_date"
-        value={formatDateForInput(editableRefugeeData?.interview_date)}
-        onChange={handleInputChange}
-        InputLabelProps={{ shrink: true }}
-      />
-    </Grid>
-
-    {/* اسم مسؤول المقابلة */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label={fieldLabels.interview_officername}
-        name="interview_officername"
-        value={editableRefugeeData?.interview_officername || ""}
-        onChange={handleInputChange}
-      />
-    </Grid>
-
-    {/* الاسم الأول */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label={fieldLabels.frist_name}
-        name="frist_name"
-        value={editableRefugeeData?.frist_name || ""}
-        onChange={handleInputChange}
-      />
-    </Grid>
-
-    {/* اسم الأب */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label={fieldLabels.second_name}
-        name="second_name"
-        value={editableRefugeeData?.second_name || ""}
-        onChange={handleInputChange}
-      />
-    </Grid>
-
-    {/* اسم الجد */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label={fieldLabels.theard_name}
-        name="theard_name"
-        value={editableRefugeeData?.theard_name || ""}
-        onChange={handleInputChange}
-      />
-    </Grid>
-
-    {/* اللقب */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label={fieldLabels.sur_name}
-        name="sur_name"
-        value={editableRefugeeData?.sur_name || ""}
-        onChange={handleInputChange}
-      />
-    </Grid>
-
-    {/* اسم الأم */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label={fieldLabels.mother_name}
-        name="mother_name"
-        value={editableRefugeeData?.mother_name || ""}
-        onChange={handleInputChange}
-      />
-    </Grid>
-
-    {/* اسم أبي الأم */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label={fieldLabels.fath_mother_name}
-        name="fath_mother_name"
-        value={editableRefugeeData?.fath_mother_name || ""}
-        onChange={handleInputChange}
-      />
-    </Grid>
-
-    {/* الديانة */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        select
-        fullWidth
-        label={fieldLabels.religion}
-        name="religion"
-        value={editableRefugeeData?.religion || ""}
-        onChange={handleInputChange}
-      >
-        {RELIGIONS.map((option) => (
-          <MenuItem key={option} value={option}>{option}</MenuItem>
-        ))}
-      </TextField>
-    </Grid>
-    {/* تاريخ الولادة */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        type="date"
-        label={fieldLabels.birth_date}
-        name="birth_date"
-        value={formatDateForInput(editableRefugeeData?.birth_date)}
-        onChange={handleInputChange}
-        InputLabelProps={{ shrink: true }}
-      />
-    </Grid>
-
-    {/* مكان الولادة */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label={fieldLabels.birth_place}
-        name="birth_place"
-        value={editableRefugeeData?.birth_place || ""}
-        onChange={handleInputChange}
-      />
-    </Grid>
-
-    {/* الحالة الاجتماعية */}
-    <Grid item xs={12} sm={6}>
-      <TextField
-        select
-        fullWidth
-        label={fieldLabels.marital_status}
-        name="marital_status"
-        value={editableRefugeeData?.marital_status || ""}
-        onChange={handleInputChange}
-      >
-        {MARITAL_STATUSES.map((option) => (
-          <MenuItem key={option} value={option}>{option}</MenuItem>
-        ))}
-      </TextField>
-    </Grid>
- {/* تاريخ الحالة الاجتماعية */}
-  <Grid item xs={12} sm={6}>
-    <TextField
-      fullWidth
-      type="date"
-      label={fieldLabels.marital_status_date}
-      name="marital_status_date"
-      value={editableRefugeeData?.marital_status_date || ""}
-      onChange={handleInputChange}
-      InputLabelProps={{ shrink: true }}
-    />
-  </Grid>
-
-  {/* رقم الهاتف */}
-  <Grid item xs={12} sm={6}>
-    <TextField
-      fullWidth
-      label={fieldLabels.phone_number}
-      name="phone_number"
-      value={editableRefugeeData?.phone_number || ""}
-      onChange={handleInputChange}
-    />
-  </Grid>
-
-  {/* المحافظة */}
-  <Grid item xs={12} sm={6}>
-    <TextField
-      fullWidth
-      label={fieldLabels.governorate}
-      name="governorate"
-      value={editableRefugeeData?.governorate || ""}
-      onChange={handleInputChange}
-    />
-  </Grid>
-
-  {/* القضاء */}
-  <Grid item xs={12} sm={6}>
-    <TextField
-      fullWidth
-      label={fieldLabels.district}
-      name="district"
-      value={editableRefugeeData?.district || ""}
-      onChange={handleInputChange}
-    />
-  </Grid>
-
-  {/* المنطقة */}
-  <Grid item xs={12} sm={6}>
-    <TextField
-      fullWidth
-      label={fieldLabels.subdistrict}
-      name="subdistrict"
-      value={editableRefugeeData?.subdistrict || ""}
-      onChange={handleInputChange}
-    />
-  </Grid>
-
-  {/* القومية */}
-  <Grid item xs={12} sm={6}>
-    <TextField
-      select
-      fullWidth
-      label={fieldLabels.nationality}
-      name="nationality"
-      value={editableRefugeeData?.nationality || ""}
-      onChange={handleInputChange}
-    >
-      {NATIONALITIES.map((option) => (
-        <MenuItem key={option} value={option}>{option}</MenuItem>
-      ))}
-    </TextField>
-  </Grid>
-
-  {/* بلد الأصل */}
-  <Grid item xs={12} sm={6}>
-    <TextField
-      
-      fullWidth
-      label={fieldLabels.origin_country}
-      name="origin_country"
-      value={editableRefugeeData?.origin_country || ""}
-      onChange={handleInputChange}
-    />
-  </Grid>
-
-  {/* المهنة */}
-  <Grid item xs={12} sm={6}>
-    <TextField
-      fullWidth
-      label={fieldLabels.profession}
-      name="profession"
-      value={editableRefugeeData?.profession || ""}
-      onChange={handleInputChange}
-    />
-  </Grid>
-  </Grid>
-);
-
-    }
-  };
-
-// const renderSection = (fields) => {
-//   const dataToDisplay = selectedRefugee || {};
-
-//   const renderFieldValue = (key, value) => {
-//     if (key === 'personal_photo') {
-//       return value ? (
-//         <img
-//           src={value}
-//           alt="الصورة الشخصية"
-//           style={{ maxWidth: '100%', maxHeight: '120px', borderRadius: 8 }}
-//         />
-//       ) : (
-//         <Typography variant="body1" color="text.secondary">
-//           لا توجد صورة
-//         </Typography>
-//       );
-//     }
-
-//     // حقول التواريخ
-//     if (
-//       key === 'birth_date' ||
-//       key === 'residency_issue_date' ||
-//       key === 'residency_expiry_date' ||
-//       key === 'form_issue_date' ||
-//       key === 'form_expiry_date' ||
-//       key === 'interview_date' ||
-//       key === 'departure_date_from_origin' ||
-//       key === 'date_of_arrival_to_iraq'
-//     ) {
-//       return <Typography variant="body1">{formatDateForDisplay(value) || '---'}</Typography>;
-//     }
-
-//     // باقي الحقول
-//     return (
-//       <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-//         {value || '---'}
-//       </Typography>
-//     );
-//   };
-
-//   return (
-//     <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
-//       <tbody>
-//         {fields.map((key) => {
-//           if (key === 'personal_photo' && !dataToDisplay?.personal_photo) {
-//             return null;
-//           }
-
-//           const label = fieldLabels[key] || key;
-//           const value = dataToDisplay?.[key];
-
-//           return (
-//             <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
-//               <td
-//                 style={{
-//                   padding: '12px',
-//                   fontWeight: 'bold',
-//                   width: '35%',
-//                   backgroundColor: '#f5f5f5',
-//                   borderRight: '1px solid #ddd',
-//                 }}
-//               >
-//                 <Typography variant="subtitle1" fontWeight="bold">
-//                   {label}
-//                 </Typography>
-//               </td>
-//               <td style={{ padding: '12px', width: '65%' }}>
-//                 {renderFieldValue(key, value)}
-//               </td>
-//             </tr>
-//           );
-//         })}
-//       </tbody>
-//     </table>
-//   );
-// };
-
-// وضع التعديل (تحرير البيانات)
-const renderEditSection = (fields) => {
-  
-  return (
-    <Grid container spacing={2}>
-      {fields.map((key) => {
-        if (key === 'personal_photo') {
-          return null; // عادة لا نعدل الصورة من هنا
-        }
-
-        const label = fieldLabels[key] || key;
-        const value = editableRefugeeData?.[key] || "";
-
-        // لو الحقل تاريخ
-        if (
-          key === 'birth_date' ||
-          key === 'residency_issue_date' ||
-          key === 'residency_expiry_date' ||
-          key === 'form_issue_date' ||
-          key === 'form_expiry_date' ||
-          key === 'interview_date' ||
-          key === 'departure_date_from_origin' ||
-          key === 'date_of_arrival_to_iraq' ||
-          key === 'marital_status_date' 
-
-        ) {
-          return (
-            <Grid item xs={12} sm={6} key={key}>
-              <TextField
-                fullWidth
-                type="date"
-                label={label}
-                name={key}
-                value={formatDateForInput(value)}
-                onChange={handleInputChange}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-          );
-        }
-
-        // لو الحقل اختيار (مثلاً: الجنس، الحالة الاجتماعية، الديانة)
-        if (key === "gender") {
-          return (
-            <Grid item xs={12} sm={6} key={key}>
-              <TextField
-                select
-                fullWidth
-                label={label}
-                name="gender"
-                value={value}
-                onChange={handleInputChange}
-              >
-                {GENDERS.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          );
-        }
-
-        if (key === "religion") {
-          return (
-            <Grid item xs={12} sm={6} key={key}>
-              <TextField
-                select
-                fullWidth
-                label={label}
-                name="religion"
-                value={value}
-                onChange={handleInputChange}
-              >
-                {RELIGIONS.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          );
-        }
-
-        if (key === "marital_status") {
-          return (
-            <Grid item xs={12} sm={6} key={key}>
-              <TextField
-                select
-                fullWidth
-                label={label}
-                name="marital_status"
-                value={value}
-                onChange={handleInputChange}
-              >
-                {MARITAL_STATUSES.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          );
-        }
-
-        if (
-  key === "mok_approval" ||
-  key === "amn_wat_approval" ||
-  key === "istk_approval" ||
-  key === "iqama_approval"
-) {
-  return (
-    <Grid item xs={12} sm={6} key={key}>
-      <TextField
-        fullWidth
-        label={label}
-        name={key}
-        value={value}
-        disabled
-      />
-    </Grid>
-  );
-}
-
-
-        // باقي الحقول النصية
-        return (
-          <Grid item xs={12} sm={6} key={key}>
+          {/* تاريخ المقابلة */}
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label={label}
-              name={key}
-              value={value}
+              type="date"
+              label={fieldLabels.interview_date}
+              name="interview_date"
+              value={formatDateForInput(editableRefugeeData?.interview_date)}
+              onChange={handleInputChange}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+
+          {/* اسم مسؤول المقابلة */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.interview_officername}
+              name="interview_officername"
+              value={editableRefugeeData?.interview_officername || ''}
               onChange={handleInputChange}
             />
           </Grid>
-        );
-      })}
-    </Grid>
-  );
-};
+
+          {/* الاسم الأول */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.frist_name}
+              name="frist_name"
+              value={editableRefugeeData?.frist_name || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* اسم الأب */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.second_name}
+              name="second_name"
+              value={editableRefugeeData?.second_name || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* اسم الجد */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.theard_name}
+              name="theard_name"
+              value={editableRefugeeData?.theard_name || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* اللقب */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.sur_name}
+              name="sur_name"
+              value={editableRefugeeData?.sur_name || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* اسم الأم */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.mother_name}
+              name="mother_name"
+              value={editableRefugeeData?.mother_name || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* اسم أبي الأم */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.fath_mother_name}
+              name="fath_mother_name"
+              value={editableRefugeeData?.fath_mother_name || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* الديانة */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.religion}
+              name="religion"
+              value={editableRefugeeData?.religion || ''}
+              onChange={handleInputChange}
+            >
+              {RELIGIONS.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          {/* تاريخ الولادة */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              type="date"
+              label={fieldLabels.birth_date}
+              name="birth_date"
+              value={formatDateForInput(editableRefugeeData?.birth_date)}
+              onChange={handleInputChange}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+
+          {/* مكان الولادة */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.birth_place}
+              name="birth_place"
+              value={editableRefugeeData?.birth_place || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* الحالة الاجتماعية */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.marital_status}
+              name="marital_status"
+              value={editableRefugeeData?.marital_status || ''}
+              onChange={handleInputChange}
+            >
+              {MARITAL_STATUSES.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          {/* تاريخ الحالة الاجتماعية */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              type="date"
+              label={fieldLabels.marital_status_date}
+              name="marital_status_date"
+              value={editableRefugeeData?.marital_status_date || ''}
+              onChange={handleInputChange}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+
+          {/* رقم الهاتف */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.phone_number}
+              name="phone_number"
+              value={editableRefugeeData?.phone_number || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* المحافظة */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.governorate}
+              name="governorate"
+              value={editableRefugeeData?.governorate || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* القضاء */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.district}
+              name="district"
+              value={editableRefugeeData?.district || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* المنطقة */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.subdistrict}
+              name="subdistrict"
+              value={editableRefugeeData?.subdistrict || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* القومية */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.nationality}
+              name="nationality"
+              value={editableRefugeeData?.nationality || ''}
+              onChange={handleInputChange}
+            >
+              {NATIONALITIES.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          {/* بلد الأصل */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.origin_country}
+              name="origin_country"
+              value={editableRefugeeData?.origin_country || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          {/* المهنة */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.profession}
+              name="profession"
+              value={editableRefugeeData?.profession || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+        </Grid>
+      );
+    }
+  };
+
+  // const renderSection = (fields) => {
+  //   const dataToDisplay = selectedRefugee || {};
+
+  //   const renderFieldValue = (key, value) => {
+  //     if (key === 'personal_photo') {
+  //       return value ? (
+  //         <img
+  //           src={value}
+  //           alt="الصورة الشخصية"
+  //           style={{ maxWidth: '100%', maxHeight: '120px', borderRadius: 8 }}
+  //         />
+  //       ) : (
+  //         <Typography variant="body1" color="text.secondary">
+  //           لا توجد صورة
+  //         </Typography>
+  //       );
+  //     }
+
+  //     // حقول التواريخ
+  //     if (
+  //       key === 'birth_date' ||
+  //       key === 'residency_issue_date' ||
+  //       key === 'residency_expiry_date' ||
+  //       key === 'form_issue_date' ||
+  //       key === 'form_expiry_date' ||
+  //       key === 'interview_date' ||
+  //       key === 'departure_date_from_origin' ||
+  //       key === 'date_of_arrival_to_iraq'
+  //     ) {
+  //       return <Typography variant="body1">{formatDateForDisplay(value) || '---'}</Typography>;
+  //     }
+
+  //     // باقي الحقول
+  //     return (
+  //       <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+  //         {value || '---'}
+  //       </Typography>
+  //     );
+  //   };
+
+  //   return (
+  //     <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
+  //       <tbody>
+  //         {fields.map((key) => {
+  //           if (key === 'personal_photo' && !dataToDisplay?.personal_photo) {
+  //             return null;
+  //           }
+
+  //           const label = fieldLabels[key] || key;
+  //           const value = dataToDisplay?.[key];
+
+  //           return (
+  //             <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
+  //               <td
+  //                 style={{
+  //                   padding: '12px',
+  //                   fontWeight: 'bold',
+  //                   width: '35%',
+  //                   backgroundColor: '#f5f5f5',
+  //                   borderRight: '1px solid #ddd',
+  //                 }}
+  //               >
+  //                 <Typography variant="subtitle1" fontWeight="bold">
+  //                   {label}
+  //                 </Typography>
+  //               </td>
+  //               <td style={{ padding: '12px', width: '65%' }}>
+  //                 {renderFieldValue(key, value)}
+  //               </td>
+  //             </tr>
+  //           );
+  //         })}
+  //       </tbody>
+  //     </table>
+  //   );
+  // };
+
+  // وضع التعديل (تحرير البيانات)
+  const renderEditSection = (fields) => {
+    return (
+      <Grid container spacing={2}>
+        {fields.map((key) => {
+          if (key === 'personal_photo') {
+            return null; // عادة لا نعدل الصورة من هنا
+          }
+
+          const label = fieldLabels[key] || key;
+          const value = editableRefugeeData?.[key] || '';
+
+          // لو الحقل تاريخ
+          if (
+            key === 'birth_date' ||
+            key === 'residency_issue_date' ||
+            key === 'residency_expiry_date' ||
+            key === 'form_issue_date' ||
+            key === 'form_expiry_date' ||
+            key === 'interview_date' ||
+            key === 'departure_date_from_origin' ||
+            key === 'date_of_arrival_to_iraq' ||
+            key === 'marital_status_date'
+          ) {
+            return (
+              <Grid item xs={12} sm={6} key={key}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label={label}
+                  name={key}
+                  value={formatDateForInput(value)}
+                  onChange={handleInputChange}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+            );
+          }
+
+          // لو الحقل اختيار (مثلاً: الجنس، الحالة الاجتماعية، الديانة)
+          if (key === 'gender') {
+            return (
+              <Grid item xs={12} sm={6} key={key}>
+                <TextField select fullWidth label={label} name="gender" value={value} onChange={handleInputChange}>
+                  {GENDERS.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            );
+          }
+
+          if (key === 'religion') {
+            return (
+              <Grid item xs={12} sm={6} key={key}>
+                <TextField select fullWidth label={label} name="religion" value={value} onChange={handleInputChange}>
+                  {RELIGIONS.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            );
+          }
+
+          if (key === 'marital_status') {
+            return (
+              <Grid item xs={12} sm={6} key={key}>
+                <TextField
+                  select
+                  fullWidth
+                  label={label}
+                  name="marital_status"
+                  value={value}
+                  onChange={handleInputChange}
+                >
+                  {MARITAL_STATUSES.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            );
+          }
+
+          if (
+            key === 'mok_approval' ||
+            key === 'amn_wat_approval' ||
+            key === 'istk_approval' ||
+            key === 'iqama_approval'
+          ) {
+            return (
+              <Grid item xs={12} sm={6} key={key}>
+                <TextField fullWidth label={label} name={key} value={value} disabled />
+              </Grid>
+            );
+          }
+
+          // باقي الحقول النصية
+          return (
+            <Grid item xs={12} sm={6} key={key}>
+              <TextField fullWidth label={label} name={key} value={value} onChange={handleInputChange} />
+            </Grid>
+          );
+        })}
+      </Grid>
+    );
+  };
   const tableHeaders = [
     { id: 'frist_name', label: 'الاسم  ' },
     { id: 'second_name', label: 'اسم الاب  ' },
@@ -1050,45 +1027,46 @@ const renderEditSection = (fields) => {
   //   }
   // };
 
-const handleForward = async () => {
-  if (!selectedRefugee) return;
-  setIsForwarding(true);
+  const handleForward = async () => {
+    if (!selectedRefugee) return;
+    setIsForwarding(true);
 
-  try {
-    let url = "";
-    let body = {};
+    try {
+      let url = '';
+      let body = {};
 
-    if (["mokhabarat", "amn_watani", "istikhbarat_defense", "iqama"].includes(userRole)) {
-      // لو الدور من أدوار الموافقات
-      url = `freqs/refugees/update-approval/${selectedRefugee.id}`;
-      body = { decision: "موافق" };
-    } else {
-      // باقي الأدوار يستخدمون الراوتر القديم
-      url = `freqs/refugees/${selectedRefugee.id}/forward`;
+      if (['mokhabarat', 'amn_watani', 'istikhbarat_defense', 'iqama'].includes(userRole)) {
+        // لو الدور من أدوار الموافقات
+        url = `freqs/refugees/update-approval/${selectedRefugee.id}`;
+        body = { decision: 'موافق' };
+      } else {
+        // باقي الأدوار يستخدمون الراوتر القديم
+        url = `freqs/refugees/${selectedRefugee.id}/forward`;
+      }
+
+      const { success, msg } = await api('PUT', url, body);
+
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      if (success) {
+        NotificationMsg(
+          'نجاح',
+          userRole && ['mokhabarat', 'amn_watani', 'istikhbarat_defense', 'iqama'].includes(userRole)
+            ? 'تمت الموافقة على الطلب'
+            : 'تمت ترقية الطلب بنجاح'
+        );
+        await fetchData();
+        handleClose();
+      } else {
+        DangerMsg('فشل التحديث', msg || 'تعذر تنفيذ العملية');
+      }
+    } catch (error) {
+      DangerMsg('خطأ', 'حدث خطأ أثناء العملية');
+      console.error(error);
+    } finally {
+      setIsForwarding(false);
     }
-
-    const { success, msg } = await api("PUT", url, body);
-
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    if (success) {
-      NotificationMsg("نجاح", userRole && ["mokhabarat", "amn_watani", "istikhbarat_defense", "iqama"].includes(userRole) 
-        ? "تمت الموافقة على الطلب" 
-        : "تمت ترقية الطلب بنجاح");
-      await fetchData();
-      handleClose();
-    } else {
-      DangerMsg("فشل التحديث", msg || "تعذر تنفيذ العملية");
-    }
-  } catch (error) {
-    DangerMsg("خطأ", "حدث خطأ أثناء العملية");
-    console.error(error);
-  } finally {
-    setIsForwarding(false);
-  }
-};
-
-
+  };
 
   const handleRollback = async (reason) => {
     if (!selectedRefugee) return;
@@ -1147,52 +1125,50 @@ const handleForward = async () => {
   // };
 
   const handleReject = async (reason) => {
-  if (!selectedRefugee || !reason) {
-    if (!reason) DangerMsg("خطأ", "يرجى إدخال سبب الرفض.");
-    return;
-  }
-  setIsForwarding(true);
-
-  try {
-    let url = "";
-    let body = {};
-
-    if (["mokhabarat", "amn_watani", "istikhbarat_defense", "iqama"].includes(userRole)) {
-      // لو الدور من أدوار الموافقات
-      url = `freqs/refugees/update-approval/${selectedRefugee.id}`;
-      body = { decision: "رفض" };
-    } else {
-      // باقي الأدوار يستخدمون الراوتر القديم
-      url = `freqs/refugees/${selectedRefugee.id}/reject`;
-      body = { notes_case: reason };
+    if (!selectedRefugee || !reason) {
+      if (!reason) DangerMsg('خطأ', 'يرجى إدخال سبب الرفض.');
+      return;
     }
+    setIsForwarding(true);
 
-    const { success, msg } = await api("PUT", url, body);
+    try {
+      let url = '';
+      let body = {};
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (['mokhabarat', 'amn_watani', 'istikhbarat_defense', 'iqama'].includes(userRole)) {
+        // لو الدور من أدوار الموافقات
+        url = `freqs/refugees/update-approval/${selectedRefugee.id}`;
+        body = { decision: 'رفض' };
+      } else {
+        // باقي الأدوار يستخدمون الراوتر القديم
+        url = `freqs/refugees/${selectedRefugee.id}/reject`;
+        body = { notes_case: reason };
+      }
 
-    if (success) {
-      NotificationMsg(
-        "نجاح",
-        ["mokhabarat", "amn_watani", "istikhbarat_defense", "iqama"].includes(userRole)
-          ? "تم تسجيل قرار الرفض بنجاح."
-          : "تم رفض الطلب بنجاح."
-      );
-      await fetchData();
-      handleClose();
-    } else {
-      DangerMsg("فشل الرفض", msg || "تعذر رفض الطلب");
+      const { success, msg } = await api('PUT', url, body);
+
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      if (success) {
+        NotificationMsg(
+          'نجاح',
+          ['mokhabarat', 'amn_watani', 'istikhbarat_defense', 'iqama'].includes(userRole)
+            ? 'تم تسجيل قرار الرفض بنجاح.'
+            : 'تم رفض الطلب بنجاح.'
+        );
+        await fetchData();
+        handleClose();
+      } else {
+        DangerMsg('فشل الرفض', msg || 'تعذر رفض الطلب');
+      }
+    } catch (error) {
+      console.error(error);
+      DangerMsg('خطأ', 'حدث خطأ أثناء رفض الطلب');
+    } finally {
+      setIsForwarding(false);
+      setOpenConfirmDialog(false);
     }
-  } catch (error) {
-    console.error(error);
-    DangerMsg("خطأ", "حدث خطأ أثناء رفض الطلب");
-  } finally {
-    setIsForwarding(false);
-    setOpenConfirmDialog(false);
-  }
-};
-
-
+  };
 
   const handleSuspend = async (reason) => {
     if (!selectedRefugee || !reason) {
@@ -1224,188 +1200,181 @@ const handleForward = async () => {
   };
 
   //2025/10/15
-//   const handleSaveEdit = async () => {
-//     if (!editableRefugeeData) return;
-//     setIsForwarding(true);
+  //   const handleSaveEdit = async () => {
+  //     if (!editableRefugeeData) return;
+  //     setIsForwarding(true);
 
-//     try {
-//       // ✅ حدد الحقول التي تريد السماح بتعديلها فقط
-//       const allowedFieldsToEdit = [
-//         'interview_date',
-//         'interview_officername',
-//         'gender',
-//         'frist_name',
-//         'second_name',
-//         'theard_name',
-//         'sur_name',
-//         'mother_name',
-//         'fath_mother_name',
-//         'religion',
-//         'birth_date',
-//         'birth_place',
-//         'marital_status',
-//         'spouse_nationality',
-//         'marital_status_date',
-//         'phone_number',
-//         'nationality',
-//         'origin_country',
-//         'profession',
-//         'first_name_member',
-//         'political_opinion',
-//         'social_group_membership',
-//         'reasons_for_persecution',
-//         'last_place_of_residence',
-//         'residency_duration',
-//         'military_service',
-//         'political_party_membership',
-//         'political_party_names',
-//         'departure_date_from_origin',
-//         'date_of_arrival_to_iraq',
-//         'is_iraq_residency',
-//         'residency_issue_date',
-//         'residency_expiry_date',
-//         'reasons_for_leaving_origin',
-//         'previous_country_before_iraq',
-//         'residency_befor_iraq',
-//         'residency_befor_iraq_durtion',
-//         'place_of_residence',
-//         'duration_of_place',
-//         'returntocountryhistory',
-//         'intendtoreturn',
-//         'whathappensifreturn',
-//         'reasons_for_asylum',
-//         'power_of_attorney_number',
-//         'form_issue_date',
-//         'form_expiry_date',
-//         'form_place_of_issue',
-//         'race',
-//         'passport',
-//         'passportissuecountry',
-//         'familypassports',
-//         'interviewnotes','district'
-//         // أضف حقول أخرى إن أردت السماح بتعديلها
-//       ];
+  //     try {
+  //       // ✅ حدد الحقول التي تريد السماح بتعديلها فقط
+  //       const allowedFieldsToEdit = [
+  //         'interview_date',
+  //         'interview_officername',
+  //         'gender',
+  //         'frist_name',
+  //         'second_name',
+  //         'theard_name',
+  //         'sur_name',
+  //         'mother_name',
+  //         'fath_mother_name',
+  //         'religion',
+  //         'birth_date',
+  //         'birth_place',
+  //         'marital_status',
+  //         'spouse_nationality',
+  //         'marital_status_date',
+  //         'phone_number',
+  //         'nationality',
+  //         'origin_country',
+  //         'profession',
+  //         'first_name_member',
+  //         'political_opinion',
+  //         'social_group_membership',
+  //         'reasons_for_persecution',
+  //         'last_place_of_residence',
+  //         'residency_duration',
+  //         'military_service',
+  //         'political_party_membership',
+  //         'political_party_names',
+  //         'departure_date_from_origin',
+  //         'date_of_arrival_to_iraq',
+  //         'is_iraq_residency',
+  //         'residency_issue_date',
+  //         'residency_expiry_date',
+  //         'reasons_for_leaving_origin',
+  //         'previous_country_before_iraq',
+  //         'residency_befor_iraq',
+  //         'residency_befor_iraq_durtion',
+  //         'place_of_residence',
+  //         'duration_of_place',
+  //         'returntocountryhistory',
+  //         'intendtoreturn',
+  //         'whathappensifreturn',
+  //         'reasons_for_asylum',
+  //         'power_of_attorney_number',
+  //         'form_issue_date',
+  //         'form_expiry_date',
+  //         'form_place_of_issue',
+  //         'race',
+  //         'passport',
+  //         'passportissuecountry',
+  //         'familypassports',
+  //         'interviewnotes','district'
+  //         // أضف حقول أخرى إن أردت السماح بتعديلها
+  //       ];
 
-//       // فلترة الحقول غير المسموح بها
-//       const filteredData = Object.fromEntries(
-//         Object.entries(editableRefugeeData).filter(([key]) => allowedFieldsToEdit.includes(key))
-//       );
+  //       // فلترة الحقول غير المسموح بها
+  //       const filteredData = Object.fromEntries(
+  //         Object.entries(editableRefugeeData).filter(([key]) => allowedFieldsToEdit.includes(key))
+  //       );
 
-// console.log('filteredData',filteredData);
+  // console.log('filteredData',filteredData);
 
-//       const { success, msg } = await api('PUT', `mains/refugees/id/${editableRefugeeData.id}`, filteredData);
-//       await new Promise((resolve) => setTimeout(resolve, 1500));
-//       if (success) {
-//         NotificationMsg('نجاح', 'تم حفظ التعديلات بنجاح.');
-//         await fetchData();
-//         setIsEditing(false);
-//         setSelectedRefugee((prev) => ({ ...prev, ...filteredData }));
-//         setEditableRefugeeData((prev) => ({ ...prev, ...filteredData }));
-//       } else {
-//         DangerMsg('فشل الحفظ', msg || 'تعذر حفظ التعديلات');
-//       }
-//     } catch (error) {
-//       DangerMsg('خطأ', 'حدث خطأ أثناء حفظ التعديلات');
-//       console.error(error);
-//     } finally {
-//       setIsForwarding(false);
-//     }
-//   };
-const handleSaveEdit = async () => {
-  if (!editableRefugeeData) return;
-  setIsForwarding(true);
+  //       const { success, msg } = await api('PUT', `mains/refugees/id/${editableRefugeeData.id}`, filteredData);
+  //       await new Promise((resolve) => setTimeout(resolve, 1500));
+  //       if (success) {
+  //         NotificationMsg('نجاح', 'تم حفظ التعديلات بنجاح.');
+  //         await fetchData();
+  //         setIsEditing(false);
+  //         setSelectedRefugee((prev) => ({ ...prev, ...filteredData }));
+  //         setEditableRefugeeData((prev) => ({ ...prev, ...filteredData }));
+  //       } else {
+  //         DangerMsg('فشل الحفظ', msg || 'تعذر حفظ التعديلات');
+  //       }
+  //     } catch (error) {
+  //       DangerMsg('خطأ', 'حدث خطأ أثناء حفظ التعديلات');
+  //       console.error(error);
+  //     } finally {
+  //       setIsForwarding(false);
+  //     }
+  //   };
+  const handleSaveEdit = async () => {
+    if (!editableRefugeeData) return;
+    setIsForwarding(true);
 
-  try {
-    // ✅ هنا نكوّن الكائن يدوياً بالحقول المسموح تعديلها فقط
-    console.log
-    ('editableRefugeeData', editableRefugeeData);
-    const filteredData = {
-      interview_date: editableRefugeeData.interview_date,
-      interview_officername: editableRefugeeData.interview_officername,
-      gender: editableRefugeeData.gender,
-      frist_name: editableRefugeeData.frist_name,
-      second_name: editableRefugeeData.second_name,
-      theard_name: editableRefugeeData.theard_name,
-      sur_name: editableRefugeeData.sur_name,
-      mother_name: editableRefugeeData.mother_name,
-      fath_mother_name: editableRefugeeData.fath_mother_name,
-      religion: editableRefugeeData.religion,
-      birth_date: editableRefugeeData.birth_date,
-      birth_place: editableRefugeeData.birth_place,
-      marital_status: editableRefugeeData.marital_status,
-      spouse_nationality: editableRefugeeData.spouse_nationality,
-      marital_status_date: editableRefugeeData.marital_status_date,
-      phone_number: editableRefugeeData.phone_number,
-      nationality: editableRefugeeData.nationality,
-      origin_country: editableRefugeeData.origin_country,
-      profession: editableRefugeeData.profession,
-      first_name_member: editableRefugeeData.first_name_member,
-      political_opinion: editableRefugeeData.political_opinion,
-      social_group_membership: editableRefugeeData.social_group_membership,
-      reasons_for_persecution: editableRefugeeData.reasons_for_persecution,
-      last_place_of_residence: editableRefugeeData.last_place_of_residence,
-      residency_duration: editableRefugeeData.residency_duration,
-      military_service: editableRefugeeData.military_service,
-      political_party_membership: editableRefugeeData.political_party_membership,
-      political_party_names: editableRefugeeData.political_party_names,
-      departure_date_from_origin: editableRefugeeData.departure_date_from_origin,
-      date_of_arrival_to_iraq: editableRefugeeData.date_of_arrival_to_iraq,
-      is_iraq_residency: editableRefugeeData.is_iraq_residency,
-      residency_issue_date: editableRefugeeData.residency_issue_date,
-      residency_expiry_date: editableRefugeeData.residency_expiry_date,
-      reasons_for_leaving_origin: editableRefugeeData.reasons_for_leaving_origin,
-      previous_country_before_iraq: editableRefugeeData.previous_country_before_iraq,
-      residency_befor_iraq: editableRefugeeData.residency_befor_iraq,
-      residency_befor_iraq_durtion: editableRefugeeData.residency_befor_iraq_durtion,
-      place_of_residence: editableRefugeeData.place_of_residence,
-      duration_of_place: editableRefugeeData.duration_of_place,
-      returntocountryhistory: editableRefugeeData.returntocountryhistory,
-      intendtoreturn: editableRefugeeData.intendtoreturn,
-      whathappensifreturn: editableRefugeeData.whathappensifreturn,
-      reasons_for_asylum: editableRefugeeData.reasons_for_asylum,
-      power_of_attorney_number: editableRefugeeData.power_of_attorney_number,
-      form_issue_date: editableRefugeeData.form_issue_date,
-      form_expiry_date: editableRefugeeData.form_expiry_date,
-      form_place_of_issue: editableRefugeeData.form_place_of_issue,
-      race: editableRefugeeData.race,
-      passport: editableRefugeeData.passport,
-      passport_number: editableRefugeeData.passport_number,
-      passportissuecountry: editableRefugeeData.passportissuecountry,
-      familypassports: editableRefugeeData.familypassports,
-      interviewnotes: editableRefugeeData.interviewnotes,
-      district: editableRefugeeData.district,
-      subdistrict: editableRefugeeData.subdistrict,
-      governorate: editableRefugeeData.governorate,
-    };
+    try {
+      // ✅ هنا نكوّن الكائن يدوياً بالحقول المسموح تعديلها فقط
+      console.log('editableRefugeeData', editableRefugeeData);
+      const filteredData = {
+        interview_date: editableRefugeeData.interview_date,
+        interview_officername: editableRefugeeData.interview_officername,
+        gender: editableRefugeeData.gender,
+        frist_name: editableRefugeeData.frist_name,
+        second_name: editableRefugeeData.second_name,
+        theard_name: editableRefugeeData.theard_name,
+        sur_name: editableRefugeeData.sur_name,
+        mother_name: editableRefugeeData.mother_name,
+        fath_mother_name: editableRefugeeData.fath_mother_name,
+        religion: editableRefugeeData.religion,
+        birth_date: editableRefugeeData.birth_date,
+        birth_place: editableRefugeeData.birth_place,
+        marital_status: editableRefugeeData.marital_status,
+        spouse_nationality: editableRefugeeData.spouse_nationality,
+        marital_status_date: editableRefugeeData.marital_status_date,
+        phone_number: editableRefugeeData.phone_number,
+        nationality: editableRefugeeData.nationality,
+        origin_country: editableRefugeeData.origin_country,
+        profession: editableRefugeeData.profession,
+        first_name_member: editableRefugeeData.first_name_member,
+        political_opinion: editableRefugeeData.political_opinion,
+        social_group_membership: editableRefugeeData.social_group_membership,
+        reasons_for_persecution: editableRefugeeData.reasons_for_persecution,
+        last_place_of_residence: editableRefugeeData.last_place_of_residence,
+        residency_duration: editableRefugeeData.residency_duration,
+        military_service: editableRefugeeData.military_service,
+        political_party_membership: editableRefugeeData.political_party_membership,
+        political_party_names: editableRefugeeData.political_party_names,
+        departure_date_from_origin: editableRefugeeData.departure_date_from_origin,
+        date_of_arrival_to_iraq: editableRefugeeData.date_of_arrival_to_iraq,
+        is_iraq_residency: editableRefugeeData.is_iraq_residency,
+        residency_issue_date: editableRefugeeData.residency_issue_date,
+        residency_expiry_date: editableRefugeeData.residency_expiry_date,
+        reasons_for_leaving_origin: editableRefugeeData.reasons_for_leaving_origin,
+        previous_country_before_iraq: editableRefugeeData.previous_country_before_iraq,
+        residency_befor_iraq: editableRefugeeData.residency_befor_iraq,
+        residency_befor_iraq_durtion: editableRefugeeData.residency_befor_iraq_durtion,
+        place_of_residence: editableRefugeeData.place_of_residence,
+        duration_of_place: editableRefugeeData.duration_of_place,
+        returntocountryhistory: editableRefugeeData.returntocountryhistory,
+        intendtoreturn: editableRefugeeData.intendtoreturn,
+        whathappensifreturn: editableRefugeeData.whathappensifreturn,
+        reasons_for_asylum: editableRefugeeData.reasons_for_asylum,
+        power_of_attorney_number: editableRefugeeData.power_of_attorney_number,
+        form_issue_date: editableRefugeeData.form_issue_date,
+        form_expiry_date: editableRefugeeData.form_expiry_date,
+        form_place_of_issue: editableRefugeeData.form_place_of_issue,
+        race: editableRefugeeData.race,
+        passport: editableRefugeeData.passport,
+        passport_number: editableRefugeeData.passport_number,
+        passportissuecountry: editableRefugeeData.passportissuecountry,
+        familypassports: editableRefugeeData.familypassports,
+        interviewnotes: editableRefugeeData.interviewnotes,
+        district: editableRefugeeData.district,
+        subdistrict: editableRefugeeData.subdistrict,
+        governorate: editableRefugeeData.governorate,
+      };
 
-    console.log('filteredData', filteredData);
+      console.log('filteredData', filteredData);
 
-    const { success, msg } = await api(
-      'PUT',
-      `mains/refugees/id/${editableRefugeeData.id}`,
-      filteredData
-    );
+      const { success, msg } = await api('PUT', `mains/refugees/id/${editableRefugeeData.id}`, filteredData);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    if (success) {
-      NotificationMsg('نجاح', 'تم حفظ التعديلات بنجاح.');
-      await fetchData();
-      setIsEditing(false);
-      setSelectedRefugee((prev) => ({ ...prev, ...filteredData }));
-      setEditableRefugeeData((prev) => ({ ...prev, ...filteredData }));
-    } else {
-      DangerMsg('فشل الحفظ', msg || 'تعذر حفظ التعديلات');
+      if (success) {
+        NotificationMsg('نجاح', 'تم حفظ التعديلات بنجاح.');
+        await fetchData();
+        setIsEditing(false);
+        setSelectedRefugee((prev) => ({ ...prev, ...filteredData }));
+        setEditableRefugeeData((prev) => ({ ...prev, ...filteredData }));
+      } else {
+        DangerMsg('فشل الحفظ', msg || 'تعذر حفظ التعديلات');
+      }
+    } catch (error) {
+      DangerMsg('خطأ', 'حدث خطأ أثناء حفظ التعديلات');
+      console.error(error);
+    } finally {
+      setIsForwarding(false);
     }
-  } catch (error) {
-    DangerMsg('خطأ', 'حدث خطأ أثناء حفظ التعديلات');
-    console.error(error);
-  } finally {
-    setIsForwarding(false);
-  }
-};
-
-
+  };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
@@ -1781,8 +1750,8 @@ const handleSaveEdit = async () => {
 
           <TabPanel value={tabIndex} index={0}>
             {/* Render table in view mode, or grid for edit mode */}
-            
-            {renderSection(personalFields)} 
+
+            {renderSection(personalFields)}
             {!isEditing && (
               <Box sx={{ textAlign: 'center', mt: 3 }}>
                 <Button variant="outlined" color="primary" onClick={() => setOpenFamilyDialog(true)}>
@@ -1794,11 +1763,9 @@ const handleSaveEdit = async () => {
           <TabPanel value={tabIndex} index={1}>
             {/* Render table in view mode, or grid for edit mode */}
             {/* {renderSection(additionalFields)} */}
-             {/* إذا في وضع تعديل، اعرض دالة التعديل، غير ذلك اعرض دالة العرض */}
-  {isEditing ? renderEditSection(additionalFields) : renderSection(additionalFields)}
-  
+            {/* إذا في وضع تعديل، اعرض دالة التعديل، غير ذلك اعرض دالة العرض */}
+            {isEditing ? renderEditSection(additionalFields) : renderSection(additionalFields)}
           </TabPanel>
-
 
           {/* Action Buttons */}
           <Stack direction="row" spacing={2} justifyContent="center" mt={4}>

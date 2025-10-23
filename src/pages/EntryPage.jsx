@@ -38,8 +38,8 @@ const formatDate = (dateString) => {
 
 // 3. تعريف الأعمدة خارج المكون
 const columnsDefinition = [
-  { field: 'id', headerName: 'رقم الطلب', flex: 1, },
-  { field: 'frist_name', headerName: 'الاسم ', flex: 1},
+  { field: 'id', headerName: 'رقم الطلب', flex: 1 },
+  { field: 'frist_name', headerName: 'الاسم ', flex: 1 },
   { field: 'second_name', headerName: 'اسم الاب', flex: 1 },
   { field: 'theard_name', headerName: 'اسم الجد', flex: 1 },
   { field: 'sur_name', headerName: 'اللقب ', flex: 1 },
@@ -47,12 +47,12 @@ const columnsDefinition = [
   {
     field: 'interview_date',
     headerName: 'تاريخ المقابلة',
-    flex: 1,minWidth: 150 ,
+    flex: 1,
+    minWidth: 150,
     valueFormatter: (params) => (params.value ? new Date(params.value).toISOString().slice(0, 10) : ''),
   },
-  { field: 'interview_officername', headerName: 'اسم موظف المقابلة', flex: 1,minWidth: 150 },
+  { field: 'interview_officername', headerName: 'اسم موظف المقابلة', flex: 1, minWidth: 150 },
   { field: 'current_stage', headerName: 'الحالة', flex: 1 },
-
 ];
 
 export default function RefugeesGrid() {
@@ -90,6 +90,7 @@ export default function RefugeesGrid() {
       const formatted = (data?.records || data || []).map((item) => ({
         id: item.id,
         interview_officername: item.interview_officername,
+        interviewnotes: item.interviewnotes,
         frist_name: item.frist_name,
         second_name: item.second_name,
         theard_name: item.theard_name,
@@ -107,6 +108,8 @@ export default function RefugeesGrid() {
         nationality: item.nationality,
         origin_country: item.origin_country,
         governorate: item.governorate,
+        district: item.district,
+        subdistrict: item.subdistrict,
         profession: item.profession,
         created_at: safeFormatDate(item.created_at),
         current_stage: item.current_stage,
@@ -119,8 +122,20 @@ export default function RefugeesGrid() {
         political_party_membership: item.political_party_membership ? 'نعم' : 'لا',
         political_party_names: item.political_party_names || '',
         departure_date_from_origin: safeFormatDate(item.departure_date_from_origin),
+        residency_issue_date: safeFormatDate(item.residency_issue_date),
         date_of_arrival_to_iraq: safeFormatDate(item.date_of_arrival_to_iraq),
-        passport_expiry_date: safeFormatDate(item.passport_expiry_date),
+        residency_expiry_date: safeFormatDate(item.residency_expiry_date),
+        is_iraq_residency: item.is_iraq_residency,
+        residency_befor_iraq: item.residency_befor_iraq,
+        residency_befor_iraq_durtion: item.residency_befor_iraq_durtion,
+        passport: item.passport,
+        returntocountryhistory: item.returntocountryhistory,
+        passport_number: item.passport_number,
+        passportissuecountry: item.passportissuecountry,
+        familypassports: item.familypassports,
+        intendtoreturn: item.intendtoreturn,
+        preferredresidencereturn: item.preferredresidencereturn,
+        whathappensifreturn: item.whathappensifreturn,
         reasons_for_leaving_origin: item.reasons_for_leaving_origin,
         previous_country_before_iraq: item.previous_country_before_iraq,
         reasons_for_asylum: item.reasons_for_asylum,
@@ -229,7 +244,8 @@ export default function RefugeesGrid() {
                   </Avatar>
                 )}
                 <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold' }}>
-                  {selectedRow.frist_name} {selectedRow.second_name} {selectedRow.last_name} {selectedRow.theard_name} {selectedRow.sur_name}
+                  {selectedRow.frist_name} {selectedRow.second_name} {selectedRow.last_name} {selectedRow.theard_name}{' '}
+                  {selectedRow.sur_name}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
                   {selectedRow.nationality}
@@ -238,24 +254,28 @@ export default function RefugeesGrid() {
 
               {/* ----------------- المعلومات الشخصية ----------------- */}
               <Grid item xs={12}>
-                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
+                <Typography
+                  variant="h6"
+                  color="primary.main"
+                  sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}
+                >
                   المعلومات الشخصية
                 </Typography>
-                <Grid container spacing={3}>                  
+                <Grid container spacing={3}>
                   <DetailItem label="الجنس" value={selectedRow.gender} />
                   <DetailItem label="الاسم " value={selectedRow.frist_name} />
                   <DetailItem label="الاب " value={selectedRow.second_name} />
                   <DetailItem label="الجد " value={selectedRow.theard_name} />
                   <DetailItem label="اللقب " value={selectedRow.sur_name} />
                   {/* استخدام الدالة المساعدة للتنسيق الاحترافي */}
-                  
+
                   <DetailItem label="اسم الام " value={selectedRow.mother_name} />
                   <DetailItem label="اسم اب الام " value={selectedRow.fath_mother_name} />
                   <DetailItem label="تاريخ الميلاد" value={formatDate(selectedRow.birth_date)} />
                   <DetailItem label="مكان الميلاد" value={selectedRow.birth_place} />
                   <DetailItem label="الديانة" value={selectedRow.religion} />
                   <DetailItem label="جنسية مقدم الطلب" value={selectedRow.nationality} />
-                  <DetailItem label="دولة المنشأ" value={selectedRow.origin_country} />
+                  <DetailItem label="بلد الأصل " value={selectedRow.origin_country} />
                   <DetailItem label="المهنة" value={selectedRow.profession} />
                   <DetailItem label="رقم الهاتف" value={selectedRow.phone_number} />
                 </Grid>
@@ -263,7 +283,11 @@ export default function RefugeesGrid() {
 
               {/* ----------------- معلومات الزواج ----------------- */}
               <Grid item xs={12}>
-                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
+                <Typography
+                  variant="h6"
+                  color="primary.main"
+                  sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}
+                >
                   معلومات الزواج
                 </Typography>
                 <Grid container spacing={3}>
@@ -275,17 +299,27 @@ export default function RefugeesGrid() {
 
               {/* ----------------- معلومات السكن ----------------- */}
               <Grid item xs={12}>
-                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
+                <Typography
+                  variant="h6"
+                  color="primary.main"
+                  sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}
+                >
                   معلومات السكن
                 </Typography>
                 <Grid container spacing={3}>
                   <DetailItem label="المحافظة" value={selectedRow.governorate} />
+                  <DetailItem label="القضاء" value={selectedRow.district} />
+                  <DetailItem label="المنطقة" value={selectedRow.subdistrict} />
                 </Grid>
               </Grid>
 
               {/* ----------------- تفاصيل اللجوء والوضع الأمني ----------------- */}
               <Grid item xs={12}>
-                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
+                <Typography
+                  variant="h6"
+                  color="primary.main"
+                  sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}
+                >
                   تفاصيل اللجوء والوضع الأمني
                 </Typography>
                 <Grid container spacing={3}>
@@ -295,43 +329,74 @@ export default function RefugeesGrid() {
                   <DetailItem label="آخر مكان إقامة" value={selectedRow.last_place_of_residence} />
                   <DetailItem label="مدة الإقامة هناك" value={selectedRow.residency_duration} />
                   <DetailItem label="خدمة عسكرية" value={selectedRow.military_service} />
-                  <DetailItem label="عضوية حزب سياسي" value={selectedRow.political_party_membership} />
+                  <DetailItem label=" هل تنتمي لاحزاب سياسية " value={selectedRow.political_party_membership} />
                   {selectedRow.political_party_membership === 'نعم' && (
-                   <DetailItem label="أسماء الأحزاب السياسية" value={selectedRow.political_party_names} />
+                    <DetailItem label="أسماء الأحزاب السياسية" value={selectedRow.political_party_names} />
                   )}
                 </Grid>
               </Grid>
 
               {/* ----------------- تفاصيل السفر والوصول ----------------- */}
               <Grid item xs={12}>
-                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
+                <Typography
+                  variant="h6"
+                  color="primary.main"
+                  sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}
+                >
                   تفاصيل السفر والوصول
                 </Typography>
                 <Grid container spacing={3}>
                   <DetailItem
-                    label="تاريخ المغادرة من بلد المنشأ"
+                    label="تاريخ المغادرة من بلد الأصلي"
                     value={formatDate(selectedRow.departure_date_from_origin)}
                   />
                   <DetailItem label="تاريخ الوصول إلى العراق" value={formatDate(selectedRow.date_of_arrival_to_iraq)} />
-                  <DetailItem label="أسباب مغادرة بلد المنشأ" value={selectedRow.reasons_for_leaving_origin} />
-                  <DetailItem label="الدولة السابقة قبل العراق" value={selectedRow.previous_country_before_iraq} />
-                  <DetailItem label="أسباب طلب اللجوء" value={selectedRow.reasons_for_asylum} />
+                  <DetailItem label="هل لديك اقامة في العراق؟" value={selectedRow.is_iraq_residency} />
                   <DetailItem
-                    label="تاريخ انتهاء صلاحية جواز السفر"
-                    value={formatDate(selectedRow.passport_expiry_date)}
+                    label="محل الاقامة قبل الدخول الاراضي العراقية"
+                    value={selectedRow.residency_befor_iraq}
                   />
+                  <DetailItem label="الفترة التي قضيتها هناك" value={selectedRow.residency_befor_iraq_durtion} />
+                  <DetailItem label="تاريخ اصدار الاقامة" value={formatDate(selectedRow.residency_issue_date)} />
+                  <DetailItem label="تاريخ انتهاء الاقامة" value={formatDate(selectedRow.residency_expiry_date)} />
+                  <DetailItem
+                    label="اذكر بإيجاز أسباب مغادرتك لبلد الأصل:
+"
+                    value={selectedRow.reasons_for_leaving_origin}
+                  />
+                  <DetailItem label="البلد السابقة قبل العراق" value={selectedRow.previous_country_before_iraq} />
+                  <DetailItem label="ملخص اسباب طلب اللجوء" value={selectedRow.reasons_for_asylum} />
+                  <DetailItem label=" هل لديك جواز سفر " value={selectedRow.passport} />
+                  <DetailItem label="رقم جواز السفر" value={selectedRow.passport_number} />
+                  <DetailItem label="بلد اصدار جواز السفر" value={selectedRow.passportissuecountry} />
+                  <DetailItem label="هل كل افراد العائلة لديهم جوازات سفر" value={selectedRow.familypassports} />
+                  <DetailItem
+                    label="هل سبق وأن عدت إلى بلدك بعد مغادرته؟ إذا كان الجواب نعم، فمتى؟ وأين كان مكان العودة ومتى؟ وماهي الفترة التي بقيت فيها؟ ماذا فعلت هناك؟ لماذا عدت إلى العراق؟"
+                    value={selectedRow.returntocountryhistory}
+                  />
+                  <DetailItem label="هل تنوي العودة الى بلدك ؟" value={selectedRow.intendtoreturn} />
+                  <DetailItem
+                    label=" إذا كنت تنوي العودة أين تفضل السكن"
+                    value={selectedRow.preferredresidencereturn}
+                  />{' '}
+                  <DetailItem label=" إذا كنت تنوي العودة أين تفضل السكن" value={selectedRow.whathappensifreturn} />
                 </Grid>
               </Grid>
 
               {/* ----------------- معلومات إدارية ----------------- */}
               <Grid item xs={12}>
-                <Typography variant="h6" color="primary.main" sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}>
+                <Typography
+                  variant="h6"
+                  color="primary.main"
+                  sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}
+                >
                   معلومات إدارية
                 </Typography>
                 <Grid container spacing={3}>
                   <DetailItem label="رقم الحالة" value={selectedRow.id} />
                   <DetailItem label="المرحلة الحالية" value={selectedRow.current_stage} />
                   <DetailItem label="اسم موظف المقابلة" value={selectedRow.interview_officername} />
+                  <DetailItem label=" ملخص المقابلة " value={selectedRow.interviewnotes} />
                   <DetailItem label="تاريخ المقابلة" value={formatDate(selectedRow.interview_date)} />
                   <DetailItem label="تاريخ الإنشاء" value={formatDate(selectedRow.created_at)} />
                   <DetailItem label="آخر تحديث" value={formatDate(selectedRow.updated_at)} />
@@ -351,7 +416,7 @@ export default function RefugeesGrid() {
             </Grid>
           )}
           {/* مساحة إضافية في الأسفل لتجنب اقتصاص المحتوى */}
-          <Box sx={{ height: 50 }} /> 
+          <Box sx={{ height: 50 }} />
         </Box>
       </Drawer>
     </Box>
