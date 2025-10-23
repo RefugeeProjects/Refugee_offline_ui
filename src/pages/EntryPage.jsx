@@ -214,12 +214,12 @@ export default function RefugeesGrid() {
         anchor="right"
         open={drawerOpen}
         onClose={handleDrawerClose}
-        PaperProps={{ sx: { width: { xs: '100%', sm: '80%', md: '50%' } } }} // تحسين استجابة العرض على الشاشات المختلفة
+        PaperProps={{ sx: { width: { xs: '100%', sm: '80%', md: '65%' } } }} // تحسين استجابة العرض على الشاشات المختلفة
       >
         <Box p={3}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h5" sx={{ fontWeight: 'bold', fontSize: '1.4rem' }}>
-              👤 تفاصيل اللاجئ - رقم الطلب: {selectedRow?.id}
+              تفاصيل اللاجئ - رقم الطلب: {selectedRow?.id}
             </Typography>
             <IconButton onClick={handleDrawerClose}>
               <CloseIcon sx={{ fontSize: 30, color: 'error.main' }} />
@@ -229,7 +229,23 @@ export default function RefugeesGrid() {
           <Divider sx={{ my: 2 }} />
 
           {selectedRow && (
-            <Grid container spacing={4}>
+            <Grid
+              container
+              spacing={4}
+              sx={{
+                '& *': {
+                  // 🔹 يؤثر على كل العناصر بداخل الـ Grid
+                  fontSize: {
+                    xs: '0.9rem',
+                    sm: '1rem',
+                    md: '1.2rem',
+                    lg: '1.5rem',
+                  },
+                  lineHeight: 1.6,
+                  mb: 1.5,
+                },
+              }}
+            >
               {/* القسم الأول: الصورة والمعلومات الأساسية */}
               <Grid item xs={12} sx={{ textAlign: 'center' }}>
                 {selectedRow.personal_photo ? (
