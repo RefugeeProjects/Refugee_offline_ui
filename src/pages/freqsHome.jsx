@@ -255,7 +255,8 @@ useEffect(() => {
     is_iraq_residency: 'هل لديك إقامة في العراق؟',//confirmed
     residency_issue_date: 'تاريخ إصدار الإقامة',//confirmed
     residency_expiry_date: 'تاريخ انتهاء الإقامة',//confirmed
-    passport: 'هل لديك جواز سفر',//confirmed
+    passport: 'هل لديك جواز سفر',//confirme
+    passport_number: 'رقم الجواز',//confirmed
     passportissuecountry: 'بلد إصدار جواز السفر',//confirmed
     familypassports: '   هل كل أفراد العائلة لديهم جوازات سفر؟   ',//confirmed
     reasons_for_leaving_origin: 'أسباب مغادرة البلد الأصلي',//confirmed
@@ -265,11 +266,11 @@ useEffect(() => {
     returntocountryhistory:
       '(اذكر بالتفصيل)هل سبق وأن عدت إلى بلدك بعد مغادرته؟ إذا كان الجواب نعم، فمتى؟ وأين كان مكان العودة ومتى؟ وماهي الفترة التي بقيت فيها؟ ماذا فعلت هناك؟ لماذا عدت إلى العراق؟',//confirmed
     intendtoreturn: 'هل تنوي العودة إلى بلدك؟',//confirmed
-    preferredresidencereturn: 'اذا كنت تنوي العودة اين تفضل السكن ؟',
-    whathappensifreturn: 'ماذا سيحدث لك اذا عدت الى بلدك؟',
+    preferredresidencereturn: 'اذا كنت تنوي العودة اين تفضل السكن ؟',//confirmed
+    whathappensifreturn: 'ماذا سيحدث لك اذا عدت الى بلدك؟',//confirmed
     place_of_residence: '  آخر محل للإقامة ضمن مغادرة بلد الأصل (قرية/مدينة/مقاطعة/الدولة)', //confirmed
-    duration_of_place: 'ماضي الفترة الزمنية التي قضيتها في هذا المكان قبل مغادرة بلدالأصل',
-    reasons_for_asylum: 'ملخص اسباب طلب اللجوء',
+    duration_of_place: 'ماضي الفترة الزمنية التي قضيتها في هذا المكان قبل مغادرة بلدالأصل',//confirmed
+    reasons_for_asylum: 'ملخص اسباب طلب اللجوء',//confirmed
     power_of_attorney_number: 'رقم الفورما', //confirmed
     form_issue_date: 'تاريخ إصدار الفورما',//confirmed
     form_expiry_date: 'تاريخ انتهاء الفورما', //confirmed
@@ -277,7 +278,7 @@ useEffect(() => {
     race: 'العرق',
     notes_case: 'تعليق',
     mok_approval: 'موافقة المخابرات',amn_wat_approval:'موافقة الامن الوطني',istk_approval:'موافقة استخبارات وامن الدفاع',iqama_approval:'موافقة الاقامة',
-    interviewnotes: 'ملخص المقابلة',
+    interviewnotes: 'ملخص المقابلة',//confirmed
   };
 
   const personalFields = [
@@ -1368,6 +1369,7 @@ const handleSaveEdit = async () => {
       form_place_of_issue: editableRefugeeData.form_place_of_issue,
       race: editableRefugeeData.race,
       passport: editableRefugeeData.passport,
+      passport_number: editableRefugeeData.passport_number,
       passportissuecountry: editableRefugeeData.passportissuecountry,
       familypassports: editableRefugeeData.familypassports,
       interviewnotes: editableRefugeeData.interviewnotes,
