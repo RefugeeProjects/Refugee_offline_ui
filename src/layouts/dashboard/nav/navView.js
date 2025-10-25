@@ -41,6 +41,12 @@ const navView = [
     icon: <MenuOpen />,
     page_role: { public: 1 },
   },
+  {
+    title: 'تقارير ',
+    path: process.env.PUBLIC_URL + '/dashboard/TrackingPage',
+    icon: <MenuOpen />,
+    page_role: { public: 1 },
+  },
   // {
   //   title: ' تقرير الاقسام   ',
   //   path: process.env.PUBLIC_URL + '/reviewer/Reports',

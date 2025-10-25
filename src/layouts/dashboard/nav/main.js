@@ -47,6 +47,12 @@ const navConfig = [
     icon: <MenuOpen />,
     // page_role: { public: 1 },
   },
+  {
+    title: 'تتبع الطلبات ',
+    path: process.env.PUBLIC_URL + '/dashboard/TrackingPage',
+    icon: <MenuOpen />,
+    // page_role: { public: 1 },
+  },
   // {
   //   title: 'ادخال',
   //   path: process.env.PUBLIC_URL + '/dashboard/DepartmentFollowup',

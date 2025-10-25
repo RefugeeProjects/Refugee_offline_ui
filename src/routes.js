@@ -23,6 +23,7 @@ import Profile from './pages/Profile';
 import ChangePassword from './pages/ChangePassword';
 import FreqsHome from './pages/freqsHome';
 import DepsFollow from './pages/depsFollow';
+import TrackingPage from './pages/track';
 import ReportPage from './pages/reportPage';
 import ApproximateSearch from './pages/ApproximateSearch';
 
@@ -81,6 +82,9 @@ export default function Router({ user_roles }) {
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/DepsFollow'} />, index: true },
         { path: 'DepsFollow', element: <DepsFollow /> },
 
+        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/TrackingPage'} />, index: true },
+        { path: 'TrackingPage', element: <TrackingPage /> },
+
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/Reports'} />, index: true },
         { path: 'Reports', element: <Reports /> },
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/PanalForERP'} />, index: true },
@@ -126,8 +130,8 @@ export default function Router({ user_roles }) {
         // { path: 'settings', element: <Settings /> },
       ],
     },
-// الصلاحيات المخابرات
- {
+    // الصلاحيات المخابرات
+    {
       path: process.env.PUBLIC_URL + '/mokhabarat',
       element: <PrivateRoute element={<MokLayouts />} />,
       children: [
