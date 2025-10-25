@@ -294,10 +294,10 @@ export default function RefugeeReport() {
         doc.addImage(logoImage, 'PNG', doc.internal.pageSize.width / 2 - 15, 2, 20, 20);
         doc.setFontSize(12);
         doc.text('وزارة الداخلية', doc.internal.pageSize.width - 20, 5, { align: 'right' });
-        doc.text('وكالة الوزارة لشؤون اللاجئين', doc.internal.pageSize.width - 30, 10, {
+        doc.text('وكالة الوزارة للشؤون الادارية والمالية ', doc.internal.pageSize.width - 30, 10, {
           align: 'center',
         });
-        doc.text('مديرية شؤون اللاجئين', doc.internal.pageSize.width - 30, 15, {
+        doc.text(' اللجنة الدائمة لشؤون اللاجئين ', doc.internal.pageSize.width - 30, 15, {
           align: 'center',
         });
         doc.text('تقرير طالبي اللجوء', doc.internal.pageSize.width / 2, 28, {
@@ -427,7 +427,7 @@ export default function RefugeeReport() {
   return (
     <Box>
       <Typography
-        variant="h2"
+        variant="h4"
         gutterBottom
         sx={{ color: '#eee !important', style }}
         style={{
