@@ -395,7 +395,7 @@ export default function RefugeesGrid() {
                     label=" إذا كنت تنوي العودة أين تفضل السكن"
                     value={selectedRow.preferredresidencereturn}
                   />{' '}
-                  <DetailItem label="ماذا سيحدث لك او لعائلتك اذا عدت ؟" value={selectedRow.whathappensifreturn} />
+                  <DetailItem label="ماذا سيحدث لك او لعائلتك اذا عدت" value={selectedRow.whathappensifreturn} />
                 </Grid>
               </Grid>
 
