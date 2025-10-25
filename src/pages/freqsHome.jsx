@@ -1,4 +1,5 @@
 import React, { useContext, useCallback, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Stack,
@@ -115,6 +116,8 @@ export default function FreqsHome() {
   // useEffect(() => {
   //   fetchData();
   // }, [fetchData]);
+  const navigate = useNavigate();
+
   const userRole = user.roles; // أو من الكونتكست/ستيت2023
 
   const fetchData = useCallback(async () => {
@@ -1756,7 +1759,10 @@ export default function FreqsHome() {
               <Box sx={{ textAlign: 'center', mt: 3 }}>
                 <Button variant="outlined" color="primary" onClick={() => setOpenFamilyDialog(true)}>
                   تفاصيل العائلة
-                </Button>
+                </Button>{' '}
+                <button onClick={() => navigate(`/dashboard/attachments/49`)} className="text-blue-600 hover:underline">
+                  عرض المرفقات
+                </button>
               </Box>
             )}
           </TabPanel>

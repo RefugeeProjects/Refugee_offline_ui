@@ -15,6 +15,7 @@ import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import DashboardAppPage from './pages/DashboardAppPage';
 import EntryPage from './pages/EntryPage';
+import AttachmentsPage from './pages/AttachmentsPage';
 import DepartmentFollowup from './pages/DepartmentFollowup';
 import UserManagment from './pages/Users/UserManagment';
 import UserManagmentAddEdit from './pages/Users/UserManagmentAddEdit';
@@ -72,6 +73,7 @@ export default function Router({ user_roles }) {
         { path: 'ChangePassword', element: <ChangePassword /> },
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/EntryPage'} />, index: true },
         { path: 'EntryPage', element: <EntryPage /> },
+        { path: 'attachments/:id', element: <AttachmentsPage /> },
 
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/DepartmentFollowup'} />, index: true },
         { path: 'DepartmentFollowup', element: <DepartmentFollowup /> },
