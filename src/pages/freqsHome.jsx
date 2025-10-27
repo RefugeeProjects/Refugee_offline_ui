@@ -96,26 +96,7 @@ export default function FreqsHome() {
   });
 
   const { user } = useContext(appContext);
-  // const fetchData = useCallback(async () => {
-  //   setIsLoadingTable(true);
-  //   try {
-  //     const { success, data } = await api('GET', `freqs/refugees`);
-  //     if (!success) {
-  //       DangerMsg('اشعارات اللاجئين', 'خطأ في تحميل البيانات');
-  //       return;
-  //     }
-  //     setRefugees(data?.records || data);
-  //   } catch (err) {
-  //     DangerMsg('اشعارات اللاجئين', 'خطأ في تحميل البيانات');
-  //     console.error(err);
-  //   } finally {
-  //     setIsLoadingTable(false);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, [fetchData]);
+  
   const navigate = useNavigate();
 
   const userRole = user.roles; // أو من الكونتكست/ستيت2023
@@ -313,107 +294,6 @@ export default function FreqsHome() {
 
   const additionalFields = Object.keys(fieldLabels).filter((key) => !personalFields.includes(key));
 
-  // const getEditableFieldComponent = (key, value) => {
-  //   const commonProps = {
-  //     fullWidth: true,
-  //     variant: 'outlined',
-  //     name: key,
-  //     value: value || '',
-  //     onChange: handleInputChange,
-  //   };
-
-  //   if (
-  //     [
-  //       'gender',
-  //       'religion',
-  //       'marital_status',
-  //       'military_service',
-  //       'origin_country',
-  //       'previous_country_before_iraq',
-  //       'spouse_nationality',
-  //       'nationality',
-  //     ].includes(key)
-  //   ) {
-  //     let options = [];
-  //     switch (key) {
-  //       case 'gender':
-  //         options = GENDERS;
-  //         break;
-  //       case 'religion':
-  //         options = RELIGIONS;
-  //         break;
-  //       case 'marital_status':
-  //         options = MARITAL_STATUSES;
-  //         break;
-  //       case 'military_service':
-  //         options = MILITARY_SERVICES;
-  //         break;
-  //       case 'origin_country':
-  //       case 'previous_country_before_iraq':
-  //       case 'spouse_nationality':
-  //         options = COUNTRIES;
-  //         break;
-  //       case 'nationality':
-  //         options = NATIONALITIES;
-  //         break;
-
-  //       default:
-  //         options = [];
-  //     }
-  //     return (
-  //       <FormControl fullWidth variant="outlined">
-  //         <InputLabel>{fieldLabels[key]}</InputLabel>
-  //         <Select {...commonProps} label={fieldLabels[key]}>
-  //           {options.map((option) => (
-  //             <MenuItem key={option} value={option}>
-  //               {option}
-  //             </MenuItem>
-  //           ))}
-  //         </Select>
-  //       </FormControl>
-  //     );
-  //   }
-
-  //   if (
-  //     key === 'birth_date' ||
-  //     key === 'form_issue_date' ||
-  //     key === 'residency_issue_date' ||
-  //     key === 'residency_expiry_date' ||
-  //     key === 'form_expiry_date' ||
-  //     key === 'interview_date' ||
-  //     key === 'departure_date_from_origin' ||
-  //     key === 'date_of_arrival_to_iraq'
-  //   ) {
-  //     return (
-  //       <TextField
-  //         type="date"
-  //         {...commonProps}
-  //         value={formatDateForInput(value)}
-  //         InputLabelProps={{
-  //           shrink: true,
-  //         }}
-  //       />
-  //     );
-  //   }
-
-  //   if (key === 'personal_photo') {
-  //     return null;
-  //   }
-
-  //   const isMultiline = [
-  //     'political_opinion',
-  //     'social_group_membership',
-  //     'reasons_for_persecution',
-  //     'last_place_of_residence',
-  //     'reasons_for_leaving_origin',
-  //     'reasons_for_asylum',
-  //     'political_party_names',
-  //     'returntocountryhistory',
-  //   ].includes(key);
-
-  //   return <TextField {...commonProps} multiline={isMultiline} rows={isMultiline ? 3 : 1} />;
-  // };
-
   const renderSection = (fields) => {
     const dataToDisplay = isEditing ? editableRefugeeData : selectedRefugee;
 
@@ -481,29 +361,7 @@ export default function FreqsHome() {
         </table>
       );
     } else {
-      // return (
-      //   <Grid container spacing={2}>
-      //     {fields.map((key) => {
-      //       if (key === 'personal_photo') {
-      //         return null;
-      //       }
-
-      //       const label = fieldLabels[key] || key;
-      //       const value = editableRefugeeData?.[key];
-
-      //       return (
-      //         <Grid item xs={12} sm={6} key={key}>
-      //           <Box sx={{ mb: 3 }}>
-      //             <Typography variant="h6" fontSize={20} fontWeight="medium" lineHeight={1.8} gutterBottom>
-      //             {label}
-      //             </Typography>
-      //             {getEditableFieldComponent(key, value)}
-      //           </Box>
-      //         </Grid>
-      //       );
-      //     })}
-      //   </Grid>
-      // );
+   
       return (
         <Grid container spacing={2}>
           {/* الجنس */}
@@ -773,84 +631,7 @@ export default function FreqsHome() {
     }
   };
 
-  // const renderSection = (fields) => {
-  //   const dataToDisplay = selectedRefugee || {};
-
-  //   const renderFieldValue = (key, value) => {
-  //     if (key === 'personal_photo') {
-  //       return value ? (
-  //         <img
-  //           src={value}
-  //           alt="الصورة الشخصية"
-  //           style={{ maxWidth: '100%', maxHeight: '120px', borderRadius: 8 }}
-  //         />
-  //       ) : (
-  //         <Typography variant="body1" color="text.secondary">
-  //           لا توجد صورة
-  //         </Typography>
-  //       );
-  //     }
-
-  //     // حقول التواريخ
-  //     if (
-  //       key === 'birth_date' ||
-  //       key === 'residency_issue_date' ||
-  //       key === 'residency_expiry_date' ||
-  //       key === 'form_issue_date' ||
-  //       key === 'form_expiry_date' ||
-  //       key === 'interview_date' ||
-  //       key === 'departure_date_from_origin' ||
-  //       key === 'date_of_arrival_to_iraq'
-  //     ) {
-  //       return <Typography variant="body1">{formatDateForDisplay(value) || '---'}</Typography>;
-  //     }
-
-  //     // باقي الحقول
-  //     return (
-  //       <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-  //         {value || '---'}
-  //       </Typography>
-  //     );
-  //   };
-
-  //   return (
-  //     <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
-  //       <tbody>
-  //         {fields.map((key) => {
-  //           if (key === 'personal_photo' && !dataToDisplay?.personal_photo) {
-  //             return null;
-  //           }
-
-  //           const label = fieldLabels[key] || key;
-  //           const value = dataToDisplay?.[key];
-
-  //           return (
-  //             <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
-  //               <td
-  //                 style={{
-  //                   padding: '12px',
-  //                   fontWeight: 'bold',
-  //                   width: '35%',
-  //                   backgroundColor: '#f5f5f5',
-  //                   borderRight: '1px solid #ddd',
-  //                 }}
-  //               >
-  //                 <Typography variant="subtitle1" fontWeight="bold">
-  //                   {label}
-  //                 </Typography>
-  //               </td>
-  //               <td style={{ padding: '12px', width: '65%' }}>
-  //                 {renderFieldValue(key, value)}
-  //               </td>
-  //             </tr>
-  //           );
-  //         })}
-  //       </tbody>
-  //     </table>
-  //   );
-  // };
-
-  // وضع التعديل (تحرير البيانات)
+    // وضع التعديل (تحرير البيانات)
   const renderEditSection = (fields) => {
     return (
       <Grid container spacing={2}>
@@ -1008,28 +789,6 @@ export default function FreqsHome() {
     }
   };
 
-  // const handleForward = async () => {
-  //   if (!selectedRefugee) return;
-  //   setIsForwarding(true);
-
-  //   try {
-  //     const { success, msg } = await api('PUT', `freqs/refugees/${selectedRefugee.id}/forward`);
-  //     await new Promise((resolve) => setTimeout(resolve, 1500));
-  //     if (success) {
-  //       DangerMsg('نجاح', 'تمت ترقية الطلب بنجاح');
-  //       await fetchData();
-  //       handleClose();
-  //     } else {
-  //       DangerMsg('فشل التحديث', msg || 'تعذر ترقية الطلب');
-  //     }
-  //   } catch (error) {
-  //     DangerMsg('خطأ', 'حدث خطأ أثناء ترقية الطلب');
-  //     console.error(error);
-  //   } finally {
-  //     setIsForwarding(false);
-  //   }
-  // };
-
   const handleForward = async () => {
     if (!selectedRefugee) return;
     setIsForwarding(true);
@@ -1099,35 +858,7 @@ export default function FreqsHome() {
     }
   };
 
-  // const handleReject = async (reason) => {
-  //   if (!selectedRefugee || !reason) {
-  //     if (!reason) DangerMsg('خطأ', 'يرجى إدخال سبب الرفض.');
-  //     return;
-  //   }
-  //   setIsForwarding(true);
-
-  //   try {
-  //     const { success, msg } = await api('PUT', `freqs/refugees/${selectedRefugee.id}/reject`, {
-  //       notes_case: reason,
-  //     });
-  //     await new Promise((resolve) => setTimeout(resolve, 1500));
-  //     if (success) {
-  //       DangerMsg('نجاح', 'تم رفض الطلب بنجاح.');
-  //       await fetchData();
-  //       handleClose();
-  //     } else {
-  //       DangerMsg('فشل الرفض', msg || 'تعذر رفض الطلب');
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     DangerMsg('خطأ', 'حدث خطأ أثناء رفض الطلب');
-  //   } finally {
-  //     setIsForwarding(false);
-  //     setOpenConfirmDialog(false);
-  //   }
-  // };
-
-  const handleReject = async (reason) => {
+   const handleReject = async (reason) => {
     if (!selectedRefugee || !reason) {
       if (!reason) DangerMsg('خطأ', 'يرجى إدخال سبب الرفض.');
       return;
@@ -1202,94 +933,7 @@ export default function FreqsHome() {
     }
   };
 
-  //2025/10/15
-  //   const handleSaveEdit = async () => {
-  //     if (!editableRefugeeData) return;
-  //     setIsForwarding(true);
-
-  //     try {
-  //       // ✅ حدد الحقول التي تريد السماح بتعديلها فقط
-  //       const allowedFieldsToEdit = [
-  //         'interview_date',
-  //         'interview_officername',
-  //         'gender',
-  //         'frist_name',
-  //         'second_name',
-  //         'theard_name',
-  //         'sur_name',
-  //         'mother_name',
-  //         'fath_mother_name',
-  //         'religion',
-  //         'birth_date',
-  //         'birth_place',
-  //         'marital_status',
-  //         'spouse_nationality',
-  //         'marital_status_date',
-  //         'phone_number',
-  //         'nationality',
-  //         'origin_country',
-  //         'profession',
-  //         'first_name_member',
-  //         'political_opinion',
-  //         'social_group_membership',
-  //         'reasons_for_persecution',
-  //         'last_place_of_residence',
-  //         'residency_duration',
-  //         'military_service',
-  //         'political_party_membership',
-  //         'political_party_names',
-  //         'departure_date_from_origin',
-  //         'date_of_arrival_to_iraq',
-  //         'is_iraq_residency',
-  //         'residency_issue_date',
-  //         'residency_expiry_date',
-  //         'reasons_for_leaving_origin',
-  //         'previous_country_before_iraq',
-  //         'residency_befor_iraq',
-  //         'residency_befor_iraq_durtion',
-  //         'place_of_residence',
-  //         'duration_of_place',
-  //         'returntocountryhistory',
-  //         'intendtoreturn',
-  //         'whathappensifreturn',
-  //         'reasons_for_asylum',
-  //         'power_of_attorney_number',
-  //         'form_issue_date',
-  //         'form_expiry_date',
-  //         'form_place_of_issue',
-  //         'race',
-  //         'passport',
-  //         'passportissuecountry',
-  //         'familypassports',
-  //         'interviewnotes','district'
-  //         // أضف حقول أخرى إن أردت السماح بتعديلها
-  //       ];
-
-  //       // فلترة الحقول غير المسموح بها
-  //       const filteredData = Object.fromEntries(
-  //         Object.entries(editableRefugeeData).filter(([key]) => allowedFieldsToEdit.includes(key))
-  //       );
-
-  // console.log('filteredData',filteredData);
-
-  //       const { success, msg } = await api('PUT', `mains/refugees/id/${editableRefugeeData.id}`, filteredData);
-  //       await new Promise((resolve) => setTimeout(resolve, 1500));
-  //       if (success) {
-  //         NotificationMsg('نجاح', 'تم حفظ التعديلات بنجاح.');
-  //         await fetchData();
-  //         setIsEditing(false);
-  //         setSelectedRefugee((prev) => ({ ...prev, ...filteredData }));
-  //         setEditableRefugeeData((prev) => ({ ...prev, ...filteredData }));
-  //       } else {
-  //         DangerMsg('فشل الحفظ', msg || 'تعذر حفظ التعديلات');
-  //       }
-  //     } catch (error) {
-  //       DangerMsg('خطأ', 'حدث خطأ أثناء حفظ التعديلات');
-  //       console.error(error);
-  //     } finally {
-  //       setIsForwarding(false);
-  //     }
-  //   };
+ 
   const handleSaveEdit = async () => {
     if (!editableRefugeeData) return;
     setIsForwarding(true);
@@ -1760,7 +1404,7 @@ export default function FreqsHome() {
                 <Button variant="outlined" color="primary" onClick={() => setOpenFamilyDialog(true)}>
                   تفاصيل العائلة
                 </Button>{' '}
-                <button onClick={() => navigate(`/dashboard/attachments/49`)} className="text-blue-600 hover:underline">
+                <button onClick={() => navigate(`/dashboard/attachments/${selectedRefugee.id}`)} className="text-blue-600 hover:underline">
                   عرض المرفقات
                 </button>
               </Box>
