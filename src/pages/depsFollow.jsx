@@ -227,7 +227,8 @@ export default function RefugeeReport() {
           if (['interview_date', 'birth_date', 'created_at', 'updated_at'].includes(column.field)) {
             // تنسيق التواريخ
             const dateValue = row[column.field];
-            acc[column.headerName] = dateValue ? new Date(dateValue).toLocaleDateString('ar-IQ') : '';
+            
+            acc[column.headerName] = dateValue ? new Date(dateValue).toLocaleDateString('en-CA') : '';
           } else {
             acc[column.headerName] = row[column.field] || '';
           }
@@ -407,7 +408,7 @@ export default function RefugeeReport() {
     { field: 'notes_case', headerName: 'ملاحظات الملف', width: 200 },
     { field: 'notes', headerName: 'ملاحظات عامة', width: 200 },
     { field: 'current_stage', headerName: 'المرحلة الحالية', width: 150 },
-    { field: 'mok_approval', headerName: 'موافقة وزارة الهجرة والمهجرين', width: 200 },
+    { field: 'mok_approval', headerName: 'موافقة المخابرات  ', width: 200 },
     { field: 'amn_wat_approval', headerName: 'موافقة الأمن الوطني', width: 200 },
     { field: 'istk_approval', headerName: 'موافقة الاستخبارات', width: 200 },
     { field: 'iqama_approval', headerName: 'موافقة الإقامة', width: 150 },

@@ -862,11 +862,12 @@ export default function FreqsHome() {
       let url = '';
       let body = {};
 
-      if (['mokhabarat', 'amn_watani', 'istikhbarat_defense', 'iqama'].includes(userRole)) {
-        // لو الدور من أدوار الموافقات
-        url = `freqs/refugees/update-approval/${selectedRefugee.id}`;
-        body = { decision: 'رفض' };
-      } else {
+      // if (['mokhabarat', 'amn_watani', 'istikhbarat_defense', 'iqama'].includes(userRole)) {
+      //   // لو الدور من أدوار الموافقات
+      //   url = `freqs/refugees/update-approval/${selectedRefugee.id}`;
+      //   body = { decision: 'رفض' };
+      // } else
+      {
         // باقي الأدوار يستخدمون الراوتر القديم
         url = `freqs/refugees/${selectedRefugee.id}/reject`;
         body = { notes_case: reason };
@@ -1311,7 +1312,7 @@ const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
                     <Typography sx={{ mt: 2 }}>جاري تحميل البيانات...</Typography>
                   </TableCell>
                 </TableRow>
-              ) : refugees.length === 0 ? (
+              ) :  !Array.isArray(refugees) || refugees.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={tableHeaders.length} sx={{ textAlign: 'center', py: 5 }}>
                     <Typography>لا توجد طلبات لعرضها.</Typography>
@@ -1539,23 +1540,23 @@ const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
                     ) : null}
 
                     {/* Approve Button */}
-                    {((selectedRefugee.current_stage === 'data_entry' &&
+                    {/* {((selectedRefugee.current_stage === 'data_entry' &&
                       (user.roles === 'data_entry' || user.roles === 'reviewer')) ||
                       (selectedRefugee.current_stage === 'reviewer' &&
                         (user.roles === 'reviewer' || user.roles === 'approver')) ||
                       (selectedRefugee.current_stage === 'approver' && user.roles === 'approver') ||
-                      isSpecialRole(user.roles)) && (
+                      isSpecialRole(user.roles)) && ( */}
                       <LoadingButton variant="contained" color="primary" onClick={handleForward} loading={isForwarding}>
                         موافقة
                       </LoadingButton>
-                    )}
+                    {/* )} */}
 
                     {/* Reject Button */}
-                    {(user.roles === 'reviewer' || user.roles === 'approver' || isSpecialRole(user.roles)) && (
+                    {/* {(user.roles === 'reviewer' || user.roles === 'approver' || isSpecialRole(user.roles)) && ( */}
                       <Button variant="outlined" color="error" onClick={() => handleOpenConfirmDialog('reject')}>
                         رفض الطلب
                       </Button>
-                    )}
+                    {/* )} */}
 
                     {/* Suspend Button */}
                     {((user.roles === 'data_entry' && selectedRefugee.current_stage === 'data_entry') ||

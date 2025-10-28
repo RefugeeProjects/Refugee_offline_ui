@@ -47,7 +47,7 @@ const navView = [
     page_role: { public: 1 },
   },
   {
-    title: 'تقارير ',
+    title: 'تتبع الطلب ',
     path: process.env.PUBLIC_URL + '/dashboard/TrackingPage',
     icon: <MenuOpen />,
     page_role: { public: 1 },
