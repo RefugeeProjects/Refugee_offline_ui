@@ -1,5 +1,6 @@
 import React, { useContext, useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 import {
   Stack,
@@ -748,15 +749,7 @@ export default function FreqsHome() {
     { id: 'second_name', label: 'اسم الاب  ' },
     { id: 'theard_name', label: 'اسم الجد  ' },
     { id: 'sur_name', label: 'اللقب  ' },
-    { id: 'mother_name', label: 'اسم الام  ' },
-    { id: 'fath_mother_name', label: 'اسم والد الام  ' },
     { id: 'interview_officername', label: 'مسؤول المقابلة  ' },
-    { id: 'current_stage', label: 'المرحلة الحالية', render: (stage) => getStageText(stage) },
-    { id: 'phone_number', label: 'رقم الهاتف' },
-    { id: 'origin_country', label: 'بلد الأصل' },
-    { id: 'date_of_arrival_to_iraq', label: 'تاريخ الوصول للعراق', render: (date) => formatDateForDisplay(date) },
-    { id: 'nationality', label: 'القومية' },
-    { id: 'birth_date', label: 'تاريخ الولادة', render: (date) => formatDateForDisplay(date) },
     { id: 'interview_date', label: 'تاريخ المقابلة', render: (date) => formatDateForDisplay(date) },
     { id: 'notes_case', label: 'تعليق' },
   ];
@@ -903,6 +896,67 @@ export default function FreqsHome() {
       setOpenConfirmDialog(false);
     }
   };
+
+const handleDelete = async (id) => {
+  if (!id) return;
+
+  // 🔹 نافذة التأكيد قبل الحذف
+  Swal.fire({
+    title: 'تأكيد الحذف',
+    text: 'هل أنت متأكد من حذف هذا القيد؟ لا يمكن التراجع بعد الحذف.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'نعم، حذف',
+    cancelButtonText: 'إلغاء',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        // 🔹 تفعيل الـ Loader
+        Swal.fire({
+          title: 'جاري الحذف...',
+          text: 'يرجى الانتظار قليلاً',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        // 🔹 تنفيذ طلب الحذف من الـ API
+const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
+
+        if (success) {
+          // 🔹 تحديث الواجهة
+          setRefugees((prev) => prev.filter((r) => r.id !== id));
+
+          Swal.fire({
+            icon: 'success',
+            title: 'تم الحذف بنجاح',
+            text: 'تم حذف القيد من النظام.',
+            confirmButtonText: 'موافق',
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'فشل الحذف',
+            text: msg || 'حدث خطأ أثناء تنفيذ عملية الحذف.',
+            confirmButtonText: 'موافق',
+          });
+        }
+      } catch (error) {
+        console.error('خطأ في الحذف:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'خطأ',
+          text: 'حدث خطأ أثناء عملية الحذف. الرجاء المحاولة لاحقاً.',
+          confirmButtonText: 'موافق',
+        });
+      }
+    }
+  });
+};
+
 
   const handleSuspend = async (reason) => {
     if (!selectedRefugee || !reason) {
@@ -1115,6 +1169,9 @@ export default function FreqsHome() {
     }
   };
 
+
+
+
   // اضافة فرد الى العائلة
   const [isSaving, setIsSaving] = useState(false);
   // تحديث أي حقل ديناميكيًا
@@ -1202,6 +1259,7 @@ export default function FreqsHome() {
             aria-label="بيانات اللاجئين"
             sx={{
               borderCollapse: 'collapse', // يجعل الحدود تظهر بوضوح بين الأعمدة والصفوف
+              
             }}
           >
             <TableHead>
@@ -1222,7 +1280,19 @@ export default function FreqsHome() {
                   >
                     {header.label}
                   </TableCell>
-                ))}
+                ))}    {/* ✅ عمود جديد لزر الحذف */}
+    <TableCell
+      sx={{
+        backgroundColor: '#e6e6e6ff',
+        color: 'black',
+        fontSize: '1rem',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        border: '1px solid #ccc',
+      }}
+    >
+      حذف القيد
+    </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -1290,6 +1360,33 @@ export default function FreqsHome() {
                         </Typography>
                       </TableCell>
                     ))}
+                     {/* ✅ زر حذف القيد */}
+      <TableCell
+        sx={{
+          textAlign: 'center',
+          border: '1px solid rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        <Button
+          variant="outlined"
+          color="error"
+          size="small"
+          onClick={(e) => {
+            e.stopPropagation(); // منع تفعيل onClick للصف
+            handleDelete(refugee.id);
+          }}
+          sx={{
+            textTransform: 'none',
+            borderRadius: 2,
+            fontWeight: 'bold',
+            fontSize: '0.9rem',
+            px: 2,
+            py: 0.5,
+          }}
+        >
+          حذف
+        </Button>
+      </TableCell>
                   </TableRow>
                 ))
               )}
@@ -1404,9 +1501,17 @@ export default function FreqsHome() {
                 <Button variant="outlined" color="primary" onClick={() => setOpenFamilyDialog(true)}>
                   تفاصيل العائلة
                 </Button>{' '}
-                <button onClick={() => navigate(`/dashboard/attachments/${selectedRefugee.id}`)} className="text-blue-600 hover:underline">
-                  عرض المرفقات
-                </button>
+<Button
+  color="primary" variant="outlined" 
+  onClick={(e) => {
+    e.stopPropagation();
+    window.open(`/dashboard/attachments/${selectedRefugee.id}`, '_blank');
+  }}
+  sx={{ textDecoration: 'underline', fontWeight: 'bold' }}
+>
+  عرض المرفقات
+</Button>
+
               </Box>
             )}
           </TabPanel>
