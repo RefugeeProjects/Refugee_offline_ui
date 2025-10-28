@@ -97,7 +97,7 @@ export default function FreqsHome() {
   });
 
   const { user } = useContext(appContext);
-  
+
   const navigate = useNavigate();
 
   const userRole = user.roles; // أو من الكونتكست/ستيت2023
@@ -362,7 +362,6 @@ export default function FreqsHome() {
         </table>
       );
     } else {
-   
       return (
         <Grid container spacing={2}>
           {/* الجنس */}
@@ -632,7 +631,7 @@ export default function FreqsHome() {
     }
   };
 
-    // وضع التعديل (تحرير البيانات)
+  // وضع التعديل (تحرير البيانات)
   const renderEditSection = (fields) => {
     return (
       <Grid container spacing={2}>
@@ -851,23 +850,21 @@ export default function FreqsHome() {
     }
   };
 
-   const handleReject = async (reason) => {
+  const handleReject = async (reason) => {
     if (!selectedRefugee || !reason) {
       if (!reason) DangerMsg('خطأ', 'يرجى إدخال سبب الرفض.');
       return;
     }
     setIsForwarding(true);
-
     try {
       let url = '';
       let body = {};
 
-      // if (['mokhabarat', 'amn_watani', 'istikhbarat_defense', 'iqama'].includes(userRole)) {
-      //   // لو الدور من أدوار الموافقات
-      //   url = `freqs/refugees/update-approval/${selectedRefugee.id}`;
-      //   body = { decision: 'رفض' };
-      // } else
-      {
+      if (['mokhabarat', 'amn_watani', 'istikhbarat_defense', 'iqama'].includes(userRole)) {
+        // لو الدور من أدوار الموافقات
+        url = `freqs/refugees/update-approval/${selectedRefugee.id}`;
+        body = { decision: 'رفض' };
+      } else {
         // باقي الأدوار يستخدمون الراوتر القديم
         url = `freqs/refugees/${selectedRefugee.id}/reject`;
         body = { notes_case: reason };
@@ -898,66 +895,65 @@ export default function FreqsHome() {
     }
   };
 
-const handleDelete = async (id) => {
-  if (!id) return;
+  const handleDelete = async (id) => {
+    if (!id) return;
 
-  // 🔹 نافذة التأكيد قبل الحذف
-  Swal.fire({
-    title: 'تأكيد الحذف',
-    text: 'هل أنت متأكد من حذف هذا القيد؟ لا يمكن التراجع بعد الحذف.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'نعم، حذف',
-    cancelButtonText: 'إلغاء',
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        // 🔹 تفعيل الـ Loader
-        Swal.fire({
-          title: 'جاري الحذف...',
-          text: 'يرجى الانتظار قليلاً',
-          allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-
-        // 🔹 تنفيذ طلب الحذف من الـ API
-const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
-
-        if (success) {
-          // 🔹 تحديث الواجهة
-          setRefugees((prev) => prev.filter((r) => r.id !== id));
-
+    // 🔹 نافذة التأكيد قبل الحذف
+    Swal.fire({
+      title: 'تأكيد الحذف',
+      text: 'هل أنت متأكد من حذف هذا القيد؟ لا يمكن التراجع بعد الحذف.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'نعم، حذف',
+      cancelButtonText: 'إلغاء',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          // 🔹 تفعيل الـ Loader
           Swal.fire({
-            icon: 'success',
-            title: 'تم الحذف بنجاح',
-            text: 'تم حذف القيد من النظام.',
-            confirmButtonText: 'موافق',
+            title: 'جاري الحذف...',
+            text: 'يرجى الانتظار قليلاً',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
           });
-        } else {
+
+          // 🔹 تنفيذ طلب الحذف من الـ API
+          const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
+
+          if (success) {
+            // 🔹 تحديث الواجهة
+            setRefugees((prev) => prev.filter((r) => r.id !== id));
+
+            Swal.fire({
+              icon: 'success',
+              title: 'تم الحذف بنجاح',
+              text: 'تم حذف القيد من النظام.',
+              confirmButtonText: 'موافق',
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'فشل الحذف',
+              text: msg || 'حدث خطأ أثناء تنفيذ عملية الحذف.',
+              confirmButtonText: 'موافق',
+            });
+          }
+        } catch (error) {
+          console.error('خطأ في الحذف:', error);
           Swal.fire({
             icon: 'error',
-            title: 'فشل الحذف',
-            text: msg || 'حدث خطأ أثناء تنفيذ عملية الحذف.',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء عملية الحذف. الرجاء المحاولة لاحقاً.',
             confirmButtonText: 'موافق',
           });
         }
-      } catch (error) {
-        console.error('خطأ في الحذف:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'خطأ',
-          text: 'حدث خطأ أثناء عملية الحذف. الرجاء المحاولة لاحقاً.',
-          confirmButtonText: 'موافق',
-        });
       }
-    }
-  });
-};
-
+    });
+  };
 
   const handleSuspend = async (reason) => {
     if (!selectedRefugee || !reason) {
@@ -988,7 +984,6 @@ const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
     }
   };
 
- 
   const handleSaveEdit = async () => {
     if (!editableRefugeeData) return;
     setIsForwarding(true);
@@ -1170,9 +1165,6 @@ const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
     }
   };
 
-
-
-
   // اضافة فرد الى العائلة
   const [isSaving, setIsSaving] = useState(false);
   // تحديث أي حقل ديناميكيًا
@@ -1260,7 +1252,6 @@ const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
             aria-label="بيانات اللاجئين"
             sx={{
               borderCollapse: 'collapse', // يجعل الحدود تظهر بوضوح بين الأعمدة والصفوف
-              
             }}
           >
             <TableHead>
@@ -1281,19 +1272,20 @@ const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
                   >
                     {header.label}
                   </TableCell>
-                ))}    {/* ✅ عمود جديد لزر الحذف */}
-    <TableCell
-      sx={{
-        backgroundColor: '#e6e6e6ff',
-        color: 'black',
-        fontSize: '1rem',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        border: '1px solid #ccc',
-      }}
-    >
-      حذف القيد
-    </TableCell>
+                ))}{' '}
+                {/* ✅ عمود جديد لزر الحذف */}
+                <TableCell
+                  sx={{
+                    backgroundColor: '#e6e6e6ff',
+                    color: 'black',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    border: '1px solid #ccc',
+                  }}
+                >
+                  حذف القيد
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -1312,7 +1304,7 @@ const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
                     <Typography sx={{ mt: 2 }}>جاري تحميل البيانات...</Typography>
                   </TableCell>
                 </TableRow>
-              ) :  !Array.isArray(refugees) || refugees.length === 0 ? (
+              ) : !Array.isArray(refugees) || refugees.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={tableHeaders.length} sx={{ textAlign: 'center', py: 5 }}>
                     <Typography>لا توجد طلبات لعرضها.</Typography>
@@ -1361,33 +1353,33 @@ const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
                         </Typography>
                       </TableCell>
                     ))}
-                     {/* ✅ زر حذف القيد */}
-      <TableCell
-        sx={{
-          textAlign: 'center',
-          border: '1px solid rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <Button
-          variant="outlined"
-          color="error"
-          size="small"
-          onClick={(e) => {
-            e.stopPropagation(); // منع تفعيل onClick للصف
-            handleDelete(refugee.id);
-          }}
-          sx={{
-            textTransform: 'none',
-            borderRadius: 2,
-            fontWeight: 'bold',
-            fontSize: '0.9rem',
-            px: 2,
-            py: 0.5,
-          }}
-        >
-          حذف
-        </Button>
-      </TableCell>
+                    {/* ✅ زر حذف القيد */}
+                    <TableCell
+                      sx={{
+                        textAlign: 'center',
+                        border: '1px solid rgba(0, 0, 0, 0.1)',
+                      }}
+                    >
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation(); // منع تفعيل onClick للصف
+                          handleDelete(refugee.id);
+                        }}
+                        sx={{
+                          textTransform: 'none',
+                          borderRadius: 2,
+                          fontWeight: 'bold',
+                          fontSize: '0.9rem',
+                          px: 2,
+                          py: 0.5,
+                        }}
+                      >
+                        حذف
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))
               )}
@@ -1502,17 +1494,17 @@ const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
                 <Button variant="outlined" color="primary" onClick={() => setOpenFamilyDialog(true)}>
                   تفاصيل العائلة
                 </Button>{' '}
-<Button
-  color="primary" variant="outlined" 
-  onClick={(e) => {
-    e.stopPropagation();
-    window.open(`/dashboard/attachments/${selectedRefugee.id}`, '_blank');
-  }}
-  sx={{ textDecoration: 'underline', fontWeight: 'bold' }}
->
-  عرض المرفقات
-</Button>
-
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(`/dashboard/attachments/${selectedRefugee.id}`, '_blank');
+                  }}
+                  sx={{ textDecoration: 'underline', fontWeight: 'bold' }}
+                >
+                  عرض المرفقات
+                </Button>
               </Box>
             )}
           </TabPanel>
@@ -1546,16 +1538,16 @@ const { success, msg } = await api('DELETE', `mains/refugees/id/${id}`);
                         (user.roles === 'reviewer' || user.roles === 'approver')) ||
                       (selectedRefugee.current_stage === 'approver' && user.roles === 'approver') ||
                       isSpecialRole(user.roles)) && ( */}
-                      <LoadingButton variant="contained" color="primary" onClick={handleForward} loading={isForwarding}>
-                        موافقة
-                      </LoadingButton>
+                    <LoadingButton variant="contained" color="primary" onClick={handleForward} loading={isForwarding}>
+                      موافقة
+                    </LoadingButton>
                     {/* )} */}
 
                     {/* Reject Button */}
                     {/* {(user.roles === 'reviewer' || user.roles === 'approver' || isSpecialRole(user.roles)) && ( */}
-                      <Button variant="outlined" color="error" onClick={() => handleOpenConfirmDialog('reject')}>
-                        رفض الطلب
-                      </Button>
+                    <Button variant="outlined" color="error" onClick={() => handleOpenConfirmDialog('reject')}>
+                      رفض الطلب
+                    </Button>
                     {/* )} */}
 
                     {/* Suspend Button */}
