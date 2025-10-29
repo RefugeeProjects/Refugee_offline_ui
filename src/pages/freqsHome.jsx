@@ -1255,38 +1255,49 @@ export default function FreqsHome() {
             }}
           >
             <TableHead>
-              <TableRow>
-                {tableHeaders.map((header) => (
-                  <TableCell
-                    key={header.id}
-                    sx={{
-                      backgroundColor: '#e6e6e6ff',
-                      color: 'black',
-                      fontSize: '1rem',
-                      fontWeight: 'bold',
-                      padding: '12px 16px',
-                      borderBottom: (theme) => `1px solid ${theme.palette.divider}`, // Corrected line
-                      textAlign: 'right', // Align header text to right for RTL
-                      border: '1px solid #ccc', // حدود لكل خلية رأس
-                    }}
-                  >
-                    {header.label}
-                  </TableCell>
-                ))}{' '}
-                {/* ✅ عمود جديد لزر الحذف */}
-                <TableCell
-                  sx={{
-                    backgroundColor: '#e6e6e6ff',
-                    color: 'black',
-                    fontSize: '1rem',
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    border: '1px solid #ccc',
-                  }}
-                >
-                  حذف القيد
-                </TableCell>
-              </TableRow>
+<TableRow>
+  {tableHeaders.map((header) => {
+    if (header.label === "حذف القيد" && user.roles !== 'data_entry') {
+      // لا تعرض العمود نهائياً
+      return null;
+    }
+
+    return (
+      <TableCell
+        key={header.id}
+        sx={{
+          backgroundColor: '#e6e6e6ff',
+          color: 'black',
+          fontSize: '1rem',
+          fontWeight: 'bold',
+          padding: '12px 16px',
+          borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+          textAlign: 'right',
+          border: '1px solid #ccc',
+        }}
+      >
+        {header.label}
+      </TableCell>
+    );
+  })}
+
+  {/* ✅ إذا كنت تريد إضافة عمود حذف القيد فقط لمستخدم data_entry */}
+  {user.roles === 'data_entry' && (
+    <TableCell
+      sx={{
+        backgroundColor: '#e6e6e6ff',
+        color: 'black',
+        fontSize: '1rem',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        border: '1px solid #ccc',
+      }}
+    >
+      حذف القيد
+    </TableCell>
+  )}
+</TableRow>
+                  
             </TableHead>
             <TableBody>
               {isLoadingTable ? (
@@ -1312,75 +1323,132 @@ export default function FreqsHome() {
                 </TableRow>
               ) : (
                 refugees.map((refugee) => (
-                  <TableRow
-                    key={refugee.id}
-                    onClick={() => handleRowClick(refugee)} // Pass the whole refugee object
-                    sx={{
-                      cursor: 'pointer',
-                      backgroundColor: 'white', // خلفية الصف الأساسي
-                      '&:hover': {
-                        backgroundColor: '#f5f5f5', // رمادي باهت عند التمرير
-                      },
-                      borderBottom: (theme) => `1px solid rgba(0, 0, 0, 0.1)`, // خط سفلي خفيف
+                  // <TableRow
+                  //   key={refugee.id}
+                  //   onClick={() => handleRowClick(refugee)} // Pass the whole refugee object
+                  //   sx={{
+                  //     cursor: 'pointer',
+                  //     backgroundColor: 'white', // خلفية الصف الأساسي
+                  //     '&:hover': {
+                  //       backgroundColor: '#f5f5f5', // رمادي باهت عند التمرير
+                  //     },
+                  //     borderBottom: (theme) => `1px solid rgba(0, 0, 0, 0.1)`, // خط سفلي خفيف
 
-                      // ✅ حذف أي خلفية خاصة بالحالات الأخرى (approved, rejected...) أو استبدالها لو أردت
-                      '&.row-approved': {
-                        backgroundColor: 'white',
-                        '&:hover': { backgroundColor: '#f5f5f5' },
-                      },
-                      '&.row-rejected': {
-                        backgroundColor: 'white',
-                        '&:hover': { backgroundColor: '#f5f5f5' },
-                      },
-                      '&.row-reviewer': {
-                        backgroundColor: 'white',
-                        '&:hover': { backgroundColor: '#f5f5f5' },
-                      },
-                      '&.row-suspended': {
-                        backgroundColor: 'white',
-                        '&:hover': { backgroundColor: '#f5f5f5' },
-                      },
-                    }}
-                    className={`row-${refugee.current_stage}`} // Apply class for row styling
-                  >
-                    {tableHeaders.map((header) => (
-                      <TableCell
-                        key={header.id}
-                        sx={{ textAlign: 'right', padding: '12px 16px', border: '1px solid rgba(0, 0, 0, 0.1)' }}
-                      >
-                        <Typography variant="body1" sx={{ whiteSpace: 'normal', lineHeight: 'normal' }}>
-                          {header.render ? header.render(refugee[header.id]) : refugee[header.id] || '---'}
-                        </Typography>
-                      </TableCell>
-                    ))}
-                    {/* ✅ زر حذف القيد */}
-                    <TableCell
-                      sx={{
-                        textAlign: 'center',
-                        border: '1px solid rgba(0, 0, 0, 0.1)',
-                      }}
-                    >
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation(); // منع تفعيل onClick للصف
-                          handleDelete(refugee.id);
-                        }}
-                        sx={{
-                          textTransform: 'none',
-                          borderRadius: 2,
-                          fontWeight: 'bold',
-                          fontSize: '0.9rem',
-                          px: 2,
-                          py: 0.5,
-                        }}
-                      >
-                        حذف
-                      </Button>
-                    </TableCell>
-                  </TableRow>
+                  //     // ✅ حذف أي خلفية خاصة بالحالات الأخرى (approved, rejected...) أو استبدالها لو أردت
+                  //     '&.row-approved': {
+                  //       backgroundColor: 'white',
+                  //       '&:hover': { backgroundColor: '#f5f5f5' },
+                  //     },
+                  //     '&.row-rejected': {
+                  //       backgroundColor: 'white',
+                  //       '&:hover': { backgroundColor: '#f5f5f5' },
+                  //     },
+                  //     '&.row-reviewer': {
+                  //       backgroundColor: 'white',
+                  //       '&:hover': { backgroundColor: '#f5f5f5' },
+                  //     },
+                  //     '&.row-suspended': {
+                  //       backgroundColor: 'white',
+                  //       '&:hover': { backgroundColor: '#f5f5f5' },
+                  //     },
+                  //   }}
+                  //   className={`row-${refugee.current_stage}`} // Apply class for row styling
+                  // >
+                  //   {tableHeaders.map((header) => (
+                  //     <TableCell
+                  //       key={header.id}
+                  //       sx={{ textAlign: 'right', padding: '12px 16px', border: '1px solid rgba(0, 0, 0, 0.1)' }}
+                  //     >
+                  //       <Typography variant="body1" sx={{ whiteSpace: 'normal', lineHeight: 'normal' }}>
+                  //         {header.render ? header.render(refugee[header.id]) : refugee[header.id] || '---'}
+                  //       </Typography>
+                  //     </TableCell>
+                  //   ))}
+                  //   {/* ✅ زر حذف القيد */}
+                  //   <TableCell
+                  //     sx={{
+                  //       textAlign: 'center',
+                  //       border: '1px solid rgba(0, 0, 0, 0.1)',
+                  //     }}
+                  //   >
+                  //     <Button
+                  //       variant="outlined"
+                  //       color="error"
+                  //       size="small"
+                  //       onClick={(e) => {
+                  //         e.stopPropagation(); // منع تفعيل onClick للصف
+                  //         handleDelete(refugee.id);
+                  //       }}
+                  //       sx={{
+                  //         textTransform: 'none',
+                  //         borderRadius: 2,
+                  //         fontWeight: 'bold',
+                  //         fontSize: '0.9rem',
+                  //         px: 2,
+                  //         py: 0.5,
+                  //       }}
+                  //     >
+                  //       حذف
+                  //     </Button>
+                  //   </TableCell>
+                  // </TableRow>
+                  <TableRow
+  key={refugee.id}
+  onClick={() => handleRowClick(refugee)}
+  sx={{
+    cursor: 'pointer',
+    backgroundColor: 'white',
+    '&:hover': { backgroundColor: '#f5f5f5' },
+    borderBottom: (theme) => `1px solid rgba(0, 0, 0, 0.1)`,
+  }}
+  className={`row-${refugee.current_stage}`}
+>
+  {tableHeaders.map((header) => (
+    <TableCell
+      key={header.id}
+      sx={{
+        textAlign: 'right',
+        padding: '12px 16px',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <Typography variant="body1" sx={{ whiteSpace: 'normal', lineHeight: 'normal' }}>
+        {header.render ? header.render(refugee[header.id]) : refugee[header.id] || '---'}
+      </Typography>
+    </TableCell>
+  ))}
+
+  {/* ✅ عرض زر الحذف فقط إذا كان الدور هو data_entry */}
+  {user.roles === 'data_entry' && (
+    <TableCell
+      sx={{
+        textAlign: 'center',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <Button
+        variant="outlined"
+        color="error"
+        size="small"
+        onClick={(e) => {
+          e.stopPropagation(); // منع تفعيل onClick للصف
+          handleDelete(refugee.id);
+        }}
+        sx={{
+          textTransform: 'none',
+          borderRadius: 2,
+          fontWeight: 'bold',
+          fontSize: '0.9rem',
+          px: 2,
+          py: 0.5,
+        }}
+      >
+        حذف
+      </Button>
+    </TableCell>
+  )}
+</TableRow>
+
                 ))
               )}
             </TableBody>
