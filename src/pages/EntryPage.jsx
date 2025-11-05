@@ -55,6 +55,13 @@ const columnsDefinition = [
   { field: 'current_stage', headerName: 'الحالة', flex: 1 },
 ];
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const FILES_BASE_URL = process.env.REACT_APP_FILES_BASE_URL;
+const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
+
+
+
+
 export default function RefugeesGrid() {
   const api = useApi();
   const [rows, setRows] = useState([]);
@@ -62,10 +69,36 @@ export default function RefugeesGrid() {
   const [selectedRow, setSelectedRow] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleRowClick = (params) => {
-    setSelectedRow(params.row);
-    setDrawerOpen(true);
-  };
+  // const handleRowClick = (params) => {
+  //   setSelectedRow(params.row);
+  //   setDrawerOpen(true);
+  // };
+
+const handleRowClick = async (params) => {
+  const refugee = params.row;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/freqs/refugees/${refugee.id}/with-files`);
+    const result = await response.json();
+
+    if (result.success && Array.isArray(result.data.files)) {
+      const photoFile = result.data.files.find(f => f.file_name === 'personal_photo.png');
+
+      // ✅ بناء المسار باستخدام ملفات .env فقط
+      refugee.personal_photo = photoFile
+        ? `${FILES_BASE_URL}${photoFile.file_path.replace('/uploads','')}`
+        : null;
+    }
+  } catch (err) {
+    console.error('Error fetching refugee photo:', err);
+  }
+
+  setSelectedRow(refugee);
+  setDrawerOpen(true);
+};
+
+
+
 
   const handleDrawerClose = () => {
     setDrawerOpen(false);
@@ -160,6 +193,9 @@ export default function RefugeesGrid() {
   }, [fetchData]);
 
   const columns = useMemo(() => columnsDefinition, []); // استخدام useMemo
+console.log('selectedRow',selectedRow);
+
+
 
   return (
     <Box sx={{ height: 650, width: '100%', p: 2 }}>
@@ -248,7 +284,9 @@ export default function RefugeesGrid() {
             >
               {/* القسم الأول: الصورة والمعلومات الأساسية */}
               <Grid item xs={12} sx={{ textAlign: 'center' }}>
-                {selectedRow.personal_photo ? (
+
+
+                {/* {selectedRow.personal_photo ? (
                   <Avatar
                     alt={selectedRow.frist_name}
                     src={selectedRow.personal_photo}
@@ -258,7 +296,45 @@ export default function RefugeesGrid() {
                   <Avatar sx={{ width: 140, height: 140, bgcolor: 'grey.400', fontSize: '3rem', m: '0 auto' }}>
                     {selectedRow.frist_name ? selectedRow.frist_name.charAt(0) : '؟'}
                   </Avatar>
-                )}
+                )} */}
+
+                {selectedRow.personal_photo ? ( 
+                
+<Avatar
+  alt={selectedRow.frist_name}
+  src={selectedRow.personal_photo || DEFAULT_PHOTO}
+  imgProps={{
+    crossOrigin: "anonymous",
+    onError: (e) => {
+      e.target.src = DEFAULT_PHOTO;
+    },
+  }}
+  sx={{
+    width: 140,
+    height: 140,
+    border: "4px solid",
+    borderColor: "primary.main",
+    m: "0 auto",
+  }}
+/>
+
+
+) : (
+  <Avatar
+    sx={{
+      width: 140,
+      height: 140,
+      bgcolor: 'grey.400',
+      fontSize: '3rem',
+      m: '0 auto',
+    }}
+  >
+    {selectedRow.frist_name ? selectedRow.frist_name.charAt(0) : '؟'}
+  </Avatar>
+)}
+
+
+
                 <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold' }}>
                   {selectedRow.frist_name} {selectedRow.second_name} {selectedRow.last_name} {selectedRow.theard_name}{' '}
                   {selectedRow.sur_name}

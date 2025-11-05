@@ -744,6 +744,7 @@ export default function FreqsHome() {
     );
   };
   const tableHeaders = [
+    { id: 'personal_photo', label: 'الصورة  ' },
     { id: 'frist_name', label: 'الاسم  ' },
     { id: 'second_name', label: 'اسم الاب  ' },
     { id: 'theard_name', label: 'اسم الجد  ' },
