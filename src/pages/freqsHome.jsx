@@ -1,6 +1,7 @@
 import React, { useContext, useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import Avatar from '@mui/material/Avatar';
 
 import {
   Stack,
@@ -96,6 +97,9 @@ export default function FreqsHome() {
     relation_member: '',
   });
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const FILES_BASE_URL = process.env.REACT_APP_FILES_BASE_URL;
+const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
   const { user } = useContext(appContext);
 
   const navigate = useNavigate();
@@ -134,6 +138,8 @@ export default function FreqsHome() {
     fetchData();
   }, [fetchData]);
 
+
+
   //جلب بيانات العائلة
   const fetchFamily = useCallback(async () => {
     setIsLoadingTable(true);
@@ -157,15 +163,52 @@ export default function FreqsHome() {
   }, [fetchFamily]);
 
   //
-  const handleRowClick = (refugeeData) => {
-    setSelectedRefugee(refugeeData);
-    setEditableRefugeeData({ ...refugeeData });
-    setIsEditing(false);
+  // const handleRowClick = (refugeeData) => {
+  //   setSelectedRefugee(refugeeData);
+  //   setEditableRefugeeData({ ...refugeeData });
+  //   setIsEditing(false);
 
-    // ✅ فلترة بيانات العائلة لهذا اللاجئ فقط
-    const filteredFamily = familyData.filter((f) => f.refugee_id === refugeeData.id);
-    setFamilyData(filteredFamily);
-  };
+  //   // ✅ فلترة بيانات العائلة لهذا اللاجئ فقط
+  //   const filteredFamily = familyData.filter((f) => f.refugee_id === refugeeData.id);
+  //   setFamilyData(filteredFamily);
+  // };
+
+  const handleRowClick = async (refugeeData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/freqs/refugees/${refugeeData.id}/with-files`);
+    const result = await response.json();
+
+    if (result.success && Array.isArray(result.data?.files)) {
+      const photoFile = result.data.files.find(f => f.file_name === 'personal_photo.png');
+
+      refugeeData.personal_photo = photoFile
+        ? `${FILES_BASE_URL}${photoFile.file_path.replace('/uploads', '')}`
+        : DEFAULT_PHOTO;
+    } else {
+      refugeeData.personal_photo = DEFAULT_PHOTO;
+    }
+  } catch (error) {
+    console.error("Error fetching photo:", error);
+    refugeeData.personal_photo = DEFAULT_PHOTO;
+  }
+  setRefugees(prev =>
+  prev.map(r => r.id === refugeeData.id
+    ? { ...r, personal_photo: refugeeData.personal_photo }
+    : r
+  )
+);
+
+
+  // ✅ نفس عملك السابق
+  setSelectedRefugee(refugeeData);
+  setEditableRefugeeData({ ...refugeeData });
+  setIsEditing(false);
+
+  const filteredFamily = familyData.filter((f) => f.refugee_id === refugeeData.id);
+  setFamilyData(filteredFamily);
+};
+
+
 
   const handleClose = () => {
     setSelectedRefugee(null);
@@ -1226,6 +1269,25 @@ export default function FreqsHome() {
     }
   }, [openFamilyDialog, selectedRefugee]);
 
+
+  const handleSyncFromOnline = async () => {
+  try {
+    NotificationMsg("جاري السحب", "يتم الآن جلب الطلبات من النظام العام...");
+
+    const { success, data, msg } = await api("GET", "mains/sync/all"); // هذا هو endpoint مالك
+    
+    if (success) {
+      NotificationMsg("نجاح", "تم سحب الطلبات من الأونلاين بنجاح ✅");
+      await fetchData(); // لإعادة تحميل البيانات بعد السحب
+    } else {
+      DangerMsg("فشل السحب", msg || "تعذر السحب من النظام العام");
+    }
+  } catch (err) {
+    console.error(err);
+    DangerMsg("خطأ", "حدث خطأ أثناء عملية السحب من الأونلاين");
+  }
+};
+
   return (
     <Container maxWidth="xl" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', py: 3 }}>
       <Stack alignItems="center" mb={3}>
@@ -1235,6 +1297,17 @@ export default function FreqsHome() {
         <Typography variant="h5" color="text.secondary">
           مرحلة: {getStageText(user?.roles)}
         </Typography>
+          {/* ✅ زر سحب البيانات – يظهر فقط للأدوار المطلوبة */}
+  {['data_entry', 'reviewer', 'approver'].includes(user.roles) && (
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={handleSyncFromOnline}
+      sx={{ mt: 2, fontWeight: 'bold' }}
+    >
+       سحب الطلبات من  الانترنت
+    </Button>
+  )}
       </Stack>
 
       {/* Wrap the custom table in Paper for a card-like effect */}
@@ -1404,20 +1477,37 @@ export default function FreqsHome() {
   }}
   className={`row-${refugee.current_stage}`}
 >
-  {tableHeaders.map((header) => (
-    <TableCell
-      key={header.id}
+ {tableHeaders.map((header) => (
+ <TableCell
+    key={header.id}
+    sx={{
+      textAlign: 'right',
+      padding: '12px 16px',
+      border: '1px solid rgba(0, 0, 0, 0.1)',
+    }}
+  >
+    {header.id === 'personal_photo' ? (
+      refugee.personal_photo ? (
+ <Avatar
+      src={refugee.personal_photo}
+      alt="الصورة"
       sx={{
-        textAlign: 'right',
-        padding: '12px 16px',
-        border: '1px solid rgba(0, 0, 0, 0.1)',
+        width: 55,
+        height: 55,
+        border: '1px solid #ccc',
       }}
-    >
+    />
+      ) : (
+    <Avatar sx={{ width: 55, height: 55 }}>?</Avatar>
+      )
+    ) : (
       <Typography variant="body1" sx={{ whiteSpace: 'normal', lineHeight: 'normal' }}>
         {header.render ? header.render(refugee[header.id]) : refugee[header.id] || '---'}
       </Typography>
-    </TableCell>
-  ))}
+    )}
+  </TableCell>
+))}
+
 
   {/* ✅ عرض زر الحذف فقط إذا كان الدور هو data_entry */}
   {user.roles === 'data_entry' && (
