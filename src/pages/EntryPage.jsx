@@ -201,8 +201,7 @@ console.log('selectedRow',selectedRow);
     <Box sx={{ height: 650, width: '100%', p: 2 }}>
       <Stack alignItems="center" mb={3}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'primary.dark' }}>
-          📂 طلبات مصادق عليها من الوزير
-        </Typography>
+موافقة نهائية        </Typography>
       </Stack>
 
       <Paper elevation={3} sx={{ height: '100%', width: '100%', p: 1 }}>
