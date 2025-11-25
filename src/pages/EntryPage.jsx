@@ -193,7 +193,6 @@ const handleRowClick = async (params) => {
   }, [fetchData]);
 
   const columns = useMemo(() => columnsDefinition, []); // استخدام useMemo
-console.log('selectedRow',selectedRow);
 
 
 

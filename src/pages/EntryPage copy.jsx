@@ -89,7 +89,6 @@ const handleRowClick = async (params) => {
     console.error('Error fetching refugee photo:', err);
   }
 
-  console.log('📸 Final photo URL:', refugee.personal_photo); // فحص النتيجة النهائية
   setSelectedRow(refugee);
   setDrawerOpen(true);
 };
@@ -189,7 +188,6 @@ const handleRowClick = async (params) => {
   }, [fetchData]);
 
   const columns = useMemo(() => columnsDefinition, []); // استخدام useMemo
-console.log('selectedRow',selectedRow);
 
 
 

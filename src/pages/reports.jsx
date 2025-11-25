@@ -23,7 +23,6 @@ const DepartmentFollowupReport = () => {
       this.addFont('Arabic-Regular.ttf', 'Arabic', 'normal');
     },
   ]);
-  console.log('row', rows);
 
   const fetchData = useCallback(async () => {
     try {

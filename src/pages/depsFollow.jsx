@@ -190,7 +190,6 @@ export default function RefugeeReport() {
         });
         params.set('where', JSON.stringify(filterObject));
       }
-      console.log('params', params);
 
       // تم افتراض أن مسار الـ API العام لجلب البيانات هو نفسه مع تغيير 'table'
       const response = await api('GET', `freqs/dynamic-query/?${params.toString()}`); // يجب التأكد من مسار الـ API الصحيح لجلب بيانات اللجوء

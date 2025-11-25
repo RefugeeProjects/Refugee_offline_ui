@@ -95,7 +95,6 @@ export default function FreqsHome() {
   });
 
   const { user } = useContext(appContext);
-  console.log('user roles:', user.roles);
 
   // const fetchData = useCallback(async () => {
   //   setIsLoadingTable(true);
@@ -983,7 +982,6 @@ const handleForward = async () => {
       const filteredData = Object.fromEntries(
         Object.entries(editableRefugeeData).filter(([key]) => allowedFieldsToEdit.includes(key))
       );
-       console.log('filteredData',filteredData);
 
       const { success, msg } = await api('PUT', `mains/refugees/id/${editableRefugeeData.id}`, filteredData);
       await new Promise((resolve) => setTimeout(resolve, 1500));

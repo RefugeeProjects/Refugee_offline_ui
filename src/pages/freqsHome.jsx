@@ -1034,7 +1034,6 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
 
     try {
       // ✅ هنا نكوّن الكائن يدوياً بالحقول المسموح تعديلها فقط
-      console.log('editableRefugeeData', editableRefugeeData);
       const filteredData = {
         interview_date: editableRefugeeData.interview_date,
         interview_officername: editableRefugeeData.interview_officername,
@@ -1094,7 +1093,6 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
         governorate: editableRefugeeData.governorate,
       };
 
-      console.log('filteredData', filteredData);
 
       const { success, msg } = await api('PUT', `mains/refugees/id/${editableRefugeeData.id}`, filteredData);
 

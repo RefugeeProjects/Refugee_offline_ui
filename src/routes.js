@@ -26,7 +26,7 @@ import FreqsHome from './pages/freqsHome';
 import DepsFollow from './pages/depsFollow';
 import TrackingPage from './pages/track';
 import ReportPage from './pages/reportPage';
-import ApproximateSearch from './pages/ApproximateSearch';
+// import ApproximateSearch from './pages/ApproximateSearch';
 
 import Reports from './pages/reports';
 import PanalForERP from './pages/panalForERP';
@@ -95,8 +95,8 @@ export default function Router({ user_roles }) {
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ReportPage'} />, index: true },
         { path: 'ReportPage', element: <ReportPage /> },
 
-        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ApproximateSearch'} />, index: true },
-        { path: 'ApproximateSearch', element: <ApproximateSearch /> },
+        // { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ApproximateSearch'} />, index: true },
+        // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
       ],
     },
     {
@@ -116,7 +116,7 @@ export default function Router({ user_roles }) {
         { element: <Navigate to="/reviewer" />, index: true },
         { path: 'Reports', element: <Reports /> },
         { path: 'ReportPage', element: <ReportPage /> },
-        { path: 'ApproximateSearch', element: <ApproximateSearch /> },
+        // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
         // { path: 'settings', element: <Settings /> },
       ],
     },
@@ -128,7 +128,7 @@ export default function Router({ user_roles }) {
         { element: <Navigate to="/iqama" />, index: true },
         { path: 'Reports', element: <Reports /> },
         { path: 'ReportPage', element: <ReportPage /> },
-        { path: 'ApproximateSearch', element: <ApproximateSearch /> },
+        // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
         // { path: 'settings', element: <Settings /> },
       ],
     },
@@ -140,7 +140,7 @@ export default function Router({ user_roles }) {
         { element: <Navigate to="/mokhabarat" />, index: true },
         { path: 'Reports', element: <Reports /> },
         { path: 'ReportPage', element: <ReportPage /> },
-        { path: 'ApproximateSearch', element: <ApproximateSearch /> },
+        // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
         // { path: 'settings', element: <Settings /> },
       ],
     },

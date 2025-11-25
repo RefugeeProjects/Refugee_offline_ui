@@ -47,11 +47,11 @@ const navConfig = [
     path: '/identity/Report',
     icon: icon('ic_analytics'),
   },
-  {
-    title: 'بحث تقريبي',
-    path: '/identity/ApproximateSearch',
-    icon: icon('ic_analytics'),
-  },
+  // {
+  //   title: 'بحث تقريبي',
+  //   path: '/identity/ApproximateSearch',
+  //   icon: icon('ic_analytics'),
+  // },
 ];
 
 export default navConfig;
