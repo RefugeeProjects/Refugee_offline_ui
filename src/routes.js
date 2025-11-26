@@ -26,10 +26,6 @@ import ApprovalsPage from './pages/ApprovalsPage';
 import ReportDynamic from './pages/reportDynamic';
 import TrackingPage from './pages/track';
 import ReportPageRejected from './pages/rejectedRequests';
-// import ApproximateSearch from './pages/ApproximateSearch';
-
-import Reports from './pages/reports';
-import PanalForERP from './pages/panalForERP';
 
 // ----------------------------------------------------------------------
 
@@ -85,12 +81,7 @@ export default function Router({ user_roles }) {
         { path: 'ReportDynamic', element: <ReportDynamic /> },
 
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/TrackingPage'} />, index: true },
-        { path: 'TrackingPage', element: <TrackingPage /> },
-
-        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/Reports'} />, index: true },
-        { path: 'Reports', element: <Reports /> },
-        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/PanalForERP'} />, index: true },
-        { path: 'PanalForERP', element: <PanalForERP /> },
+        { path: 'TrackingPage', element: <TrackingPage /> },       
 
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ReportPageRejected'} />, index: true },
         { path: 'ReportPageRejected', element: <ReportPageRejected /> },
@@ -114,7 +105,6 @@ export default function Router({ user_roles }) {
       element: <PrivateRoute element={<ViewLayout />} />,
       children: [
         { element: <Navigate to="/reviewer" />, index: true },
-        { path: 'Reports', element: <Reports /> },
         { path: 'ReportPageRejected', element: <ReportPageRejected /> },
         // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
         // { path: 'settings', element: <Settings /> },
@@ -126,10 +116,7 @@ export default function Router({ user_roles }) {
       element: <PrivateRoute element={<IqamaLayouts />} />,
       children: [
         { element: <Navigate to="/iqama" />, index: true },
-        { path: 'Reports', element: <Reports /> },
         { path: 'ReportPageRejected', element: <ReportPageRejected /> },
-        // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
-        // { path: 'settings', element: <Settings /> },
       ],
     },
     // الصلاحيات المخابرات
@@ -138,7 +125,6 @@ export default function Router({ user_roles }) {
       element: <PrivateRoute element={<MokLayouts />} />,
       children: [
         { element: <Navigate to="/mokhabarat" />, index: true },
-        { path: 'Reports', element: <Reports /> },
         { path: 'ReportPageRejected', element: <ReportPageRejected /> },
         // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
         // { path: 'settings', element: <Settings /> },

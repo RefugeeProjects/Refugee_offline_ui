@@ -6,14 +6,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-// import DisplayCategory from './Category/DisplayCategory';
-import View_Device from './devices/view_Device';
-import Formation from './formations/formation';
-// import Viewexception from './exception/viewexception';
-import Viewfreqs from './freqs/viewfreqs';
-import Viewdepts from './depts/viewdepts';
-import Viewcharacterlocation from './characterlocation/viewcharacterlocation';
-import Viewletter from './letter/viewletter';
+
 
 import { titles } from '../../utils/title';
 
