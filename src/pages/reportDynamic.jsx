@@ -121,27 +121,27 @@ export default function RefugeeReport() {
   ]);
 
   // 2. إزالة المتغيرات القديمة، أو تعديل المتغيرات المشتركة
-  const [tblGov, setTblGov] = useState([]); // يُفترض استخدامها للمحافظة (governorate)
+  // const [tblGov, setTblGov] = useState([]); // يُفترض استخدامها للمحافظة (governorate)
 
   // تم دمج الدوال القديمة في دالة واحدة لجلب البيانات اللازمة للفلاتر الجديدة
-  const fetchFilterData = useCallback(async () => {
-    try {
-      // مثال لجلب المحافظات إذا كانت مستخدمة كفلتر خارجي
-      const { success, data } = await api('GET', `mains/governorate`); // افتراض أن المسار لا يزال صحيحاً
-      if (success) {
-        setTblGov(data?.records || []);
-      } else {
-        DangerMsg('تحميل البيانات', 'خطأ في تحميل بيانات المحافظات');
-      }
-    } catch (err) {
-      DangerMsg('تحميل البيانات', 'خطأ في تحميل البيانات الأساسية');
-      console.error(err);
-    }
-  }, []);
+  // const fetchFilterData = useCallback(async () => {
+  //   try {
+  //     // مثال لجلب المحافظات إذا كانت مستخدمة كفلتر خارجي
+  //     const { success, data } = await api('GET', `mains/governorate`); // افتراض أن المسار لا يزال صحيحاً
+  //     if (success) {
+  //       setTblGov(data?.records || []);
+  //     } else {
+  //       DangerMsg('تحميل البيانات', 'خطأ في تحميل بيانات المحافظات');
+  //     }
+  //   } catch (err) {
+  //     DangerMsg('تحميل البيانات', 'خطأ في تحميل البيانات الأساسية');
+  //     console.error(err);
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    fetchFilterData();
-  }, [fetchFilterData]);
+  // useEffect(() => {
+  //   fetchFilterData();
+  // }, [fetchFilterData]);
 
   const ref = useRef();
   const handlePrint = useReactToPrint({

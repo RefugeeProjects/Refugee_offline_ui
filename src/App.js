@@ -34,7 +34,7 @@ export default function App() {
   //       pages: {
   //         DashboardAppPage: 1,
   //         freqsHome: 0,
-  //         EntryPage: 0,
+  //         FinalApprovalPage: 0,
   //         reportPage: 0,
   //         reports: 0,
   //       },

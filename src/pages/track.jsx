@@ -17,7 +17,7 @@ import { useReactToPrint } from 'react-to-print';
 import { useApi } from '../utils';
 import { DangerMsg } from '../components/NotificationMsg';
 
-export default function DepsFollow() {
+export default function ReportDynamic() {
   const [reports, setReports] = useState([]);
   const [stages, setStages] = useState([]); // NEW
   const [stagesLoading, setStagesLoading] = useState(false); // NEW

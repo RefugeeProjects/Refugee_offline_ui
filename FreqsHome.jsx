@@ -21,7 +21,7 @@ function TabPanel(props) {
   );
 }
 
-export default function FreqsHome() {
+export default function ApprovalsPage() {
   const [refugees, setRefugees] = useState([]);
   const [familyData, setFamilyData] = useState([]);
   const [selectedRefugee, setSelectedRefugee] = useState(null);

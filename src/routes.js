@@ -14,18 +14,18 @@ import PrivateRoute from './auth/PrivateRoutes';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import DashboardAppPage from './pages/DashboardAppPage';
-import EntryPage from './pages/EntryPage';
+import FinalApprovalPage from './pages/FinalApprovalPage';
 import AttachmentsPage from './pages/AttachmentsPage';
-import DepartmentFollowup from './pages/DepartmentFollowup';
+// import DepartmentFollowup from './pages/DepartmentFollowup';
 import UserManagment from './pages/Users/UserManagment';
 import UserManagmentAddEdit from './pages/Users/UserManagmentAddEdit';
 import Settings from './pages/Setting/Settings';
 import Profile from './pages/Profile';
 import ChangePassword from './pages/ChangePassword';
-import FreqsHome from './pages/freqsHome';
-import DepsFollow from './pages/depsFollow';
+import ApprovalsPage from './pages/ApprovalsPage';
+import ReportDynamic from './pages/reportDynamic';
 import TrackingPage from './pages/track';
-import ReportPage from './pages/reportPage';
+import ReportPageRejected from './pages/rejectedRequests';
 // import ApproximateSearch from './pages/ApproximateSearch';
 
 import Reports from './pages/reports';
@@ -66,23 +66,23 @@ export default function Router({ user_roles }) {
         { path: 'app', element: <DashboardAppPage /> },
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/Orderadd'} />, index: true },
         // main order **************************************************
-        { path: 'EntryPage', element: <EntryPage /> },
-        { path: 'DepartmentFollowup', element: <DepartmentFollowup /> },
+        { path: 'FinalApprovalPage', element: <FinalApprovalPage /> },
+        // { path: 'DepartmentFollowup', element: <DepartmentFollowup /> },
 
         { path: 'profile', element: <Profile /> },
         { path: 'ChangePassword', element: <ChangePassword /> },
-        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/EntryPage'} />, index: true },
-        { path: 'EntryPage', element: <EntryPage /> },
+        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/FinalApprovalPage'} />, index: true },
+        { path: 'FinalApprovalPage', element: <FinalApprovalPage /> },
         { path: 'attachments/:id', element: <AttachmentsPage /> },
 
-        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/DepartmentFollowup'} />, index: true },
-        { path: 'DepartmentFollowup', element: <DepartmentFollowup /> },
+        // { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/DepartmentFollowup'} />, index: true },
+        // { path: 'DepartmentFollowup', element: <DepartmentFollowup /> },
 
-        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/FreqsHome'} />, index: true },
-        { path: 'FreqsHome', element: <FreqsHome /> },
+        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ApprovalsPage'} />, index: true },
+        { path: 'ApprovalsPage', element: <ApprovalsPage /> },
 
-        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/DepsFollow'} />, index: true },
-        { path: 'DepsFollow', element: <DepsFollow /> },
+        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ReportDynamic'} />, index: true },
+        { path: 'ReportDynamic', element: <ReportDynamic /> },
 
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/TrackingPage'} />, index: true },
         { path: 'TrackingPage', element: <TrackingPage /> },
@@ -92,8 +92,8 @@ export default function Router({ user_roles }) {
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/PanalForERP'} />, index: true },
         { path: 'PanalForERP', element: <PanalForERP /> },
 
-        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ReportPage'} />, index: true },
-        { path: 'ReportPage', element: <ReportPage /> },
+        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ReportPageRejected'} />, index: true },
+        { path: 'ReportPageRejected', element: <ReportPageRejected /> },
 
         // { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ApproximateSearch'} />, index: true },
         // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
@@ -115,7 +115,7 @@ export default function Router({ user_roles }) {
       children: [
         { element: <Navigate to="/reviewer" />, index: true },
         { path: 'Reports', element: <Reports /> },
-        { path: 'ReportPage', element: <ReportPage /> },
+        { path: 'ReportPageRejected', element: <ReportPageRejected /> },
         // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
         // { path: 'settings', element: <Settings /> },
       ],
@@ -127,7 +127,7 @@ export default function Router({ user_roles }) {
       children: [
         { element: <Navigate to="/iqama" />, index: true },
         { path: 'Reports', element: <Reports /> },
-        { path: 'ReportPage', element: <ReportPage /> },
+        { path: 'ReportPageRejected', element: <ReportPageRejected /> },
         // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
         // { path: 'settings', element: <Settings /> },
       ],
@@ -139,7 +139,7 @@ export default function Router({ user_roles }) {
       children: [
         { element: <Navigate to="/mokhabarat" />, index: true },
         { path: 'Reports', element: <Reports /> },
-        { path: 'ReportPage', element: <ReportPage /> },
+        { path: 'ReportPageRejected', element: <ReportPageRejected /> },
         // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
         // { path: 'settings', element: <Settings /> },
       ],
@@ -149,11 +149,11 @@ export default function Router({ user_roles }) {
       element: <PrivateRoute element={<UserLayout />} />,
       children: [
         { element: <Navigate to="/approver" />, index: true },
-        { path: 'EntryPage', element: <EntryPage /> },
+        { path: 'FinalApprovalPage', element: <FinalApprovalPage /> },
 
         { element: <Navigate to="/approver" />, index: true },
-        { path: 'DepartmentFollowup', element: <DepartmentFollowup /> },
-        // { path: 'ReportPage', element: <ReportPage /> },
+        // { path: 'DepartmentFollowup', element: <DepartmentFollowup /> },
+        // { path: 'ReportPageRejected', element: <ReportPageRejected /> },
         { path: 'settings', element: <Settings /> },
       ],
     },

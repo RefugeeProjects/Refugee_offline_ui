@@ -71,7 +71,7 @@ function TabPanel(props) {
   );
 }
 
-export default function FreqsHome() {
+export default function ApprovalsPage() {
   const [openFamilyDialog, setOpenFamilyDialog] = useState(false);
 
   const [isForwarding, setIsForwarding] = useState(false);

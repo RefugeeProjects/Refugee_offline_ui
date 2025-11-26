@@ -19,13 +19,13 @@ const navView = [
   },
   {
     title: 'طلبات اللجوء',
-    path: process.env.PUBLIC_URL + '/dashboard/FreqsHome',
+    path: process.env.PUBLIC_URL + '/dashboard/ApprovalsPage',
     icon: <MenuOpen />,
     page_role: { public: 1 },
   },
   // {
   //   title: 'موافقة اللجنة ',
-  //   path: process.env.PUBLIC_URL + '/dashboard/EntryPage',
+  //   path: process.env.PUBLIC_URL + '/dashboard/FinalApprovalPage',
   //   icon: <MenuOpen />,
   //   page_role: { public: 1 },
   // },

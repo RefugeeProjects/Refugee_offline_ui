@@ -18,7 +18,7 @@ const navConfig = [
   },
   {
     title: 'طلبات اللجوء',
-    path: process.env.PUBLIC_URL + '/dashboard/FreqsHome',
+    path: process.env.PUBLIC_URL + '/dashboard/ApprovalsPage',
     icon: <MenuOpen />,
     // page_role: { public: 1 },
   },
@@ -31,19 +31,19 @@ const navConfig = [
   // },
   {
     title: 'موافقة اللجنة',
-    path: process.env.PUBLIC_URL + '/dashboard/EntryPage',
+    path: process.env.PUBLIC_URL + '/dashboard/FinalApprovalPage',
     icon: <MenuOpen />,
     // page_role: { public: 1 },
   },
   {
     title: 'الطلبات المرفوضة ',
-    path: process.env.PUBLIC_URL + '/dashboard/reportPage',
+    path: process.env.PUBLIC_URL + '/dashboard/ReportPageRejected',
     icon: <MenuOpen />,
     // page_role: { public: 1 },
   },
   {
     title: 'تقرير ',
-    path: process.env.PUBLIC_URL + '/dashboard/DepsFollow',
+    path: process.env.PUBLIC_URL + '/dashboard/ReportDynamic',
     icon: <MenuOpen />,
     // page_role: { public: 1 },
   },
