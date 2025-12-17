@@ -16,6 +16,7 @@ import { decodeJWT } from './utils';
 import Loader from './components/Loader';
 import { StyledChart } from './components/chart';
 import ScrollToTop from './components/scroll-to-top';
+import SystemWatermark from './components/SystemWatermark';
 import 'react-notifications-component/dist/theme.css';
 // ----------------------------------------------------------------------
 
@@ -96,6 +97,7 @@ export default function App() {
           <appContext.Provider value={{ ...appInfo, setAppInfo, load, setLoading, setToken }}>
             <ScrollToTop />
             <StyledChart />
+            <SystemWatermark />
             <Router user_roles={appInfo?.user?.roles} />
           </appContext.Provider>
         </ThemeProvider>

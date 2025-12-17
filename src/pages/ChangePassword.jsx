@@ -37,7 +37,6 @@ export default function ChangePassword({ modalProps, openModal, toogleModal }) {
   const api = useApi();
   // context data
   const { user } = useContext(appContext);
-  const user_id = user?.id;
 
   const navigate = useNavigate();
 
@@ -83,7 +82,8 @@ export default function ChangePassword({ modalProps, openModal, toogleModal }) {
       // delete userBody.newPassowrd;
       delete userBody.confirmPassword;
 
-      const { success, err } = await api('PUT', `users/id/${user_id}/change-password`, userBody);
+      const { success, err } = await api('PUT', `users/change-password`, userBody);
+      console.log('changePwd', success, err);
       if (!success) {
         if (err?.errPwd) {
           DangerMsg('اشعارات كلمة المرور', err.errMsg);

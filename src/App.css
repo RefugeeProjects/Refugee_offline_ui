@@ -535,3 +535,9 @@ fieldset {
   flex-direction: column;
   align-items: center;
 }
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
