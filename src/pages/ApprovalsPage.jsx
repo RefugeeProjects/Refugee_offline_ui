@@ -164,17 +164,6 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
     fetchFamily();
   }, [fetchFamily]);
 
-  //
-  // const handleRowClick = (refugeeData) => {
-  //   setSelectedRefugee(refugeeData);
-  //   setEditableRefugeeData({ ...refugeeData });
-  //   setIsEditing(false);
-
-  //   // ✅ فلترة بيانات العائلة لهذا اللاجئ فقط
-  //   const filteredFamily = familyData.filter((f) => f.refugee_id === refugeeData.id);
-  //   setFamilyData(filteredFamily);
-  // };
-
   const handleRowClick = async (refugeeData) => {
   try {
     const response = await fetch(`${API_BASE_URL}/freqs/refugees/${refugeeData.id}/with-files`);
