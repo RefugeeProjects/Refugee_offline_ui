@@ -73,12 +73,12 @@ export default function ReportDynamic() {
 
   const fetchData = useCallback(async () => {
     try {
-      const { success, data } = await api('GET', `mains/refugees`);
+      const { success, data } = await api('GET', `freqs/refugees`);
       if (!success) {
         DangerMsg('تقارير يومية', 'خطأ في تحميل البيانات');
         return;
       }
-      setReports(data?.records || []);
+      setReports(data || []);
     } catch (err) {
       DangerMsg('تقارير يومية', 'خطأ في تحميل البيانات');
       console.error(err);

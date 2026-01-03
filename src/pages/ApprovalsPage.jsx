@@ -47,14 +47,6 @@ import { LoadingButton } from '@mui/lab';
 
 import { appContext } from '../context';
 
-const RELIGIONS = ['إسلام', 'مسيحية', 'يهودية', 'بوذية', 'ديانات أخرى'];
-const GENDERS = ['ذكر', 'أنثى'];
-const MARITAL_STATUSES = ['أعزب', 'متزوج', 'مطلق', 'أرمل'];
-
-const MILITARY_SERVICES = ['لا', 'نعم'];
-const COUNTRIES = ['العراق', 'سوريا', 'لبنان', 'مصر', 'الأردن', 'تركيا', 'دول أخرى'];
-const NATIONALITIES = ['عربي', 'كردي', 'تركماني', 'كلداني', 'سرياني', 'أشوري', 'أخرى'];
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -97,12 +89,131 @@ export default function ApprovalsPage() {
     relation_member: '',
   });
 
-
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-const FILES_BASE_URL = process.env.REACT_APP_FILES_BASE_URL;
-const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const FILES_BASE_URL = process.env.REACT_APP_FILES_BASE_URL;
+  const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
   const { user } = useContext(appContext);
+  const [lookups, setLookups] = useState({});
+  const LOOKUP_MAP = {
+    gender: 'Sex',
+    religion: 'Religions',
+    marital_status: 'MaritalStatus',
+    nationality: 'Nationalities',
+    spouse_nationality: 'COUNTRY',
+    birth_place: 'COUNTRY',
+    profession: 'Occupations',
+    race: 'Ethnicities',
+    origin_country: 'COUNTRY',
+  };
+  const mapLabelsToIdsByLookupMap = (record, lookups, LOOKUP_MAP) => {
+    const result = { ...record };
+
+    Object.keys(LOOKUP_MAP).forEach((field) => {
+      const value = record[field];
+      const lookupArr = lookups[field];
+
+      if (!value || !Array.isArray(lookupArr)) return;
+
+      const found = lookupArr.find((o) => o.description_ar === value || o.name === value);
+
+      if (found) {
+        result[field] = found.id;
+      }
+    });
+
+    return result;
+  };
+
+  const [isLoadingLookups, setIsLoadingLookups] = useState(false);
+  //2026-1-02
+  // const loadAllLookups = async () => {
+  //   if (Object.keys(lookups).length === Object.keys(LOOKUP_MAP).length) return;
+
+  //   setIsLoadingLookups(true);
+  //   try {
+  //     const entries = Object.entries(LOOKUP_MAP);
+
+  //     const results = await Promise.all(
+  //       entries.map(([key, category]) =>
+  //         api('GET', `lookups/items?category=${category}`).then((res) => ({
+  //           key,
+  //           success: res.success,
+  //           data: res.data,
+  //         }))
+  //       )
+  //     );
+
+  //     const aggregated = {};
+  //     results.forEach((r) => {
+  //       if (r.success) aggregated[r.key] = r.data;
+  //     });
+
+  //     setLookups(aggregated);
+  //   } finally {
+  //     setIsLoadingLookups(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   const fetchLookups = async () => {
+  //     const result = {};
+  //     for (const key in LOOKUP_MAP) {
+  //       const { data, success } = await api('GET', `lookups/items?category=${LOOKUP_MAP[key]}`);
+  //       if (success) result[key] = data;
+  //     }
+  //     setLookups(result);
+  //   };
+
+  //   fetchLookups();
+  // }, []);
+
+  const loadAllLookups = async (force = false) => {
+    if (!force && Object.keys(lookups).length === Object.keys(LOOKUP_MAP).length) {
+      return lookups;
+    }
+
+    setIsLoadingLookups(true);
+    try {
+      const entries = Object.entries(LOOKUP_MAP);
+
+      const results = await Promise.all(
+        entries.map(([key, category]) =>
+          api('GET', `lookups/items?category=${category}`).then((res) => ({
+            key,
+            success: res.success,
+            data: res.data,
+          }))
+        )
+      );
+
+      const aggregated = {};
+      results.forEach((r) => {
+        if (r.success) aggregated[r.key] = r.data;
+      });
+
+      setLookups(aggregated);
+      return aggregated; // ✅ مهم جدًا
+    } finally {
+      setIsLoadingLookups(false);
+    }
+  };
+
+  const loadLookup = async (key) => {
+    if (lookups[key]) return; // لا تعيد الجلب إذا موجود
+
+    const category = LOOKUP_MAP[key];
+    if (!category) return;
+
+    const { data, success } = await api('GET', `lookups/items?category=${category}`);
+    if (success) {
+      console.log('trueeeeeeeeee', data);
+
+      setLookups((prev) => ({
+        ...prev,
+        [key]: data,
+      }));
+    }
+  };
 
   const navigate = useNavigate();
 
@@ -140,8 +251,6 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
     fetchData();
   }, [fetchData]);
 
-
-
   //جلب بيانات العائلة
   const fetchFamily = useCallback(async () => {
     setIsLoadingTable(true);
@@ -164,42 +273,40 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
     fetchFamily();
   }, [fetchFamily]);
 
+  const mapLabelToId = (lookupsArray = [], label) => {
+    const found = lookupsArray.find((o) => o.description_ar === label || o.name === label);
+    return found ? found.id : '';
+  };
+
   const handleRowClick = async (refugeeData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/freqs/refugees/${refugeeData.id}/with-files`);
-    const result = await response.json();
+    try {
+      const response = await fetch(`${API_BASE_URL}/freqs/refugees/${refugeeData.id}/with-files`);
+      const result = await response.json();
 
-    if (result.success && Array.isArray(result.data?.files)) {
-      const photoFile = result.data.files.find(f => f.file_name === 'personal_photo.png');
+      if (result.success && Array.isArray(result.data?.files)) {
+        const photoFile = result.data.files.find((f) => f.file_name === 'personal_photo.png');
 
-      refugeeData.personal_photo = photoFile
-        ? `${FILES_BASE_URL}${photoFile.file_path.replace('/uploads', '')}`
-        : DEFAULT_PHOTO;
-    } else {
+        refugeeData.personal_photo = photoFile
+          ? `${FILES_BASE_URL}${photoFile.file_path.replace('/uploads', '')}`
+          : DEFAULT_PHOTO;
+      } else {
+        refugeeData.personal_photo = DEFAULT_PHOTO;
+      }
+    } catch (error) {
+      console.error('Error fetching photo:', error);
       refugeeData.personal_photo = DEFAULT_PHOTO;
     }
-  } catch (error) {
-    console.error("Error fetching photo:", error);
-    refugeeData.personal_photo = DEFAULT_PHOTO;
-  }
-  setRefugees(prev =>
-  prev.map(r => r.id === refugeeData.id
-    ? { ...r, personal_photo: refugeeData.personal_photo }
-    : r
-  )
-);
+    setRefugees((prev) =>
+      prev.map((r) => (r.id === refugeeData.id ? { ...r, personal_photo: refugeeData.personal_photo } : r))
+    );
 
+    // ✅ نفس عملك السابق
+    setSelectedRefugee(refugeeData);
+    setIsEditing(false);
 
-  // ✅ نفس عملك السابق
-  setSelectedRefugee(refugeeData);
-  setEditableRefugeeData({ ...refugeeData });
-  setIsEditing(false);
-
-  const filteredFamily = familyData.filter((f) => f.refugee_id === refugeeData.id);
-  setFamilyData(filteredFamily);
-};
-
-
+    const filteredFamily = familyData.filter((f) => f.refugee_id === refugeeData.id);
+    setFamilyData(filteredFamily);
+  };
 
   const handleClose = () => {
     setSelectedRefugee(null);
@@ -400,7 +507,7 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
         <Grid container spacing={2}>
           {/* الجنس */}
           <Grid item xs={12} sm={6}>
-            <TextField
+            {/* <TextField
               select
               fullWidth
               label={fieldLabels.gender}
@@ -411,6 +518,20 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
               {GENDERS.map((option) => (
                 <MenuItem key={option} value={option}>
                   {option}
+                </MenuItem>
+              ))}
+            </TextField> */}
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.gender}
+              name="gender"
+              value={editableRefugeeData?.gender || ''}
+              onChange={handleInputChange}
+            >
+              {(lookups.gender || []).map((o) => (
+                <MenuItem key={o.id} value={o.id}>
+                  {o.description_ar}
                 </MenuItem>
               ))}
             </TextField>
@@ -516,9 +637,9 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
               value={editableRefugeeData?.religion || ''}
               onChange={handleInputChange}
             >
-              {RELIGIONS.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
+              {(lookups.religion || []).map((o) => (
+                <MenuItem key={o.id} value={o.id}>
+                  {o.description_ar}
                 </MenuItem>
               ))}
             </TextField>
@@ -539,12 +660,19 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
           {/* مكان الولادة */}
           <Grid item xs={12} sm={6}>
             <TextField
+              select
               fullWidth
               label={fieldLabels.birth_place}
               name="birth_place"
               value={editableRefugeeData?.birth_place || ''}
               onChange={handleInputChange}
-            />
+            >
+              {(lookups.birth_place || []).map((o) => (
+                <MenuItem key={o.id} value={o.id}>
+                  {o.description_ar}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
 
           {/* الحالة الاجتماعية */}
@@ -557,9 +685,9 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
               value={editableRefugeeData?.marital_status || ''}
               onChange={handleInputChange}
             >
-              {MARITAL_STATUSES.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
+              {(lookups.marital_status || []).map((o) => (
+                <MenuItem key={o.id} value={o.id}>
+                  {o.description_ar}
                 </MenuItem>
               ))}
             </TextField>
@@ -571,12 +699,28 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
               type="date"
               label={fieldLabels.marital_status_date}
               name="marital_status_date"
-              value={editableRefugeeData?.marital_status_date || ''}
+              value={formatDateForInput(editableRefugeeData?.marital_status_date || '')}
               onChange={handleInputChange}
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-
+          {/* جنسية الزوج  */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.spouse_nationality}
+              name="spouse_nationality"
+              value={editableRefugeeData?.spouse_nationality || ''}
+              onChange={handleInputChange}
+            >
+              {(lookups.spouse_nationality || []).map((o) => (
+                <MenuItem key={o.id} value={o.id}>
+                  {o.description_ar}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
           {/* رقم الهاتف */}
           <Grid item xs={12} sm={6}>
             <TextField
@@ -631,9 +775,9 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
               value={editableRefugeeData?.nationality || ''}
               onChange={handleInputChange}
             >
-              {NATIONALITIES.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
+              {(lookups.nationality || []).map((o) => (
+                <MenuItem key={o.id} value={o.id}>
+                  {o.description_ar}
                 </MenuItem>
               ))}
             </TextField>
@@ -642,23 +786,44 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
           {/* بلد الأصل */}
           <Grid item xs={12} sm={6}>
             <TextField
+              select
               fullWidth
               label={fieldLabels.origin_country}
               name="origin_country"
               value={editableRefugeeData?.origin_country || ''}
               onChange={handleInputChange}
-            />
+            >
+              {(lookups.origin_country || []).map((o) => (
+                <MenuItem key={o.id} value={o.id}>
+                  {o.description_ar}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
 
           {/* المهنة */}
           <Grid item xs={12} sm={6}>
-            <TextField
+            {/* <TextField
               fullWidth
               label={fieldLabels.profession}
               name="profession"
               value={editableRefugeeData?.profession || ''}
               onChange={handleInputChange}
-            />
+            /> */}
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.profession}
+              name="profession"
+              value={editableRefugeeData?.profession || ''}
+              onChange={handleInputChange}
+            >
+              {(lookups.profession || []).map((o) => (
+                <MenuItem key={o.id} value={o.id}>
+                  {o.description_ar}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
         </Grid>
       );
@@ -709,9 +874,9 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
             return (
               <Grid item xs={12} sm={6} key={key}>
                 <TextField select fullWidth label={label} name="gender" value={value} onChange={handleInputChange}>
-                  {GENDERS.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
+                  {(lookups.gender || []).map((o) => (
+                    <MenuItem key={o.id} value={o.id}>
+                      {o.description_ar}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -723,9 +888,9 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
             return (
               <Grid item xs={12} sm={6} key={key}>
                 <TextField select fullWidth label={label} name="religion" value={value} onChange={handleInputChange}>
-                  {RELIGIONS.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
+                  {(lookups.religion || []).map((o) => (
+                    <MenuItem key={o.id} value={o.id}>
+                      {o.description_ar}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -744,9 +909,22 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
                   value={value}
                   onChange={handleInputChange}
                 >
-                  {MARITAL_STATUSES.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
+                  {(lookups.marital_status || []).map((o) => (
+                    <MenuItem key={o.id} value={o.id}>
+                      {o.description_ar}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            );
+          }
+          if (key === 'race') {
+            return (
+              <Grid item xs={12} sm={6} key={key}>
+                <TextField select fullWidth label={label} name="race" value={value} onChange={handleInputChange}>
+                  {(lookups.race || []).map((o) => (
+                    <MenuItem key={o.id} value={o.id}>
+                      {o.description_ar}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -1084,7 +1262,6 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
         governorate: editableRefugeeData.governorate,
       };
 
-
       const { success, msg } = await api('PUT', `mains/refugees/id/${editableRefugeeData.id}`, filteredData);
 
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -1258,24 +1435,23 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
     }
   }, [openFamilyDialog, selectedRefugee]);
 
-
   const handleSyncFromOnline = async () => {
-  try {
-    NotificationMsg("جاري السحب", "يتم الآن جلب الطلبات من النظام العام...");
+    try {
+      NotificationMsg('جاري السحب', 'يتم الآن جلب الطلبات من النظام العام...');
 
-    const { success, data, msg } = await api("GET", "mains/sync/all"); // هذا هو endpoint مالك
-    
-    if (success) {
-      NotificationMsg("نجاح", "تم سحب الطلبات من الأونلاين بنجاح ✅");
-      await fetchData(); // لإعادة تحميل البيانات بعد السحب
-    } else {
-      DangerMsg("فشل السحب", msg || "تعذر السحب من النظام العام");
+      const { success, data, msg } = await api('GET', 'mains/sync/all'); // هذا هو endpoint مالك
+
+      if (success) {
+        NotificationMsg('نجاح', 'تم سحب الطلبات من الأونلاين بنجاح ✅');
+        await fetchData(); // لإعادة تحميل البيانات بعد السحب
+      } else {
+        DangerMsg('فشل السحب', msg || 'تعذر السحب من النظام العام');
+      }
+    } catch (err) {
+      console.error(err);
+      DangerMsg('خطأ', 'حدث خطأ أثناء عملية السحب من الأونلاين');
     }
-  } catch (err) {
-    console.error(err);
-    DangerMsg("خطأ", "حدث خطأ أثناء عملية السحب من الأونلاين");
-  }
-};
+  };
 
   return (
     <Container maxWidth="xl" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', py: 3 }}>
@@ -1286,17 +1462,12 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
         <Typography variant="h5" color="text.secondary">
           مرحلة: {getStageText(user?.roles)}
         </Typography>
-          {/* ✅ زر سحب البيانات – يظهر فقط للأدوار المطلوبة */}
-  {['data_entry', 'reviewer', 'approver'].includes(user.roles) && (
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={handleSyncFromOnline}
-      sx={{ mt: 2, fontWeight: 'bold' }}
-    >
-       سحب الطلبات من  الانترنت
-    </Button>
-  )}
+        {/* ✅ زر سحب البيانات – يظهر فقط للأدوار المطلوبة */}
+        {['data_entry', 'reviewer', 'approver'].includes(user.roles) && (
+          <Button variant="contained" color="primary" onClick={handleSyncFromOnline} sx={{ mt: 2, fontWeight: 'bold' }}>
+            سحب الطلبات من الانترنت
+          </Button>
+        )}
       </Stack>
 
       {/* Wrap the custom table in Paper for a card-like effect */}
@@ -1318,49 +1489,48 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
             }}
           >
             <TableHead>
-<TableRow>
-  {tableHeaders.map((header) => {
-    if (header.label === "حذف القيد" && user.roles !== 'data_entry') {
-      // لا تعرض العمود نهائياً
-      return null;
-    }
+              <TableRow>
+                {tableHeaders.map((header) => {
+                  if (header.label === 'حذف القيد' && user.roles !== 'data_entry') {
+                    // لا تعرض العمود نهائياً
+                    return null;
+                  }
 
-    return (
-      <TableCell
-        key={header.id}
-        sx={{
-          backgroundColor: '#e6e6e6ff',
-          color: 'black',
-          fontSize: '1rem',
-          fontWeight: 'bold',
-          padding: '12px 16px',
-          borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-          textAlign: 'right',
-          border: '1px solid #ccc',
-        }}
-      >
-        {header.label}
-      </TableCell>
-    );
-  })}
+                  return (
+                    <TableCell
+                      key={header.id}
+                      sx={{
+                        backgroundColor: '#e6e6e6ff',
+                        color: 'black',
+                        fontSize: '1rem',
+                        fontWeight: 'bold',
+                        padding: '12px 16px',
+                        borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+                        textAlign: 'right',
+                        border: '1px solid #ccc',
+                      }}
+                    >
+                      {header.label}
+                    </TableCell>
+                  );
+                })}
 
-  {/* ✅ إذا كنت تريد إضافة عمود حذف القيد فقط لمستخدم data_entry */}
-  {user.roles === 'data_entry' && (
-    <TableCell
-      sx={{
-        backgroundColor: '#e6e6e6ff',
-        color: 'black',
-        fontSize: '1rem',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        border: '1px solid #ccc',
-      }}
-    >
-      حذف القيد
-    </TableCell>
-  )}
-</TableRow>
-                  
+                {/* ✅ إذا كنت تريد إضافة عمود حذف القيد فقط لمستخدم data_entry */}
+                {user.roles === 'data_entry' && (
+                  <TableCell
+                    sx={{
+                      backgroundColor: '#e6e6e6ff',
+                      color: 'black',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                      border: '1px solid #ccc',
+                    }}
+                  >
+                    حذف القيد
+                  </TableCell>
+                )}
+              </TableRow>
             </TableHead>
             <TableBody>
               {isLoadingTable ? (
@@ -1456,79 +1626,77 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
                   //   </TableCell>
                   // </TableRow>
                   <TableRow
-  key={refugee.id}
-  onClick={() => handleRowClick(refugee)}
-  sx={{
-    cursor: 'pointer',
-    backgroundColor: 'white',
-    '&:hover': { backgroundColor: '#f5f5f5' },
-    borderBottom: (theme) => `1px solid rgba(0, 0, 0, 0.1)`,
-  }}
-  className={`row-${refugee.current_stage}`}
->
- {tableHeaders.map((header) => (
- <TableCell
-    key={header.id}
-    sx={{
-      textAlign: 'right',
-      padding: '12px 16px',
-      border: '1px solid rgba(0, 0, 0, 0.1)',
-    }}
-  >
-    {header.id === 'personal_photo' ? (
-      refugee.personal_photo ? (
- <Avatar
-      src={refugee.personal_photo}
-      alt="الصورة"
-      sx={{
-        width: 55,
-        height: 55,
-        border: '1px solid #ccc',
-      }}
-    />
-      ) : (
-    <Avatar sx={{ width: 55, height: 55 }}>?</Avatar>
-      )
-    ) : (
-      <Typography variant="body1" sx={{ whiteSpace: 'normal', lineHeight: 'normal' }}>
-        {header.render ? header.render(refugee[header.id]) : refugee[header.id] || '---'}
-      </Typography>
-    )}
-  </TableCell>
-))}
+                    key={refugee.id}
+                    onClick={() => handleRowClick(refugee)}
+                    sx={{
+                      cursor: 'pointer',
+                      backgroundColor: 'white',
+                      '&:hover': { backgroundColor: '#f5f5f5' },
+                      borderBottom: (theme) => `1px solid rgba(0, 0, 0, 0.1)`,
+                    }}
+                    className={`row-${refugee.current_stage}`}
+                  >
+                    {tableHeaders.map((header) => (
+                      <TableCell
+                        key={header.id}
+                        sx={{
+                          textAlign: 'right',
+                          padding: '12px 16px',
+                          border: '1px solid rgba(0, 0, 0, 0.1)',
+                        }}
+                      >
+                        {header.id === 'personal_photo' ? (
+                          refugee.personal_photo ? (
+                            <Avatar
+                              src={refugee.personal_photo}
+                              alt="الصورة"
+                              sx={{
+                                width: 55,
+                                height: 55,
+                                border: '1px solid #ccc',
+                              }}
+                            />
+                          ) : (
+                            <Avatar sx={{ width: 55, height: 55 }}>?</Avatar>
+                          )
+                        ) : (
+                          <Typography variant="body1" sx={{ whiteSpace: 'normal', lineHeight: 'normal' }}>
+                            {header.render ? header.render(refugee[header.id]) : refugee[header.id] || '---'}
+                          </Typography>
+                        )}
+                      </TableCell>
+                    ))}
 
-
-  {/* ✅ عرض زر الحذف فقط إذا كان الدور هو data_entry */}
-  {user.roles === 'data_entry' && (
-    <TableCell
-      sx={{
-        textAlign: 'center',
-        border: '1px solid rgba(0, 0, 0, 0.1)',
-      }}
-    >
-      <Button
-        variant="outlined"
-        color="error"
-        size="small"
-        onClick={(e) => {
-          e.stopPropagation(); // منع تفعيل onClick للصف
-          handleDelete(refugee.id);
-        }}
-        sx={{
-          textTransform: 'none',
-          borderRadius: 2,
-          fontWeight: 'bold',
-          fontSize: '0.9rem',
-          px: 2,
-          py: 0.5,
-        }}
-      >
-        حذف
-      </Button>
-    </TableCell>
-  )}
-</TableRow>
-
+                    {/* ✅ عرض زر الحذف فقط إذا كان الدور هو data_entry */}
+                    {user.roles === 'data_entry' && (
+                      <TableCell
+                        sx={{
+                          textAlign: 'center',
+                          border: '1px solid rgba(0, 0, 0, 0.1)',
+                        }}
+                      >
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation(); // منع تفعيل onClick للصف
+                            handleDelete(refugee.id);
+                          }}
+                          sx={{
+                            textTransform: 'none',
+                            borderRadius: 2,
+                            fontWeight: 'bold',
+                            fontSize: '0.9rem',
+                            px: 2,
+                            py: 0.5,
+                          }}
+                        >
+                          حذف
+                        </Button>
+                      </TableCell>
+                    )}
+                  </TableRow>
                 ))
               )}
             </TableBody>
@@ -1579,7 +1747,8 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
           }}
         >
           {/* Close Button */}
-          <IconButton
+          {/* 2026-01-02 */}
+          {/* <IconButton
             onClick={handleClose}
             sx={{
               position: 'absolute',
@@ -1590,7 +1759,7 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
             aria-label="إغلاق"
           >
             <CloseIcon />
-          </IconButton>
+          </IconButton> */}
 
           {/* Edit Button (positioned at top right) */}
           {!isEditing &&
@@ -1598,15 +1767,22 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
             ((user.roles === 'data_entry' && selectedRefugee.current_stage === 'data_entry') ||
               (user.roles === 'data_entry' && selectedRefugee.current_stage === 'suspended')) && (
               <IconButton
-                onClick={() => setIsEditing(true)}
-                sx={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                  color: 'info.main',
+                onClick={async () => {
+                  // 1️⃣ حمّل التراميز وخذ النسخة الفعلية
+                  const loadedLookups = await loadAllLookups(true);
+
+                  // 2️⃣ خذ نسخة من الصف
+                  const source = { ...selectedRefugee };
+
+                  // 3️⃣ التحويل باستخدام lookups الصحيحة
+                  const converted = mapLabelsToIdsByLookupMap(source, loadedLookups, LOOKUP_MAP);
+
+                  // 4️⃣ خزّنها
+                  setEditableRefugeeData(converted);
+
+                  // 5️⃣ ادخل وضع التعديل
+                  setIsEditing(true);
                 }}
-                aria-label="تعديل الطلب"
-                title="تعديل الطلب"
               >
                 <EditIcon />
               </IconButton>
@@ -1636,7 +1812,15 @@ const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
           <TabPanel value={tabIndex} index={0}>
             {/* Render table in view mode, or grid for edit mode */}
 
-            {renderSection(personalFields)}
+            {isEditing && isLoadingLookups ? (
+              <Box sx={{ textAlign: 'center', py: 4 }}>
+                <CircularProgress />
+                <Typography sx={{ mt: 2 }}>جاري تحميل التراميز...</Typography>
+              </Box>
+            ) : (
+              renderSection(personalFields)
+            )}
+
             {!isEditing && (
               <Box sx={{ textAlign: 'center', mt: 3 }}>
                 <Button variant="outlined" color="primary" onClick={() => setOpenFamilyDialog(true)}>

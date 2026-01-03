@@ -10,7 +10,7 @@ import { Stack, Typography } from '@mui/material';
 import { format } from 'date-fns'; // مكتبة احترافية للتعامل مع التواريخ
 import { ar } from 'date-fns/locale'; // استيراد اللغة العربية
 import { auth } from 'src/firebase.config';
-
+import Cookies from 'js-cookie';
 // 1. مكون مساعد لعرض الحقول والتسميات داخل الـ Drawer (لتحسين القراءة)
 const DetailItem = ({ label, value }) => (
   <Grid item xs={12} sm={6} md={4}>
@@ -59,9 +59,6 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const FILES_BASE_URL = process.env.REACT_APP_FILES_BASE_URL;
 const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
 
-
-
-
 export default function RefugeesGrid() {
   const api = useApi();
   const [rows, setRows] = useState([]);
@@ -74,31 +71,31 @@ export default function RefugeesGrid() {
   //   setDrawerOpen(true);
   // };
 
-const handleRowClick = async (params) => {
-  const refugee = params.row;
+  const handleRowClick = async (params) => {
+    const refugee = params.row;
+    try {
+      const token = Cookies.get('token');
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/freqs/refugees/${refugee.id}/with-files`);
-    const result = await response.json();
+      const response = await fetch(`${API_BASE_URL}/freqs/refugees/${refugee.id}/with-files`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await response.json();
 
-    if (result.success && Array.isArray(result.data.files)) {
-      const photoFile = result.data.files.find(f => f.file_name === 'personal_photo.png');
+      if (result.success && Array.isArray(result.data.files)) {
+        const photoFile = result.data.files.find((f) => f.file_name === 'personal_photo.png');
 
-      // ✅ بناء المسار باستخدام ملفات .env فقط
-      refugee.personal_photo = photoFile
-        ? `${FILES_BASE_URL}${photoFile.file_path.replace('/uploads','')}`
-        : null;
+        // ✅ بناء المسار باستخدام ملفات .env فقط
+        refugee.personal_photo = photoFile ? `${FILES_BASE_URL}${photoFile.file_path.replace('/uploads', '')}` : null;
+      }
+    } catch (err) {
+      console.error('Error fetching refugee photo:', err);
     }
-  } catch (err) {
-    console.error('Error fetching refugee photo:', err);
-  }
 
-  setSelectedRow(refugee);
-  setDrawerOpen(true);
-};
-
-
-
+    setSelectedRow(refugee);
+    setDrawerOpen(true);
+  };
 
   const handleDrawerClose = () => {
     setDrawerOpen(false);
@@ -194,13 +191,12 @@ const handleRowClick = async (params) => {
 
   const columns = useMemo(() => columnsDefinition, []); // استخدام useMemo
 
-
-
   return (
     <Box sx={{ height: 650, width: '100%', p: 2 }}>
       <Stack alignItems="center" mb={3}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'primary.dark' }}>
-موافقة نهائية        </Typography>
+          موافقة نهائية{' '}
+        </Typography>
       </Stack>
 
       <Paper elevation={3} sx={{ height: '100%', width: '100%', p: 1 }}>
@@ -282,8 +278,6 @@ const handleRowClick = async (params) => {
             >
               {/* القسم الأول: الصورة والمعلومات الأساسية */}
               <Grid item xs={12} sx={{ textAlign: 'center' }}>
-
-
                 {/* {selectedRow.personal_photo ? (
                   <Avatar
                     alt={selectedRow.frist_name}
@@ -296,42 +290,37 @@ const handleRowClick = async (params) => {
                   </Avatar>
                 )} */}
 
-                {selectedRow.personal_photo ? ( 
-                
-<Avatar
-  alt={selectedRow.frist_name}
-  src={selectedRow.personal_photo || DEFAULT_PHOTO}
-  imgProps={{
-    crossOrigin: "anonymous",
-    onError: (e) => {
-      e.target.src = DEFAULT_PHOTO;
-    },
-  }}
-  sx={{
-    width: 140,
-    height: 140,
-    border: "4px solid",
-    borderColor: "primary.main",
-    m: "0 auto",
-  }}
-/>
-
-
-) : (
-  <Avatar
-    sx={{
-      width: 140,
-      height: 140,
-      bgcolor: 'grey.400',
-      fontSize: '3rem',
-      m: '0 auto',
-    }}
-  >
-    {selectedRow.frist_name ? selectedRow.frist_name.charAt(0) : '؟'}
-  </Avatar>
-)}
-
-
+                {selectedRow.personal_photo ? (
+                  <Avatar
+                    alt={selectedRow.frist_name}
+                    src={selectedRow.personal_photo || DEFAULT_PHOTO}
+                    imgProps={{
+                      crossOrigin: 'anonymous',
+                      onError: (e) => {
+                        e.target.src = DEFAULT_PHOTO;
+                      },
+                    }}
+                    sx={{
+                      width: 140,
+                      height: 140,
+                      border: '4px solid',
+                      borderColor: 'primary.main',
+                      m: '0 auto',
+                    }}
+                  />
+                ) : (
+                  <Avatar
+                    sx={{
+                      width: 140,
+                      height: 140,
+                      bgcolor: 'grey.400',
+                      fontSize: '3rem',
+                      m: '0 auto',
+                    }}
+                  >
+                    {selectedRow.frist_name ? selectedRow.frist_name.charAt(0) : '؟'}
+                  </Avatar>
+                )}
 
                 <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold' }}>
                   {selectedRow.frist_name} {selectedRow.second_name} {selectedRow.last_name} {selectedRow.theard_name}{' '}
