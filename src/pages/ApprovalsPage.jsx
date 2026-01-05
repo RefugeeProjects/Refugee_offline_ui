@@ -278,10 +278,14 @@ export default function ApprovalsPage() {
     return found ? found.id : '';
   };
 
+  const token = localStorage.getItem("token");
+
   const handleRowClick = async (refugeeData) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/freqs/refugees/${refugeeData.id}/with-files`);
-      const result = await response.json();
+
+      const { success, data } = await api('GET',`freqs/refugees/${refugeeData.id}/with-files`);
+
+      const result = await data.json();
 
       if (result.success && Array.isArray(result.data?.files)) {
         const photoFile = result.data.files.find((f) => f.file_name === 'personal_photo.png');
