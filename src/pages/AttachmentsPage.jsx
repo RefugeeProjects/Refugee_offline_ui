@@ -1,23 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useApi } from '../utils';
 
 const AttachmentsPage = () => {
   const { id } = useParams(); // ✅ استقبال id من المسار
-  const baseUrl = process.env.REACT_APP_TRAFFIC_API;
+  // const baseUrl = process.env.REACT_APP_TRAFFIC_API;
+  const baseUrl = process.env.REACT_APP_FILES_BASE_URL;
+
   const [files, setFiles] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const api = useApi();
 
   // 🔹 جلب الملفات الخاصة باللاجئ
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const response = await fetch(`${baseUrl}/freqs/refugees/${id}/with-files`);
-        const result = await response.json();
+        // const response = await fetch(`${baseUrl}/freqs/refugees/${id}/with-files`);
+        // const { success, data } = await api('GET', `freqs/refugees/${id}/with-files`);
 
-        if (result.success) {
-          const cleanFiles = (result.data.files || []).filter((f) => f && f.file_path);
+        // const result = await data.json();
+
+        // if (result.success) {
+        //   const cleanFiles = (result.data.files || []).filter((f) => f && f.file_path);
+        //   setFiles(cleanFiles);
+        // }
+        //  else {
+        //   setError('لم يتم العثور على ملفات مرتبطة بهذا اللاجئ');
+        // }
+        const { success, data } = await api('GET', `freqs/refugees/${id}/with-files`);
+
+        if (success) {
+          const cleanFiles = (data.files || []).filter((f) => f && f.file_path);
           setFiles(cleanFiles);
         } else {
           setError('لم يتم العثور على ملفات مرتبطة بهذا اللاجئ');
@@ -35,6 +50,7 @@ const AttachmentsPage = () => {
 
   if (loading) return <p className="text-center text-gray-600 mt-10">جاري التحميل...</p>;
   if (error) return <p className="text-center text-red-600 mt-10">{error}</p>;
+  console.log('full bath', baseUrl);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen" dir="rtl">
