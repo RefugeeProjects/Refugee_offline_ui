@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useApi } from '../utils';
 
 const AttachmentsPage = () => {
 const token = localStorage.getItem("token");
 
   const { id } = useParams(); // ✅ استقبال id من المسار
-  const baseUrl = process.env.REACT_APP_TRAFFIC_API;
+  // const baseUrl = process.env.REACT_APP_TRAFFIC_API;
+  const baseUrl = process.env.REACT_APP_FILES_BASE_URL;
+
   const [files, setFiles] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -66,6 +69,7 @@ const openFile = async (fileId, fileType) => {
 
   if (loading) return <p className="text-center text-gray-600 mt-10">جاري التحميل...</p>;
   if (error) return <p className="text-center text-red-600 mt-10">{error}</p>;
+  console.log('full bath', baseUrl);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen" dir="rtl">
