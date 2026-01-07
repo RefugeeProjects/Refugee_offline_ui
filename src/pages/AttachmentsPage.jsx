@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { useApi } from '../utils';
 
 const AttachmentsPage = () => {
+const token = localStorage.getItem("token");
+
   const { id } = useParams(); // ✅ استقبال id من المسار
   // const baseUrl = process.env.REACT_APP_TRAFFIC_API;
   const baseUrl = process.env.REACT_APP_FILES_BASE_URL;
@@ -11,29 +13,25 @@ const AttachmentsPage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const api = useApi();
-
   // 🔹 جلب الملفات الخاصة باللاجئ
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        // const response = await fetch(`${baseUrl}/freqs/refugees/${id}/with-files`);
-        // const { success, data } = await api('GET', `freqs/refugees/${id}/with-files`);
+      if (!token) {
+  setError("انتهت الجلسة، أعد تسجيل الدخول");
+  setLoading(false);
+  return;
+}
 
-        // const result = await data.json();
+        const response = await fetch(`${baseUrl}/freqs/refugees/${id}/with-files`, { headers: {
+      Authorization: `Bearer ${token}`,
+    },
+        });
+        const result = await response.json();
 
-        // if (result.success) {
-        //   const cleanFiles = (result.data.files || []).filter((f) => f && f.file_path);
-        //   setFiles(cleanFiles);
-        // }
-        //  else {
-        //   setError('لم يتم العثور على ملفات مرتبطة بهذا اللاجئ');
-        // }
-        const { success, data } = await api('GET', `freqs/refugees/${id}/with-files`);
-
-        if (success) {
-          const cleanFiles = (data.files || []).filter((f) => f && f.file_path);
-          setFiles(cleanFiles);
+        if (result.success) {
+          const cleanFiles = (result.data.files || []);
+          setFiles(result.data.files || []);
         } else {
           setError('لم يتم العثور على ملفات مرتبطة بهذا اللاجئ');
         }
@@ -47,6 +45,27 @@ const AttachmentsPage = () => {
 
     fetchFiles();
   }, [id, baseUrl]);
+const openFile = async (fileId, fileType) => {
+
+  if (!token) {
+    setError("انتهت الجلسة، أعد تسجيل الدخول");
+    return;
+  }
+
+  const res = await fetch(`${baseUrl}/freqs/files/${fileId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  
+  });
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+
+  if (fileType?.startsWith("image")) {
+    setSelectedImage(url);
+  } else {
+    window.open(url, "_blank");
+  }
+};
 
   if (loading) return <p className="text-center text-gray-600 mt-10">جاري التحميل...</p>;
   if (error) return <p className="text-center text-red-600 mt-10">{error}</p>;
@@ -61,16 +80,10 @@ const AttachmentsPage = () => {
       ) : (
         <ul className="max-w-3xl mx-auto space-y-4">
           {files.map((file) => (
-            <div key={file.id}>
-              <a href={`${baseUrl.replace('/api', '')}${file.file_path}`} target="_blank" rel="noopener noreferrer">
-                {file.file_name}
-              </a>
-              <img
-                src={`${baseUrl.replace('/api', '')}${file.file_path}`}
-                alt={file.file_name}
-                style={{ width: '150px', margin: '10px', borderRadius: '8px' }}
-              />
-            </div>
+            <button onClick={() => openFile(file.file_id, file.file_type)}>
+  عرض
+</button>
+
           ))}
         </ul>
       )}

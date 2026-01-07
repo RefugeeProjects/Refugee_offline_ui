@@ -278,10 +278,13 @@ export default function ApprovalsPage() {
     return found ? found.id : '';
   };
 
+  const token = localStorage.getItem("token");
+
   const handleRowClick = async (refugeeData) => {
     try {
-      // const response = await fetch(`${API_BASE_URL}/freqs/refugees/${refugeeData.id}/with-files`);
-      const { success, data } = await api('GET', `freqs/refugees/${refugeeData.id}/with-files`);
+
+      const { success, data } = await api('GET',`freqs/refugees/${refugeeData.id}/with-files`);
+
       const result = await data.json();
 
       if (result.success && Array.isArray(result.data?.files)) {
