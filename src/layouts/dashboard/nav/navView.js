@@ -59,6 +59,12 @@ const navView = [
   //   icon: <MenuOpen />,
   //   page_role: { public: 1 },
   // },
+  //  {
+  //   title: 'ترحيل إلى عشتار ',
+  //   path: process.env.PUBLIC_URL + '/dashboard/Migrate',
+  //   icon: <MenuOpen />,
+  //   // page_role: { public: 1 },
+  // },
 ];
 
 export default navView;

@@ -22,13 +22,6 @@ const navConfig = [
     icon: <MenuOpen />,
     // page_role: { public: 1 },
   },
-
-  // {
-  //   title: 'ادخال بيانات ',
-  //   path: process.env.PUBLIC_URL + '/dashboard/DataEntry',
-  //   icon: <MenuOpen />,
-  //   page_role: { public: 1 },
-  // },
   {
     title: 'موافقة اللجنة',
     path: process.env.PUBLIC_URL + '/dashboard/FinalApprovalPage',
@@ -54,34 +47,10 @@ const navConfig = [
     // page_role: { public: 1 },
   },
   // {
-  //   title: 'ادخال',
-  //   path: process.env.PUBLIC_URL + '/dashboard/DepartmentFollowup',
+  //   title: 'ترحيل إلى عشتار ',
+  //   path: process.env.PUBLIC_URL + '/dashboard/Migrate',
   //   icon: <MenuOpen />,
   //   // page_role: { public: 1 },
-  // },
-  // {
-  //   title: 'تقرير الاقسام   ',
-  //   path: process.env.PUBLIC_URL + '/dashboard/Reports',
-  //   icon: <MenuOpen />,
-  //   // page_role: { public: 1 },
-  // },
-  // {
-  //   title: 'البحث التقريبي',
-  //   path: process.env.PUBLIC_URL + '/dashboard/ApproximateSearch',
-  //   icon: <MenuOpen />,
-  //   // page_role: { public: 1 },
-  // },
-  // {
-  //   title: '  التقاريير ',
-  //   path: process.env.PUBLIC_URL + '/dashboard/ReportPage',
-  //   icon: <MenuOpen />,
-  //   page_role: { public: 1 }
-  // },
-  // {
-  //   title: '  الاحصائيات ',
-  //   path: process.env.PUBLIC_URL + '/dashboard/StatisticsPage',
-  //   icon: <MenuOpen />,
-  //   page_role: { public: 1 },
   // },
 ];
 

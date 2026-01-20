@@ -23,30 +23,7 @@ const navView = [
     icon: <MenuOpen />,
     page_role: { public: 1 },
   },
-  // {
-  //   title: 'موافقة اللجنة ',
-  //   path: process.env.PUBLIC_URL + '/dashboard/FinalApprovalPage',
-  //   icon: <MenuOpen />,
-  //   page_role: { public: 1 },
-  // },
-  // {
-  //   title: 'الطلبات المرفوضة ',
-  //   path: process.env.PUBLIC_URL + '/reviewer/reportPage',
-  //   icon: <MenuOpen />,
-  //   page_role: { public: 1 },
-  // },
-  // {
-  //   title: ' تقرير الاقسام   ',
-  //   path: process.env.PUBLIC_URL + '/reviewer/Reports',
-  //   icon: <MenuOpen />,
-  //   page_role: { public: 1 },
-  // },
-  // {
-  //   title: 'البحث التقريبي',
-  //   path: process.env.PUBLIC_URL + '/reviewer/ApproximateSearch',
-  //   icon: <MenuOpen />,
-  //   page_role: { public: 1 },
-  // },
+  
 ];
 
 export default navView;

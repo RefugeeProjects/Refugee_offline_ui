@@ -24,6 +24,7 @@ import Profile from './pages/Profile';
 import ChangePassword from './pages/ChangePassword';
 import ApprovalsPage from './pages/ApprovalsPage';
 import ReportDynamic from './pages/reportDynamic';
+import Migrate from './pages/Migrate_To_Ishtar';
 import TrackingPage from './pages/track';
 import ReportPageRejected from './pages/rejectedRequests';
 
@@ -85,9 +86,9 @@ export default function Router({ user_roles }) {
 
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ReportPageRejected'} />, index: true },
         { path: 'ReportPageRejected', element: <ReportPageRejected /> },
+        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/Migrate'} />, index: true },
+        { path: 'Migrate', element: <Migrate /> },
 
-        // { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ApproximateSearch'} />, index: true },
-        // { path: 'ApproximateSearch', element: <ApproximateSearch /> },
       ],
     },
     {
