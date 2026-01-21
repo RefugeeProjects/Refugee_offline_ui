@@ -88,7 +88,16 @@ export default function ApprovalsPage() {
     birthday_member: '',
     relation_member: '',
   });
-
+const [openInterviewDialog, setOpenInterviewDialog] = useState(false);
+const [pendingRefugee, setPendingRefugee] = useState(null);
+const [officerName, setOfficerName] = useState('');
+const [interviewDate, setInterviewDate] = useState('');
+useEffect(() => {
+  if (openInterviewDialog) {
+    setOfficerName('');
+    setInterviewDate('');
+  }
+}, [openInterviewDialog]);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const FILES_BASE_URL = process.env.REACT_APP_FILES_BASE_URL;
   const DEFAULT_PHOTO = process.env.REACT_APP_DEFAULT_PHOTO;
@@ -125,47 +134,6 @@ export default function ApprovalsPage() {
   };
 
   const [isLoadingLookups, setIsLoadingLookups] = useState(false);
-  //2026-1-02
-  // const loadAllLookups = async () => {
-  //   if (Object.keys(lookups).length === Object.keys(LOOKUP_MAP).length) return;
-
-  //   setIsLoadingLookups(true);
-  //   try {
-  //     const entries = Object.entries(LOOKUP_MAP);
-
-  //     const results = await Promise.all(
-  //       entries.map(([key, category]) =>
-  //         api('GET', `lookups/items?category=${category}`).then((res) => ({
-  //           key,
-  //           success: res.success,
-  //           data: res.data,
-  //         }))
-  //       )
-  //     );
-
-  //     const aggregated = {};
-  //     results.forEach((r) => {
-  //       if (r.success) aggregated[r.key] = r.data;
-  //     });
-
-  //     setLookups(aggregated);
-  //   } finally {
-  //     setIsLoadingLookups(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const fetchLookups = async () => {
-  //     const result = {};
-  //     for (const key in LOOKUP_MAP) {
-  //       const { data, success } = await api('GET', `lookups/items?category=${LOOKUP_MAP[key]}`);
-  //       if (success) result[key] = data;
-  //     }
-  //     setLookups(result);
-  //   };
-
-  //   fetchLookups();
-  // }, []);
 
   const loadAllLookups = async (force = false) => {
     if (!force && Object.keys(lookups).length === Object.keys(LOOKUP_MAP).length) {
@@ -206,7 +174,6 @@ export default function ApprovalsPage() {
 
     const { data, success } = await api('GET', `lookups/items?category=${category}`);
     if (success) {
-      console.log('trueeeeeeeeee', data);
 
       setLookups((prev) => ({
         ...prev,
@@ -281,6 +248,7 @@ export default function ApprovalsPage() {
   const token = localStorage.getItem("token");
 
   const handleRowClick = async (refugeeData) => {
+
     try {
 
       const { success, data } = await api('GET',`freqs/refugees/${refugeeData.id}/with-files`);
@@ -303,6 +271,32 @@ export default function ApprovalsPage() {
     setRefugees((prev) =>
       prev.map((r) => (r.id === refugeeData.id ? { ...r, personal_photo: refugeeData.personal_photo } : r))
     );
+
+if (user.roles === 'data_entry') {
+  const hasDate = !!refugeeData.interview_date;
+  const hasOfficer = !!refugeeData.interview_officername;
+
+  if (!hasDate && !hasOfficer) {
+    // الاثنين مفقودين → ابدأ بالتاريخ
+    setPendingRefugee({ ...refugeeData, require: 'date' });
+    setOpenInterviewDialog(true);
+    return;
+  }
+
+  if (hasDate && !hasOfficer) {
+    setPendingRefugee({ ...refugeeData, require: 'officer' });
+    setOpenInterviewDialog(true);
+    return;
+  }
+
+  if (!hasDate && hasOfficer) {
+    setPendingRefugee({ ...refugeeData, require: 'date' });
+    setOpenInterviewDialog(true);
+    return;
+  }
+}
+
+
 
     // ✅ نفس عملك السابق
     setSelectedRefugee(refugeeData);
@@ -551,6 +545,7 @@ export default function ApprovalsPage() {
               value={formatDateForInput(editableRefugeeData?.interview_date)}
               onChange={handleInputChange}
               InputLabelProps={{ shrink: true }}
+              required
             />
           </Grid>
 
@@ -1266,6 +1261,10 @@ export default function ApprovalsPage() {
         governorate: editableRefugeeData.governorate,
       };
 
+      if (!editableRefugeeData?.interview_date) {
+  return DangerMsg('خطأ', 'تاريخ المقابلة حقل إجباري ولا يمكن تركه فارغاً');
+}
+
       const { success, msg } = await api('PUT', `mains/refugees/id/${editableRefugeeData.id}`, filteredData);
 
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -1456,6 +1455,42 @@ export default function ApprovalsPage() {
       DangerMsg('خطأ', 'حدث خطأ أثناء عملية السحب من الأونلاين');
     }
   };
+
+  const handleSaveInterviewRequired = async () => {
+  if (!pendingRefugee) return;
+
+  let payload = {};
+
+  if (pendingRefugee.require === 'officer') {
+    if (!officerName) return DangerMsg('خطأ', 'اسم ضابط المقابلة مطلوب');
+    payload.interview_officername = officerName;
+  }
+
+  if (pendingRefugee.require === 'date') {
+    if (!interviewDate) return DangerMsg('خطأ', 'تاريخ المقابلة مطلوب');
+    payload.interview_date = interviewDate;
+  }
+
+  try {
+    const { success, msg } = await api(
+      'PUT',
+      `mains/refugees/id/${pendingRefugee.id}`,
+      payload
+    );
+
+    if (success) {
+      NotificationMsg('نجاح', 'تم حفظ البيانات');
+      setOpenInterviewDialog(false);
+      setPendingRefugee(null);
+      await fetchData(); // تحديث الجدول
+    } else {
+      DangerMsg('فشل', msg || 'لم يتم الحفظ');
+    }
+  } catch (e) {
+    console.error(e);
+    DangerMsg('خطأ', 'فشل الاتصال بالخادم');
+  }
+};
 
   return (
     <Container maxWidth="xl" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', py: 3 }}>
@@ -2275,6 +2310,69 @@ export default function ApprovalsPage() {
           </LoadingButton>
         </DialogActions>
       </Dialog>
+      <Dialog
+  open={openInterviewDialog}
+  disableEscapeKeyDown
+  onClose={() => {}}
+>
+<DialogTitle
+  sx={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  }}
+>
+  بيانات المقابلة مطلوبة
+
+  <IconButton
+    onClick={() => {
+      setOpenInterviewDialog(false);
+      setPendingRefugee(null);
+    }}
+  >
+    <CloseIcon />
+  </IconButton>
+</DialogTitle>
+
+  <DialogContent>
+
+    {pendingRefugee?.require === 'officer' && (
+  <TextField
+    fullWidth
+    required
+    label="اسم ضابط المقابلة"
+    value={officerName}
+    onChange={(e) => setOfficerName(e.target.value)}
+  />
+)}
+
+{pendingRefugee?.require === 'date' && (
+  <TextField
+    fullWidth
+    required
+    type="date"
+    label="تاريخ المقابلة"
+    InputLabelProps={{ shrink: true }}
+    value={interviewDate}
+    onChange={(e) => setInterviewDate(e.target.value)}
+  />
+)}
+
+
+  </DialogContent>
+
+<DialogActions>
+  <Button
+    variant="contained"
+    color="primary"
+    onClick={handleSaveInterviewRequired}
+  >
+    حفظ
+  </Button>
+</DialogActions>
+
+</Dialog>
+
     </Container>
   );
 }

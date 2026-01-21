@@ -17,16 +17,8 @@ const token = localStorage.getItem("token");
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-      if (!token) {
-  setError("انتهت الجلسة، أعد تسجيل الدخول");
-  setLoading(false);
-  return;
-}
 
-        const response = await fetch(`${baseUrl}/freqs/refugees/${id}/with-files`, { headers: {
-      Authorization: `Bearer ${token}`,
-    },
-        });
+        const response = await fetch(`${baseUrl}/freqs/refugees/${id}/with-files`);
         const result = await response.json();
 
         if (result.success) {

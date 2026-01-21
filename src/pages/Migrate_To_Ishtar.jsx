@@ -48,26 +48,26 @@ export default function Migrate_To_Ishtar() {
   // =============================
   // توليد الرقم العائلي
   // =============================
-  const generateFamilyNumber = async (id) => {
-    setLoadingIds((prev) => [...prev, id]);
-    try {
-      const { success, msg } = await api(
-        'POST',
-        `migration/refugees/${id}/generate-family-number`
-      );
+  // const generateFamilyNumber = async (id) => {
+  //   setLoadingIds((prev) => [...prev, id]);
+  //   try {
+  //     const { success, msg } = await api(
+  //       'POST',
+  //       `migration/refugees/${id}/generate-family-number`
+  //     );
 
-      if (!success) {
-        DangerMsg('رقم عائلي', msg || 'فشل التوليد');
-      } else {
-        NotificationMsg('رقم عائلي', 'تم توليد الرقم بنجاح', 'success');
-        fetchData();
-      }
-    } catch {
-      DangerMsg('رقم عائلي', 'خطأ أثناء التوليد');
-    } finally {
-      setLoadingIds((prev) => prev.filter((x) => x !== id));
-    }
-  };
+  //     if (!success) {
+  //       DangerMsg('رقم عائلي', msg || 'فشل التوليد');
+  //     } else {
+  //       NotificationMsg('رقم عائلي', 'تم توليد الرقم بنجاح', 'success');
+  //       fetchData();
+  //     }
+  //   } catch {
+  //     DangerMsg('رقم عائلي', 'خطأ أثناء التوليد');
+  //   } finally {
+  //     setLoadingIds((prev) => prev.filter((x) => x !== id));
+  //   }
+  // };
 
   // =============================
   // أعمدة الجدول
@@ -81,27 +81,27 @@ export default function Migrate_To_Ishtar() {
     { field: 'sur_name', headerName: 'اللقب' },
     { field: 'current_stage', headerName: 'المرحلة' },
     { field: 'registration_group_number', headerName: 'الرقم العائلي', width: 160 },
-       {
-          field: 'actions',
-          headerName: 'الإجراءات',
-          width: 160,
-          sortable: false,
-          renderCell: (params) => (
-            <Button
-              variant="contained"
-              dir="rtl"
-              color="primary"
-              sx={{
-                direction: 'rtl',
-                transform: 'scaleX(-1);', // يوقف أي عكس
-                unicodeBidi: 'normal', // يمنع الانعكاس داخل النص
-                textAlign: 'center',
-              }}
-              onClick={() => generateFamilyNumber(params.row.id)}
-            >توليد رقم عائلي
-            </Button>
-          ),
-        },
+      //  {
+      //     field: 'actions',
+      //     headerName: 'الإجراءات',
+      //     width: 160,
+      //     sortable: false,
+      //     renderCell: (params) => (
+      //       <Button
+      //         variant="contained"
+      //         dir="rtl"
+      //         color="primary"
+      //         sx={{
+      //           direction: 'rtl',
+      //           transform: 'scaleX(-1);', // يوقف أي عكس
+      //           unicodeBidi: 'normal', // يمنع الانعكاس داخل النص
+      //           textAlign: 'center',
+      //         }}
+      //         onClick={() => generateFamilyNumber(params.row.id)}
+      //       >توليد رقم عائلي
+      //       </Button>
+      //     ),
+      //   },
   ];
 const migrateAll = async () => {
   setLoading(true);
