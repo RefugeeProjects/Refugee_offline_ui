@@ -23,6 +23,12 @@ const navView = [
     icon: <MenuOpen />,
     page_role: { public: 1 },
   },
+  {
+    title: 'طلبات منجزة ',
+    path: process.env.PUBLIC_URL + '/dashboard/SecurityPage',
+    icon: <MenuOpen />,
+    page_role: { public: 1 },
+  },
   
 ];
 

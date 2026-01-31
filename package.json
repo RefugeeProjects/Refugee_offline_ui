@@ -71,6 +71,7 @@
     "jspdf-autotable": "^3.8.4",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.563.0",
     "mdb-react-ui-kit": "^6.0.0",
     "mime-db": "^1.52.0",
     "numeral": "^2.0.6",

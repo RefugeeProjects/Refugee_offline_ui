@@ -46,6 +46,7 @@ import { DangerMsg, NotificationMsg } from '../components/NotificationMsg';
 import { LoadingButton } from '@mui/lab';
 
 import { appContext } from '../context';
+import ActionWithNote from './ActionWithNote'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -181,6 +182,8 @@ useEffect(() => {
       }));
     }
   };
+console.log('FILES_BASE_URL =', FILES_BASE_URL);
+console.log('DEFAULT_PHOTO =', DEFAULT_PHOTO);
 
   const navigate = useNavigate();
 
@@ -197,6 +200,7 @@ useEffect(() => {
       }
 
       const { success, data } = await api('GET', endpoint);
+console.log('REFUGEES RAW FROM API =', data?.records || data);
 
       if (!success) {
         DangerMsg('اشعارات اللاجئين', 'خطأ في تحميل البيانات');
@@ -251,19 +255,43 @@ useEffect(() => {
 
     try {
 
-      const { success, data } = await api('GET',`freqs/refugees/${refugeeData.id}/with-files`);
+      // const { success, data } = await api('GET',`freqs/refugees/${refugeeData.id}/with-files`);
 
-      const result = await data.json();
+      // const result = await data.json();
 
-      if (result.success && Array.isArray(result.data?.files)) {
-        const photoFile = result.data.files.find((f) => f.file_name === 'personal_photo.png');
+      // if (result.success && Array.isArray(result.data?.files)) {
+      //   const photoFile = result.data.files.find((f) => f.file_name === 'personal_photo.png');
 
-        refugeeData.personal_photo = photoFile
-          ? `${FILES_BASE_URL}${photoFile.file_path.replace('/uploads', '')}`
-          : DEFAULT_PHOTO;
-      } else {
-        refugeeData.personal_photo = DEFAULT_PHOTO;
-      }
+      //   refugeeData.personal_photo = photoFile
+      //     ? `${FILES_BASE_URL}${photoFile.file_path.replace('/uploads', '')}`
+      //     : DEFAULT_PHOTO;
+      // } else {
+      //   refugeeData.personal_photo = DEFAULT_PHOTO;
+      // }
+
+      const { success, data } = await api(
+  'GET',
+  `freqs/refugees/${refugeeData.id}/with-files`
+);
+
+if (success && Array.isArray(data?.files)) {
+  const photoFile = data.files.find(
+    (f) => f.file_name === 'personal_photo.png'
+  );
+
+  if (photoFile?.file_path) {
+    refugeeData.personal_photo =
+      `${FILES_BASE_URL}${photoFile.file_path.replace('/uploads', '')}`;
+  } else {
+    refugeeData.personal_photo = DEFAULT_PHOTO;
+  }
+} else {
+  refugeeData.personal_photo = DEFAULT_PHOTO;
+}
+
+
+
+
     } catch (error) {
       console.error('Error fetching photo:', error);
       refugeeData.personal_photo = DEFAULT_PHOTO;
@@ -993,7 +1021,7 @@ if (user.roles === 'data_entry') {
     }
   };
 
-  const handleForward = async () => {
+  const handleForward = async (note = null) => {
     if (!selectedRefugee) return;
     setIsForwarding(true);
 
@@ -1004,7 +1032,7 @@ if (user.roles === 'data_entry') {
       if (['mokhabarat', 'amn_watani', 'istikhbarat_defense', 'iqama'].includes(userRole)) {
         // لو الدور من أدوار الموافقات
         url = `freqs/refugees/update-approval/${selectedRefugee.id}`;
-        body = { decision: 'موافق' };
+        body = { decision: 'موافق',  ...(note ? { notes: note } : {}) };
       } else {
         // باقي الأدوار يستخدمون الراوتر القديم
         url = `freqs/refugees/${selectedRefugee.id}/forward`;
@@ -1075,7 +1103,7 @@ if (user.roles === 'data_entry') {
       if (['mokhabarat', 'amn_watani', 'istikhbarat_defense', 'iqama'].includes(userRole)) {
         // لو الدور من أدوار الموافقات
         url = `freqs/refugees/update-approval/${selectedRefugee.id}`;
-        body = { decision: 'رفض' };
+        body = { decision: 'رفض',  ...(reason ? { notes: reason } : {}) };
       } else {
         // باقي الأدوار يستخدمون الراوتر القديم
         url = `freqs/refugees/${selectedRefugee.id}/reject`;
@@ -1595,75 +1623,6 @@ if (user.roles === 'data_entry') {
                 </TableRow>
               ) : (
                 refugees.map((refugee) => (
-                  // <TableRow
-                  //   key={refugee.id}
-                  //   onClick={() => handleRowClick(refugee)} // Pass the whole refugee object
-                  //   sx={{
-                  //     cursor: 'pointer',
-                  //     backgroundColor: 'white', // خلفية الصف الأساسي
-                  //     '&:hover': {
-                  //       backgroundColor: '#f5f5f5', // رمادي باهت عند التمرير
-                  //     },
-                  //     borderBottom: (theme) => `1px solid rgba(0, 0, 0, 0.1)`, // خط سفلي خفيف
-
-                  //     // ✅ حذف أي خلفية خاصة بالحالات الأخرى (approved, rejected...) أو استبدالها لو أردت
-                  //     '&.row-approved': {
-                  //       backgroundColor: 'white',
-                  //       '&:hover': { backgroundColor: '#f5f5f5' },
-                  //     },
-                  //     '&.row-rejected': {
-                  //       backgroundColor: 'white',
-                  //       '&:hover': { backgroundColor: '#f5f5f5' },
-                  //     },
-                  //     '&.row-reviewer': {
-                  //       backgroundColor: 'white',
-                  //       '&:hover': { backgroundColor: '#f5f5f5' },
-                  //     },
-                  //     '&.row-suspended': {
-                  //       backgroundColor: 'white',
-                  //       '&:hover': { backgroundColor: '#f5f5f5' },
-                  //     },
-                  //   }}
-                  //   className={`row-${refugee.current_stage}`} // Apply class for row styling
-                  // >
-                  //   {tableHeaders.map((header) => (
-                  //     <TableCell
-                  //       key={header.id}
-                  //       sx={{ textAlign: 'right', padding: '12px 16px', border: '1px solid rgba(0, 0, 0, 0.1)' }}
-                  //     >
-                  //       <Typography variant="body1" sx={{ whiteSpace: 'normal', lineHeight: 'normal' }}>
-                  //         {header.render ? header.render(refugee[header.id]) : refugee[header.id] || '---'}
-                  //       </Typography>
-                  //     </TableCell>
-                  //   ))}
-                  //   {/* ✅ زر حذف القيد */}
-                  //   <TableCell
-                  //     sx={{
-                  //       textAlign: 'center',
-                  //       border: '1px solid rgba(0, 0, 0, 0.1)',
-                  //     }}
-                  //   >
-                  //     <Button
-                  //       variant="outlined"
-                  //       color="error"
-                  //       size="small"
-                  //       onClick={(e) => {
-                  //         e.stopPropagation(); // منع تفعيل onClick للصف
-                  //         handleDelete(refugee.id);
-                  //       }}
-                  //       sx={{
-                  //         textTransform: 'none',
-                  //         borderRadius: 2,
-                  //         fontWeight: 'bold',
-                  //         fontSize: '0.9rem',
-                  //         px: 2,
-                  //         py: 0.5,
-                  //       }}
-                  //     >
-                  //       حذف
-                  //     </Button>
-                  //   </TableCell>
-                  // </TableRow>
                   <TableRow
                     key={refugee.id}
                     onClick={() => handleRowClick(refugee)}
@@ -1675,7 +1634,7 @@ if (user.roles === 'data_entry') {
                     }}
                     className={`row-${refugee.current_stage}`}
                   >
-                    {tableHeaders.map((header) => (
+                    {tableHeaders.map((header) => ( 
                       <TableCell
                         key={header.id}
                         sx={{
@@ -1684,6 +1643,13 @@ if (user.roles === 'data_entry') {
                           border: '1px solid rgba(0, 0, 0, 0.1)',
                         }}
                       >
+                        {header.id === 'personal_photo' && (
+  console.log(
+    'IMG SRC BUILT =',
+    refugee.personal_photo
+  )
+)}
+
                         {header.id === 'personal_photo' ? (
                           refugee.personal_photo ? (
                             <Avatar
@@ -1901,25 +1867,26 @@ if (user.roles === 'data_entry') {
                         إرجاع المرحلة
                       </Button>
                     ) : null}
-
-                    {/* Approve Button */}
-                    {/* {((selectedRefugee.current_stage === 'data_entry' &&
-                      (user.roles === 'data_entry' || user.roles === 'reviewer')) ||
-                      (selectedRefugee.current_stage === 'reviewer' &&
-                        (user.roles === 'reviewer' || user.roles === 'approver')) ||
-                      (selectedRefugee.current_stage === 'approver' && user.roles === 'approver') ||
-                      isSpecialRole(user.roles)) && ( */}
+{/* 
                     <LoadingButton variant="contained" color="primary" onClick={handleForward} loading={isForwarding}>
                       موافقة
                     </LoadingButton>
-                    {/* )} */}
+                  
 
-                    {/* Reject Button */}
-                    {/* {(user.roles === 'reviewer' || user.roles === 'approver' || isSpecialRole(user.roles)) && ( */}
+                
                     <Button variant="outlined" color="error" onClick={() => handleOpenConfirmDialog('reject')}>
                       رفض الطلب
                     </Button>
-                    {/* )} */}
+                    */}
+
+<ActionWithNote
+  userRole={user.roles}
+  loading={isForwarding}
+  onApprove={(note) => handleForward(note)}
+  onReject={(note) => handleReject(note)}
+/>
+
+
 
                     {/* Suspend Button */}
                     {((user.roles === 'data_entry' && selectedRefugee.current_stage === 'data_entry') ||

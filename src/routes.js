@@ -23,6 +23,7 @@ import Settings from './pages/Setting/Settings';
 import Profile from './pages/Profile';
 import ChangePassword from './pages/ChangePassword';
 import ApprovalsPage from './pages/ApprovalsPage';
+import SecurityPage from './pages/SecurityPage';
 import ReportDynamic from './pages/reportDynamic';
 import Migrate from './pages/Migrate_To_Ishtar';
 import TrackingPage from './pages/track';
@@ -77,6 +78,10 @@ export default function Router({ user_roles }) {
 
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ApprovalsPage'} />, index: true },
         { path: 'ApprovalsPage', element: <ApprovalsPage /> },
+
+
+        { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/SecurityPage'} />, index: true },
+        { path: 'SecurityPage', element: <SecurityPage /> },
 
         { element: <Navigate to={process.env.PUBLIC_URL + '/dashboard/ReportDynamic'} />, index: true },
         { path: 'ReportDynamic', element: <ReportDynamic /> },
