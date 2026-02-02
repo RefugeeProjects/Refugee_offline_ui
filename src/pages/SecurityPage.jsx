@@ -358,6 +358,7 @@ const fieldLabels = {
     religion: 'الديانة', //confirmed
     birth_date: 'تاريخ الولادة', //confirmed
     birth_place: 'مكان الولادة', //confirmed
+    placeofbirthcity: 'مدينة الولادة', // confirmed
     marital_status: 'الحالة الاجتماعية', //confirmed
     spouse_nationality: 'جنسية الزوج/الزوجة', //confirmed
     marital_status_date: 'تاريخ الحالة الاجتماعية', // confirmed
@@ -368,6 +369,14 @@ const fieldLabels = {
     nationality: 'جنسية مقدم الطلب', //confirmed
     origin_country: 'بلد الأصل', //confirmed
     profession: 'المهنة', //confirmed
+    education_level_id: 'المستوى التعليمي', //confirmed
+    father_date_ofbirth: 'تاريخ ميلاد الأب', //confirmed
+    father_isdead: 'هل الأب متوفى؟', //confirmed
+    father_nationalityid: 'جنسية الأب', //confirmed
+    mother_date_ofbirth: 'تاريخ ميلاد الأم', //confirmed
+    mother_isdead: 'هل الأم متوفاة؟', //confirmed
+    mother_nationalityid: 'جنسية الأم', //confirmed
+
     personal_photo: 'الصورة الشخصية', //confirmed
     // political_opinion: 'الرأي السياسي', //confirmed
     // social_group_membership: 'الانتماء الاجتماعي أو القبلي',
@@ -738,12 +747,34 @@ const formatDate = (value) => {
                   <DetailItem label="اسم الام " value={refugeeDetails.mother_name} />
                   <DetailItem label="اسم اب الام " value={refugeeDetails.fath_mother_name} />
                   <DetailItem label="تاريخ الميلاد" value={formatDate(refugeeDetails.birth_date)} />
-                  <DetailItem label="مكان الميلاد" value={refugeeDetails.birth_place} />
+                  <DetailItem label="بلد الميلاد" value={refugeeDetails.birth_place} />
+                  <DetailItem label="مدينة الميلاد" value={refugeeDetails.placeofbirthcity} />
                   <DetailItem label="الديانة" value={refugeeDetails.religion} />
                   <DetailItem label="جنسية مقدم الطلب" value={refugeeDetails.nationality} />
                   <DetailItem label="بلد الأصل " value={refugeeDetails.origin_country} />
                   <DetailItem label="المهنة" value={refugeeDetails.profession} />
+                  <DetailItem label="المستوى التعليمي" value={refugeeDetails.education_level_id} />
                   <DetailItem label="رقم الهاتف" value={refugeeDetails.phone_number} />
+                </Grid>
+              </Grid>
+
+
+              {/* ----------------- معلومات الوالدين ----------------- */}
+              <Grid item xs={12}>
+                <Typography
+                  variant="h6"
+                  color="primary.main"
+                  sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}
+                >
+                  معلومات الوالدين
+                </Typography>
+                <Grid container spacing={3}>
+                  <DetailItem label="تاريخ ميلاد الأب" value={refugeeDetails.father_date_ofbirth} />
+                  <DetailItem label="هل الأب متوفى؟" value={refugeeDetails.father_isdead} />
+                  <DetailItem label="جنسية الأب" value={refugeeDetails.father_nationalityid} />
+                  <DetailItem label="تاريخ ميلاد الأم" value={refugeeDetails.mother_date_ofbirth} />
+                  <DetailItem label="هل الأم متوفاة؟" value={refugeeDetails.mother_isdead} />
+                  <DetailItem label="جنسية الأم" value={refugeeDetails.mother_nationalityid} />
                 </Grid>
               </Grid>
 
@@ -758,7 +789,7 @@ const formatDate = (value) => {
                 </Typography>
                 <Grid container spacing={3}>
                   <DetailItem label="الحالة الاجتماعية" value={refugeeDetails.marital_status} />
-                  <DetailItem label="تاريخ الحالة الاجتماعية " value={refugeeDetails.marital_status_date} />
+                  <DetailItem label="تاريخ الحالة الاجتماعية " value={formatDate(refugeeDetails.marital_status_date)} />
                   <DetailItem label="جنسية الزوج/الزوجة" value={refugeeDetails.spouse_nationality} />
                 </Grid>
               </Grid>

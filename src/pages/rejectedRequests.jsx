@@ -101,6 +101,7 @@ export default function RefugeesGrid() {
         religion: item.religion,
         birth_date: safeFormatDate(item.birth_date), // تنسيق في صفيف البيانات
         birth_place: item.birth_place,
+        placeofbirthcity: item.placeofbirthcity,
         marital_status: item.marital_status,
         marital_status_date: safeFormatDate(item.marital_status_date),
         spouse_nationality: item.spouse_nationality,
@@ -144,6 +145,13 @@ export default function RefugeesGrid() {
         interview_officerName: item.interview_officerName || '',
         personal_photo: item.personal_photo || '',
         notes: item.notes || '', // ✅ إضافة حقل الملاحظات المفقود
+        education_level_id: item.education_level_id,
+        father_date_ofbirth: safeFormatDate(item.father_date_ofbirth),
+        father_isdead: item.father_isdead ? 'نعم' : 'لا',
+        father_nationalityid: item.father_nationalityid,
+        mother_date_ofbirth: safeFormatDate(item.mother_date_ofbirth),
+        mother_isdead: item.mother_isdead ? 'نعم' : 'لا',
+        mother_nationalityid: item.mother_nationalityid,
       }));
 
       setRows(formatted);
@@ -288,12 +296,33 @@ export default function RefugeesGrid() {
                   <DetailItem label="اسم الام " value={selectedRow.mother_name} />
                   <DetailItem label="اسم اب الام " value={selectedRow.fath_mother_name} />
                   <DetailItem label="تاريخ الميلاد" value={formatDate(selectedRow.birth_date)} />
-                  <DetailItem label="مكان الميلاد" value={selectedRow.birth_place} />
+                  <DetailItem label="بلد الميلاد" value={selectedRow.birth_place} />
+                  <DetailItem label="مدينة الولادة" value={selectedRow.placeofbirthcity} />
                   <DetailItem label="الديانة" value={selectedRow.religion} />
                   <DetailItem label="جنسية مقدم الطلب" value={selectedRow.nationality} />
                   <DetailItem label="بلد الأصل " value={selectedRow.origin_country} />
                   <DetailItem label="المهنة" value={selectedRow.profession} />
+                  <DetailItem label="المستوى التعليمي" value={selectedRow.education_level_id} />
                   <DetailItem label="رقم الهاتف" value={selectedRow.phone_number} />
+                </Grid>
+              </Grid>
+
+              {/* ----------------- معلومات الوالدين ----------------- */}
+              <Grid item xs={12}>
+                <Typography
+                  variant="h6"
+                  color="primary.main"
+                  sx={{ mb: 2, borderBottom: '2px solid', borderColor: 'divider', pb: 0.5 }}
+                >
+                  معلومات الوالدين
+                </Typography>
+                <Grid container spacing={3}>
+                  <DetailItem label="تاريخ ميلاد الأب" value={formatDate(selectedRow.father_date_ofbirth)} />
+                  <DetailItem label="هل الأب متوفى؟" value={selectedRow.father_isdead} />
+                  <DetailItem label="جنسية الأب" value={selectedRow.father_nationalityid} />
+                  <DetailItem label="تاريخ ميلاد الأم" value={formatDate(selectedRow.mother_date_ofbirth)} />
+                  <DetailItem label="هل الأم متوفاة؟" value={selectedRow.mother_isdead} />
+                  <DetailItem label="جنسية الأم" value={selectedRow.mother_nationalityid} />
                 </Grid>
               </Grid>
 
@@ -308,7 +337,7 @@ export default function RefugeesGrid() {
                 </Typography>
                 <Grid container spacing={3}>
                   <DetailItem label="الحالة الاجتماعية" value={selectedRow.marital_status} />
-                  <DetailItem label="تاريخ الحالة الاجتماعية " value={selectedRow.marital_status_date} />
+                  <DetailItem label="تاريخ الحالة الاجتماعية " value={formatDate(selectedRow.marital_status_date)} />
                   <DetailItem label="جنسية الزوج/الزوجة" value={selectedRow.spouse_nationality} />
                 </Grid>
               </Grid>

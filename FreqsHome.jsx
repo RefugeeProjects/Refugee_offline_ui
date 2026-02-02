@@ -85,7 +85,7 @@ export default function ApprovalsPage() {
     gender:'الجنس', interview_date:'تاريخ المقابلة', interview_officername:'اسم مسؤول المقابلة',
     frist_name:'الاسم', second_name:'اسم الأب', theard_name:'اسم الجد', sur_name:'اللقب',
     mother_name:'اسم الأم', fath_mother_name:'اسم ابي الأم', religion:'الديانة', birth_date:'تاريخ الولادة',
-    birth_place:'مكان الولادة', marital_status:'الحالة الاجتماعية', spouse_nationality:'جنسية الزوج/الزوجة',
+    birth_place:'بلد الولادة',placeofbirthcity:'مكان الولادة', marital_status:'الحالة الاجتماعية', spouse_nationality:'جنسية الزوج/الزوجة',
     marital_status_date:'تاريخ الحالة الاجتماعية', phone_number:'رقم الهاتف', governorate:'المحافظة',
     district:'القضاء', subdistrict:'المنطقة', nationality:'القومية', origin_country:'بلد الأصل',
     profession:'المهنة', personal_photo:'الصورة الشخصية', first_name_member:'اسم أول فرد من العائلة',
@@ -107,13 +107,23 @@ export default function ApprovalsPage() {
     form_place_of_issue:'جهة الاصدار', race:'العرق', notes_case:'تعليق',
     mok_approval:'موافقة المخابرات', amn_wat_approval:'موافقة الامن الوطني',
     istk_approval:'موافقة استخبارات وامن الدفاع', iqama_approval:'موافقة الاقامة',
-    interviewnotes:'ملخص المقابلة'
+    interviewnotes:'ملخص المقابلة',
+    education_level_id:'المستوى التعليمي',
+     father_date_ofbirth: 'تاريخ ميلاد الأب',
+    father_isdead: 'هل الأب متوفى؟',
+    father_nationalityid: 'جنسية الأب',
+    mother_date_ofbirth: 'تاريخ ميلاد الأم',
+    mother_isdead: 'هل الأم متوفاة؟',
+    mother_nationalityid: 'جنسية الأم',
   };
 
   const personalFields = ['gender','frist_name','second_name','theard_name','sur_name','mother_name','fath_mother_name',
-    'interview_officername','interview_date','birth_date','birth_place','religion','marital_status','spouse_nationality',
+    'interview_officername','interview_date','birth_date','birth_place','placeofbirthcity','religion','marital_status','spouse_nationality',
     'marital_status_date','phone_number','governorate','district','subdistrict','nationality','origin_country',
-    'profession','personal_photo','first_name_member'];
+    'profession','personal_photo','first_name_member','education_level_id',
+    'father_date_ofbirth','father_isdead','father_nationalityid',
+    'mother_date_ofbirth','mother_isdead','mother_nationalityid'
+  ];
 
   const additionalFields = Object.keys(fieldLabels).filter((key) => !personalFields.includes(key));
 
@@ -124,7 +134,7 @@ export default function ApprovalsPage() {
         return value ? (<img src={value} alt="الصورة" style={{maxWidth:'100%',maxHeight:'120px',borderRadius:8}} />)
         : (<Typography variant="body1" color="text.secondary">لا توجد صورة</Typography>);
       }
-      if (['birth_date','residency_issue_date','residency_expiry_date','form_issue_date','form_expiry_date','interview_date','departure_date_from_origin','date_of_arrival_to_iraq'].includes(key)) {
+      if (['birth_date','residency_issue_date','residency_expiry_date','form_issue_date','form_expiry_date','interview_date','departure_date_from_origin','date_of_arrival_to_iraq','father_date_ofbirth','mother_date_ofbirth'].includes(key)) {
         return <Typography variant="body1">{formatDateForDisplay(value) || '---'}</Typography>;
       }
       return (<Typography variant="body1" sx={{whiteSpace:'pre-wrap'}}>{value || '---'}</Typography>);
@@ -151,14 +161,22 @@ export default function ApprovalsPage() {
   };
 
   const tableHeaders = [
-    {id:'frist_name',label:'الاسم'}, {id:'second_name',label:'اسم الاب'},
-    {id:'theard_name',label:'اسم الجد'}, {id:'sur_name',label:'اللقب'},
-    {id:'mother_name',label:'اسم الام'}, {id:'fath_mother_name',label:'اسم والد الام'},
-    {id:'interview_officername',label:'مسؤول المقابلة'}, {id:'current_stage',label:'المرحلة الحالية'},
-    {id:'phone_number',label:'رقم الهاتف'}, {id:'origin_country',label:'بلد الأصل'},
+    {id:'frist_name',label:'الاسم'},
+    {id:'second_name',label:'اسم الاب'},
+    {id:'theard_name',label:'اسم الجد'},
+    {id:'sur_name',label:'اللقب'},
+    {id:'mother_name',label:'اسم الام'},
+    {id:'fath_mother_name',label:'اسم والد الام'},
+    {id:'interview_officername',label:'مسؤول المقابلة'},
+    {id:'current_stage',label:'المرحلة الحالية'},
+    {id:'phone_number',label:'رقم الهاتف'},
+    {id:'origin_country',label:'بلد الأصل'},
     {id:'date_of_arrival_to_iraq',label:'تاريخ الوصول للعراق',render:(d)=>formatDateForDisplay(d)},
     {id:'nationality',label:'القومية'}, {id:'birth_date',label:'تاريخ الولادة',render:(d)=>formatDateForDisplay(d)},
-    {id:'interview_date',label:'تاريخ المقابلة',render:(d)=>formatDateForDisplay(d)}, {id:'notes_case',label:'تعليق'}
+    {id:'interview_date',label:'تاريخ المقابلة',render:(d)=>formatDateForDisplay(d)},
+    {id:'notes_case',label:'تعليق'},
+    {id:'father_date_ofbirth',label:'تاريخ ميلاد الأب',render:(d)=>formatDateForDisplay(d)},
+    {id:'mother_date_ofbirth',label:'تاريخ ميلاد الأم',render:(d)=>formatDateForDisplay(d)},
   ];
 
   const getStageText = (stage) => {

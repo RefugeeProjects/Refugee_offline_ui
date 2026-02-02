@@ -26,6 +26,7 @@ export default function RefugeeReport() {
     religion: false,
     birth_date: false,
     birth_place: false,
+    placeofbirthcity: false,
     marital_status: false,
     spouse_nationality: false,
     phone_number: false,
@@ -79,6 +80,14 @@ export default function RefugeeReport() {
     origin_country: false,
     political_party_membership: false,
     political_party_names: false,
+    education_level_id: false,
+    father_date_ofbirth: false,
+    father_isdead: false,
+    father_nationalityid: false,
+    mother_date_ofbirth: false,
+    mother_isdead: false,
+    mother_nationalityid: false,
+
   });
   const [filters, setFilters] = useState([]);
   const [reportData, setReportData] = useState([]);
@@ -110,6 +119,16 @@ export default function RefugeeReport() {
   const fliterGB = [...new Set(reportData.map((row) => row.created_by).filter((value) => value))];
   const fliterIN = [...new Set(reportData.map((row) => row.interview_officername).filter((value) => value))];
   const fliterGE = [...new Set(reportData.map((row) => row.gender).filter((value) => value))];
+  const fliterFDB = [...new Set(reportData.map((row) => row.father_date_ofbirth).filter((value) => value))];
+  const fliterMID = [...new Set(reportData.map((row) => row.mother_date_ofbirth).filter((value) => value))];
+  const fliterFID = [...new Set(reportData.map((row) => row.father_isdead).filter((value) => value))];
+  const  fliterFNI = [...new Set(reportData.map((row) => row.father_nationalityid).filter((value) => value))];
+  const fliterMDB = [...new Set(reportData.map((row) => row.mother_isdead).filter((value) => value))];
+  const fliterMNI = [...new Set(reportData.map((row) => row.mother_nationalityid).filter((value) => value))];
+  
+  
+
+  
 
   // تحميل الخط إلى jsPDF
   jsPDF.API.events.push([
@@ -363,16 +382,24 @@ export default function RefugeeReport() {
     { field: 'mother_name', headerName: 'اسم الأم', width: 120 },
     { field: 'fath_mother_name', headerName: 'اسم أب الأم', width: 150 },
     { field: 'birth_date', headerName: 'تاريخ الميلاد', width: 150 },
-    { field: 'birth_place', headerName: 'مكان الميلاد', width: 150 },
+    { field: 'birth_place', headerName: 'بلد الميلاد', width: 150 },
+    { field: 'placeofbirthcity', headerName: 'مدينة الولادة', width: 150 },
     { field: 'gender', headerName: 'الجنس', width: 80 },
     { field: 'religion', headerName: 'الديانة', width: 100 },
     { field: 'nationality', headerName: 'الجنسية', width: 100 },
     { field: 'race', headerName: 'العرق', width: 100 },
     { field: 'profession', headerName: 'المهنة', width: 150 },
+    { field: 'education_level_id', headerName: 'المستوى التعليمي', width: 150 },
     { field: 'phone_number', headerName: 'رقم الهاتف', width: 150 },
     { field: 'marital_status', headerName: 'الحالة الاجتماعية', width: 150 },
     { field: 'marital_status_date', headerName: 'تاريخ الحالة الزوجية', width: 170 },
     { field: 'spouse_nationality', headerName: 'جنسية الزوج/الزوجة', width: 170 },
+    { field: 'father_date_ofbirth', headerName: 'تاريخ ميلاد الأب', width: 170 },
+    { field: 'mother_date_ofbirth', headerName: 'تاريخ ميلاد الأم', width: 170 },
+    { field: 'father_isdead', headerName: 'هل الأب متوفى؟', width: 150 },
+    { field: 'mother_isdead', headerName: 'هل الأم متوفاة؟', width: 150 },
+    { field: 'father_nationalityid', headerName: 'جنسية الأب', width: 150 },
+    { field: 'mother_nationalityid', headerName: 'جنسية الأم', width: 150 },
     { field: 'governorate', headerName: 'المحافظة الحالية', width: 150 },
     { field: 'district', headerName: 'القضاء الحالي', width: 150 },
     { field: 'subdistrict', headerName: 'المنطقة الحالية', width: 150 },
@@ -467,6 +494,12 @@ export default function RefugeeReport() {
                   'created_by',
                   'interview_officername',
                   'gender',
+                  'father_date_ofbirth',
+                  'father_isdead',
+                  'father_nationalityid',
+                  'mother_date_ofbirth',
+                  'mother_isdead',
+                  'mother_nationalityid',
                 ].includes(column.field)
               ) // اختيار الحقول التي ستكون كفلاتر
               .map((column) => (
@@ -639,7 +672,57 @@ export default function RefugeeReport() {
                       onChange={(event, newValue) => handleAddOrUpdateFilter(column.field, newValue)}
                       renderInput={(params) => <TextField {...params} label={`فلتر: ${column.headerName}`} />}
                     />
-                  ) : (
+                  ) : column.field === 'father_date_ofbirth' ? (
+                    <Autocomplete
+                      fullWidth
+                      options={fliterFDB}
+                      getOptionLabel={(option) => option.toString()}
+                      onChange={(event, newValue) => handleAddOrUpdateFilter(column.field, newValue)}
+                      renderInput={(params) => <TextField {...params} label={`فلتر: ${column.headerName}`} />}
+                    />
+                  ) : column.field === 'father_isdead' ? (
+                    <Autocomplete 
+                      fullWidth
+                      options={fliterFID}
+                      getOptionLabel={(option) => option.toString()}
+                      onChange={(event, newValue) => handleAddOrUpdateFilter(column.field, newValue)}
+                      renderInput={(params) => <TextField {...params} label={`فلتر: ${column.headerName}`} />}
+                    />
+                  ) : column.field === 'father_nationalityid' ? (
+                    <Autocomplete
+                      fullWidth
+                      options={fliterFNI}
+                      getOptionLabel={(option) => option.toString()}
+                      onChange={(event, newValue) => handleAddOrUpdateFilter(column.field, newValue)}
+                      renderInput={(params) => <TextField {...params} label={`فلتر: ${column.headerName}`} />}
+                    />
+                  ) : column.field === 'mother_date_ofbirth' ? (
+                    <Autocomplete
+                      fullWidth
+                      options={fliterMDB}
+                      getOptionLabel={(option) => option.toString()}
+                      onChange={(event, newValue) => handleAddOrUpdateFilter(column.field, newValue)}
+                      renderInput={(params) => <TextField {...params} label={`فلتر: ${column.headerName}`} />}
+                    />
+                  ) : column.field === 'mother_isdead' ? (
+                    <Autocomplete
+                      fullWidth
+                      options={fliterMID}
+                      getOptionLabel={(option) => option.toString()}
+                      onChange={(event, newValue) => handleAddOrUpdateFilter(column.field, newValue)}
+                      renderInput={(params) => <TextField {...params} label={`فلتر: ${column.headerName}`} />}
+                    />
+                  ) : column.field === 'mother_nationalityid' ? (
+                    <Autocomplete
+                      fullWidth
+                      options={fliterMNI}
+                      getOptionLabel={(option) => option.toString()}
+                      onChange={(event, newValue) => handleAddOrUpdateFilter(column.field, newValue)}
+                      renderInput={(params) => <TextField {...params} label={`فلتر: ${column.headerName}`} />}
+                    />
+                  ) :  
+                
+                  (
                     <TextField
                       label={`فلتر: ${column.headerName}`}
                       onChange={(e) => handleAddOrUpdateFilter(column.field, e.target.value)}

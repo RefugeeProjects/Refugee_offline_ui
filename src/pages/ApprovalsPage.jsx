@@ -114,6 +114,10 @@ useEffect(() => {
     profession: 'Occupations',
     race: 'Ethnicities',
     origin_country: 'COUNTRY',
+    education_level_id: 'EducationLevels',
+    father_nationalityid: 'Nationalities',
+    mother_nationalityid: 'Nationalities',
+
   };
   const mapLabelsToIdsByLookupMap = (record, lookups, LOOKUP_MAP) => {
     const result = { ...record };
@@ -350,7 +354,8 @@ if (user.roles === 'data_entry') {
     const { name, value } = e.target;
     setEditableRefugeeData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === "mother_isdead" || name === "father_isdead"
+      ? parseInt(value, 10) : value,
     }));
   };
 
@@ -381,6 +386,7 @@ if (user.roles === 'data_entry') {
     religion: 'الديانة', //confirmed
     birth_date: 'تاريخ الولادة', //confirmed
     birth_place: 'مكان الولادة', //confirmed
+    placeofbirthcity: 'مدينة الولادة', //confirmed
     marital_status: 'الحالة الاجتماعية', //confirmed
     spouse_nationality: 'جنسية الزوج/الزوجة', //confirmed
     marital_status_date: 'تاريخ الحالة الاجتماعية', // confirmed
@@ -432,6 +438,13 @@ if (user.roles === 'data_entry') {
     istk_approval: 'موافقة استخبارات وامن الدفاع',
     iqama_approval: 'موافقة الاقامة',
     interviewnotes: 'ملخص المقابلة', //confirmed
+    education_level_id: 'المستوى التعليمي', // confirmed
+    father_date_ofbirth: 'تاريخ ميلاد الأب', // confirmed
+    father_isdead: 'هل الأب متوفى؟', // confirmed
+    father_nationalityid: 'جنسية الأب', // confirmed
+    mother_date_ofbirth: 'تاريخ ميلاد الأم', // confirmed
+    mother_isdead: 'هل الأم متوفاة؟', // confirmed
+    mother_nationalityid: 'جنسية الأم', // confirmed
   };
 
   const personalFields = [
@@ -446,6 +459,7 @@ if (user.roles === 'data_entry') {
     'interview_date',
     'birth_date',
     'birth_place',
+    'placeofbirthcity',
     'religion',
     'marital_status',
     'spouse_nationality',
@@ -458,6 +472,13 @@ if (user.roles === 'data_entry') {
     'origin_country',
     'profession',
     'personal_photo',
+    'education_level_id',
+    'father_date_ofbirth',
+    'father_isdead',
+    'father_nationalityid',
+    'mother_date_ofbirth',
+    'mother_isdead',
+    'mother_nationalityid'
   ];
 
   const additionalFields = Object.keys(fieldLabels).filter((key) => !personalFields.includes(key));
@@ -475,6 +496,12 @@ if (user.roles === 'data_entry') {
           </Typography>
         );
       }
+      
+if (key === "father_isdead" || key === "mother_isdead") {
+  return Number(value) === 1 ? "نعم" : "لا";
+}
+
+
       if (
         key === 'birth_date' ||
         key === 'residency_issue_date' ||
@@ -483,7 +510,9 @@ if (user.roles === 'data_entry') {
         key === 'form_expiry_date' ||
         key === 'interview_date' ||
         key === 'departure_date_from_origin' ||
-        key === 'date_of_arrival_to_iraq'
+        key === 'date_of_arrival_to_iraq' ||
+        key === 'father_date_ofbirth' ||
+        key === 'mother_date_ofbirth'
       ) {
         return <Typography variant="body1">{formatDateForDisplay(value) || '---'}</Typography>;
       }
@@ -533,20 +562,6 @@ if (user.roles === 'data_entry') {
         <Grid container spacing={2}>
           {/* الجنس */}
           <Grid item xs={12} sm={6}>
-            {/* <TextField
-              select
-              fullWidth
-              label={fieldLabels.gender}
-              name="gender"
-              value={editableRefugeeData?.gender || ''}
-              onChange={handleInputChange}
-            >
-              {GENDERS.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField> */}
             <TextField
               select
               fullWidth
@@ -701,6 +716,16 @@ if (user.roles === 'data_entry') {
               ))}
             </TextField>
           </Grid>
+          {/* مدينة الولادة */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label={fieldLabels.placeofbirthcity}
+              name="placeofbirthcity"
+              value={editableRefugeeData?.placeofbirthcity || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
 
           {/* الحالة الاجتماعية */}
           <Grid item xs={12} sm={6}>
@@ -830,13 +855,6 @@ if (user.roles === 'data_entry') {
 
           {/* المهنة */}
           <Grid item xs={12} sm={6}>
-            {/* <TextField
-              fullWidth
-              label={fieldLabels.profession}
-              name="profession"
-              value={editableRefugeeData?.profession || ''}
-              onChange={handleInputChange}
-            /> */}
             <TextField
               select
               fullWidth
@@ -852,6 +870,129 @@ if (user.roles === 'data_entry') {
               ))}
             </TextField>
           </Grid>
+          
+         {/* المستوى التعليمي*/}
+
+            <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.education_level_id}
+              name="education_level_id"
+              value={editableRefugeeData?.education_level_id || ''}
+              onChange={handleInputChange}
+            >
+              {(lookups.EducationLevels || []).map((o) => (
+                <MenuItem key={o.id} value={o.id}>
+                  {o.description_ar}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          {/* تاريخ ميلاد الأب */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              type="date"
+              label={fieldLabels.father_date_ofbirth}
+              name="father_date_ofbirth"
+              value={formatDateForInput(editableRefugeeData?.father_date_ofbirth)}
+              onChange={handleInputChange}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+
+          {/* هل الأب متوفى؟ */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.father_isdead}
+              name="father_isdead"
+              value={editableRefugeeData?.father_isdead !== undefined && editableRefugeeData?.father_isdead !== null ? String(editableRefugeeData.father_isdead) : ""}
+              onChange={handleInputChange}
+            >
+              <MenuItem value="1">نعم</MenuItem>
+              <MenuItem value="0">لا</MenuItem>
+            </TextField>
+          </Grid>
+
+          {/* جنسية الأب */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.father_nationalityid}
+              name="father_nationalityid"
+              value={editableRefugeeData?.father_nationalityid || ''}
+              onChange={handleInputChange}
+            >
+              {(lookups.father_nationalityid || []).map((o) => (
+                <MenuItem key={o.id} value={o.id}>
+                  {o.description_ar}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+
+
+          {/* تاريخ ميلاد الأم */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              type="date"
+              label={fieldLabels.mother_date_ofbirth}
+              name="mother_date_ofbirth"
+              value={formatDateForInput(editableRefugeeData?.mother_date_ofbirth)}
+              onChange={handleInputChange}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+
+
+          {/* هل الأم متوفاة؟ */}          
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.mother_isdead}
+              name="mother_isdead"
+              value={editableRefugeeData?.mother_isdead !== undefined && editableRefugeeData?.mother_isdead !== null ? String(editableRefugeeData.mother_isdead) : ""}
+              onChange={handleInputChange}
+            >
+              <MenuItem value="1">نعم</MenuItem>
+              <MenuItem value="0">لا</MenuItem>
+            </TextField>
+          </Grid>
+
+          {/* جنسية الأم */}          
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label={fieldLabels.mother_nationalityid}
+              name="mother_nationalityid"
+              value={editableRefugeeData?.mother_nationalityid || ''}
+              onChange={handleInputChange}
+            >
+              {(lookups.father_nationalityid || []).map((o) => (
+                <MenuItem key={o.id} value={o.id}>
+                  {o.description_ar}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+
+
+
+
+
+
+
+          {/* End final Grid   */}        
         </Grid>
       );
     }
@@ -879,7 +1020,9 @@ if (user.roles === 'data_entry') {
             key === 'interview_date' ||
             key === 'departure_date_from_origin' ||
             key === 'date_of_arrival_to_iraq' ||
-            key === 'marital_status_date'
+            key === 'marital_status_date'  ||
+            key === 'father_date_ofbirth' ||
+            key === 'mother_date_ofbirth'
           ) {
             return (
               <Grid item xs={12} sm={6} key={key}>
@@ -950,6 +1093,48 @@ if (user.roles === 'data_entry') {
               <Grid item xs={12} sm={6} key={key}>
                 <TextField select fullWidth label={label} name="race" value={value} onChange={handleInputChange}>
                   {(lookups.race || []).map((o) => (
+                    <MenuItem key={o.id} value={o.id}>
+                      {o.description_ar}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            );
+          }
+
+          if (key === 'father_nationalityid') {
+            return (
+              <Grid item xs={12} sm={6} key={key}>
+                <TextField
+                  select
+                  fullWidth
+                  label={label}
+                  name="father_nationalityid"
+                  value={value}
+                  onChange={handleInputChange}
+                >
+                  {(lookups.father_nationalityid || []).map((o) => (
+                    <MenuItem key={o.id} value={o.id}>
+                      {o.description_ar}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            );
+          }
+
+          if (key === 'mother_nationalityid') {
+            return (
+              <Grid item xs={12} sm={6} key={key}>
+                <TextField
+                  select
+                  fullWidth
+                  label={label}
+                  name="mother_nationalityid"
+                  value={value}
+                  onChange={handleInputChange}
+                >
+                  {(lookups.mother_nationalityid || []).map((o) => (
                     <MenuItem key={o.id} value={o.id}>
                       {o.description_ar}
                     </MenuItem>
@@ -1243,6 +1428,7 @@ if (user.roles === 'data_entry') {
         religion: editableRefugeeData.religion,
         birth_date: editableRefugeeData.birth_date,
         birth_place: editableRefugeeData.birth_place,
+        placeofbirthcity: editableRefugeeData.placeofbirthcity,
         marital_status: editableRefugeeData.marital_status,
         spouse_nationality: editableRefugeeData.spouse_nationality,
         marital_status_date: editableRefugeeData.marital_status_date,
@@ -1287,6 +1473,13 @@ if (user.roles === 'data_entry') {
         district: editableRefugeeData.district,
         subdistrict: editableRefugeeData.subdistrict,
         governorate: editableRefugeeData.governorate,
+        education_level_id: editableRefugeeData.education_level_id,
+        father_date_ofbirth: editableRefugeeData.father_date_ofbirth,
+        father_isdead: editableRefugeeData.father_isdead,//if 1  write "yes " else "no",
+        father_nationalityid: editableRefugeeData.father_nationalityid,
+        mother_date_ofbirth: editableRefugeeData.mother_date_ofbirth,
+        mother_isdead: editableRefugeeData.mother_isdead,
+        mother_nationalityid: editableRefugeeData.mother_nationalityid,
       };
 
       if (!editableRefugeeData?.interview_date) {
