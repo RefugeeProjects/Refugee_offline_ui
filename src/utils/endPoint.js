@@ -9,7 +9,7 @@ export const endPoints =
    process.env.NODE_ENV !== 'production' ?
       { WID_API: process.env.REACT_APP_TRAFFIC_API }
       :
-      { WID_API: `https://127.0.0.1:9001/api/` }
+      { WID_API: process.env.REACT_APP_TRAFFIC_API }
 
       
 // export const endPoints =
